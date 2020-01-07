@@ -15,7 +15,7 @@ Usage:
 
 Available Commands:
   help        Help about any command
-  kubernetes  kubernetes command handles actions that preformed on the managed kubernetes service
+  kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
 
 Flags:

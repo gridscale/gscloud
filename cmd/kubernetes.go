@@ -23,22 +23,22 @@ import (
 // clusterCmd represents the cluster command
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
-	Short: "cluster command handles actions that preformed on a kubernetes cluster",
-	Long:  "cluster command handles actions that preformed on a kubernetes cluster",
+	Short: "Actions on a Kubernetes cluster",
+	Long:  "Actions on a Kubernetes cluster.",
 }
 
-// kubernetesCmd represents the kubernetes command
+// kubernetesCmd represents the Kubernetes command
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
-	Short: "kubernetes command handles actions that preformed on the managed kubernetes service",
-	Long:  "kubernetes command handles actions that preformed on the managed kubernetes service",
+	Short: "Operate managed Kubernetes clusters",
+	Long:  "Operate managed Kubernetes clusters.",
 }
 
 // saveKubeconfigCmd represents the kubeconfig command
 var saveKubeconfigCmd = &cobra.Command{
 	Use:   "save-kubeconfig",
-	Short: "Saves configuration of the given cluster into the provided kubeconfig",
-	Long:  "Saves configuration of the given cluster into the provided kubeconfig or KUBECONFIG ENV. variable",
+	Short: "Saves configuration of the given cluster into a kubeconfig",
+	Long:  "Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.",
 	Run: func(cmd *cobra.Command, args []string) {
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
@@ -66,7 +66,7 @@ var saveKubeconfigCmd = &cobra.Command{
 		}
 		newKubeConfig := fetchKubeConfigFromProvider(clusterID)
 		if len(newKubeConfig.Clusters) == 0 || len(newKubeConfig.Users) == 0 {
-			fmt.Fprintln(os.Stderr, "Error: Invaild kubeconfig")
+			fmt.Fprintln(os.Stderr, "Error: Invalid kubeconfig")
 			os.Exit(1)
 		}
 		c := newKubeConfig.Clusters[0]
@@ -149,8 +149,8 @@ func init() {
 // execCredentialCmd represents the getCertificate command
 var execCredentialCmd = &cobra.Command{
 	Use:   "exec-credential",
-	Short: "Provides client's credential to kubectl command",
-	Long:  "exec-credential provides client's credential to kubectl command",
+	Short: "Provides client credentials to kubectl command",
+	Long:  "exec-credential provides client credentials to kubectl command.",
 	Run: func(cmd *cobra.Command, args []string) {
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
