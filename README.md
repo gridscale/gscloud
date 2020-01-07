@@ -32,11 +32,11 @@ Use "gscloud [command] --help" for more information about a command.
 accounts:
 - account:
   name: default
-  user_id: a13e84c9-852d-484-xxx-xxxx
+  userId: a13e84c9-852d-484-xxx-xxxx
   token: "9b6590592c65f7daa707d88"
 - account:
   name: liveaccount
-  user_id: a13e84c9-852d-2222-xxx-xxxx
+  userId: a13e84c9-852d-2222-xxx-xxxx
   token: 2222290592c6522222f7daa707d88
   url: https://api.gridscale.io
 

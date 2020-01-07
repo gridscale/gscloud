@@ -2,17 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v2"
+	"github.com/spf13/viper"
 )
 
 type accountEntry struct {
 	Name   string `yaml:"name"`
-	UserID string `yaml:"user_id"`
+	UserID string `yaml:"userId"`
 	Token  string `yaml:"token"`
 	URL    string `yaml:"url"`
 }
@@ -28,33 +27,28 @@ func cliPath() string {
 	return filepath.Join(dir, os.Args[0])
 }
 
-func (c *cliConfig) fetchCliConfig() *cliConfig {
-	yamlFile, _ := ioutil.ReadFile(cfgFile)
-	err := yaml.Unmarshal(yamlFile, c)
+func newCliClient(account string) *gsclient {
+	var ac accountEntry
+	
+	cliConf := &cliConfig{}
+	err := viper.Unmarshal(cliConf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-
-	return c
-}
-
-func newCliClient(account string) *gsclient {
-	var cc cliConfig
-	var ac accountEntry
-	cliConfig := cc.fetchCliConfig()
-	for _, a := range cliConfig.Accounts {
+	
+	for _, a := range cliConf.Accounts {
 		if account == a.Name {
 			ac = a
 			break
 		}
 	}
 
-	config := &config{
+	clientConf := &clientConfig{
 		apiURL:     defaultAPIURL,
 		userUUID:   ac.UserID,
 		userToken:  ac.Token,
 		userAgent:  "gscloud",
 		httpClient: http.DefaultClient,
 	}
-	return newClient(config)
+	return newClient(clientConf)
 }
