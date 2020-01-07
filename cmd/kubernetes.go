@@ -143,7 +143,7 @@ func init() {
 	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's uuid")
 	saveKubeconfigCmd.MarkFlagRequired("cluster")
-	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentaction method (exec-credential)")
+	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentication method (exec-credential)")
 }
 
 // execCredentialCmd represents the getCertificate command
