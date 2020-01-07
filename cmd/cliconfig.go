@@ -12,7 +12,7 @@ import (
 
 type accountEntry struct {
 	Name   string `yaml:"name"`
-	UserID string `yaml:"user_id"`
+	UserID string `yaml:"userId"`
 	Token  string `yaml:"token"`
 	URL    string `yaml:"url"`
 }
