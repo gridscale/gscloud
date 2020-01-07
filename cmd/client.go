@@ -24,7 +24,7 @@ const (
 	requestUUIDHeaderParam         = "X-Request-Id"
 )
 
-type config struct {
+type clientConfig struct {
 	apiURL     string
 	userUUID   string
 	userToken  string
@@ -33,10 +33,10 @@ type config struct {
 }
 
 type gsclient struct {
-	cfg *config
+	cfg *clientConfig
 }
 
-func newClient(c *config) *gsclient {
+func newClient(c *clientConfig) *gsclient {
 	client := &gsclient{
 		cfg: c,
 	}
