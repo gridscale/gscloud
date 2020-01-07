@@ -62,14 +62,6 @@ func initConfig() {
 		viper.AddConfigPath(configPath())
 		viper.AddConfigPath(".")
 	}
-	if account == "" {
-		account = "default"
-	}
-	client = newCliClient(account)
-
-	if client == nil {
-		os.Exit(1)
-	}
 	viper.AutomaticEnv() // read in environment variables that match
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -81,6 +73,14 @@ func initConfig() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	}
+	
+	if account == "" {
+		account = "default"
+	}
+	client = newCliClient(account)
+	if client == nil {
+		os.Exit(1)
 	}
 }
 
