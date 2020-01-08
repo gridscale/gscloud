@@ -5,4 +5,4 @@
 
 FEATURES:
 * Support make-config for creating a new configuration file
-* Support kubernetes cluster sub-commands: save-kubeconfig and exec-credential for managing authentication for cluster 
+* Support kubernetes cluster sub-commands: save-kubeconfig and exec-credential for managing a cluster's authentication 
