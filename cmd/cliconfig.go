@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
 
+	"github.com/kardianos/osext"
 	"github.com/spf13/viper"
 )
 
@@ -20,11 +20,11 @@ type cliConfig struct {
 }
 
 func cliPath() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	filePath, err := osext.Executable()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	return filepath.Join(dir, os.Args[0])
+	return filePath
 }
 
 func newCliClient(account string) *gsclient {
