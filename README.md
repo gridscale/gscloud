@@ -1,4 +1,4 @@
-# gscloud: The Command Line Interface for the gridcsale cloud
+# gscloud: The Command Line Interface for the gridscale cloud
 
 ## Supported Services
 
