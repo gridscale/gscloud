@@ -42,6 +42,10 @@ func cliConfigPath() string {
 	return path
 }
 
+func cliCachePath() string {
+	return configdir.LocalCache("gscloud")
+}
+
 func newCliClient(account string) *gsclient {
 	var ac accountEntry
 
