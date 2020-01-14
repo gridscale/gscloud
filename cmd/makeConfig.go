@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -30,12 +31,10 @@ Create a new configuration file at a specified path:
 
 `, cliConfigPath()),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		dirPath := cliConfigPath()
-		filePath := dirPath + "/config.yaml"
+		filePath := cliConfigPath()
 
-		_, err := os.Stat(filePath)
-		if os.IsNotExist(err) {
-			err = os.MkdirAll(dirPath, os.FileMode(0700))
+		if !fileExists(filePath) {
+			err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
 			if err != nil {
 				return err
 			}
