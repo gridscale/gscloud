@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kirsle/configdir"
 	"github.com/kardianos/osext"
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,15 @@ func cliPath() string {
 		fmt.Fprintln(os.Stderr, err)
 	}
 	return filePath
+}
+
+func cliConfigPath() string {
+	path := viper.ConfigFileUsed()
+	if path == "" {
+		path = configPath() + "/config.yaml"
+		viper.SetConfigFile(path)
+	}
+	return path
 }
 
 func newCliClient(account string) *gsclient {

@@ -31,11 +31,7 @@ Create a new configuration file at a specified path:
 
 `, configPath()),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path := viper.ConfigFileUsed()
-		if path == "" {
-			path = configPath() + "/config.yaml"
-			viper.SetConfigFile(path)
-		}
+		path := cliConfigPath()
 
 		err := os.MkdirAll(configPath(), 0755)
 		if err != nil {
