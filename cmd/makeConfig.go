@@ -30,18 +30,22 @@ Create a new configuration file at a specified path:
 
 `, cliConfigPath()),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path := cliConfigPath()
-		err := os.MkdirAll(path, 0755)
-		if err != nil {
-			return err
-		}
+		dirPath := cliConfigPath()
+		filePath := dirPath + "/config.yaml"
 
-		err = ioutil.WriteFile(path, emptyConfig(), 0644)
-		if err != nil {
-			return err
-		}
+		_, err := os.Stat(filePath)
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(dirPath, os.FileMode(0700))
+			if err != nil {
+				return err
+			}
 
-		fmt.Println(path)
+			err = ioutil.WriteFile(filePath, emptyConfig(), 0644)
+			if err != nil {
+				return err
+			}
+		}
+		fmt.Println(filePath)
 		return nil
 	},
 }
