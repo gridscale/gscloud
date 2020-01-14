@@ -253,7 +253,7 @@ func fetchKubeConfigFromProvider(id string) *kubeConfig {
 }
 
 func kubeConfigCachePath() string {
-	return filepath.Join(configdir.LocalCache("gscloud"), "exec-credential")
+	return filepath.Join(cliCachePath(), "exec-credential")
 }
 
 func cachedKubeConfigPath(id string) string {
