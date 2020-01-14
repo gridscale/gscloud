@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/kirsle/configdir"
 	"github.com/kardianos/osext"
@@ -28,10 +29,14 @@ func cliPath() string {
 	return filePath
 }
 
+// configPath construct platform specific path to the configuration file.
+// - on Linux: $XDG_CONFIG_HOME or $HOME/.config
+// - on macOS: $HOME/Library/Application Support
+// - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
 func cliConfigPath() string {
 	path := viper.ConfigFileUsed()
 	if path == "" {
-		path = configPath() + "/config.yaml"
+		path = filepath.Join(configdir.LocalConfig("gscloud"), "config.yaml")
 		viper.SetConfigFile(path)
 	}
 	return path

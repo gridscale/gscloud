@@ -42,14 +42,6 @@ func init() {
 
 }
 
-// configPath construct platform specific path to the configuration file.
-// - on Linux: $XDG_CONFIG_HOME or $HOME/.config
-// - on macOS: $HOME/Library/Application Support
-// - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
-func configPath() string {
-	return configdir.LocalConfig("gscloud")
-}
-
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
@@ -59,7 +51,7 @@ func initConfig() {
 		// Use default paths.
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(configPath())
+		viper.AddConfigPath(cliConfigPath())
 		viper.AddConfigPath(".")
 	}
 	viper.AutomaticEnv() // read in environment variables that match
