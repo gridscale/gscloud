@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,11 +28,10 @@ Create a new configuration file at a specified path:
 
 	gscloud --config ~/myconfig.yaml make-config
 
-`, configPath()),
+`, cliConfigPath()),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		path := cliConfigPath()
-
-		err := os.MkdirAll(configPath(), 0755)
+		err := os.MkdirAll(path, 0755)
 		if err != nil {
 			return err
 		}

@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kirsle/configdir"
 	"github.com/kardianos/osext"
+	"github.com/kirsle/configdir"
 	"github.com/spf13/viper"
 )
 
