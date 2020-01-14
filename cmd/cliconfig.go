@@ -35,7 +35,7 @@ func cliPath() string {
 func cliConfigPath() string {
 	path := viper.ConfigFileUsed()
 	if path == "" {
-		path = configdir.LocalConfig("gscloud")
+		path = configdir.LocalConfig("gscloud") + "/config.yaml"
 		viper.SetConfigFile(path)
 	}
 	return path
@@ -69,4 +69,12 @@ func newCliClient(account string) *gsclient {
 		httpClient: http.DefaultClient,
 	}
 	return newClient(clientConf)
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
