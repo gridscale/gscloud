@@ -29,13 +29,13 @@ func cliPath() string {
 
 func newCliClient(account string) *gsclient {
 	var ac accountEntry
-	
+
 	cliConf := &cliConfig{}
 	err := viper.Unmarshal(cliConf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	
+
 	for _, a := range cliConf.Accounts {
 		if account == a.Name {
 			ac = a
