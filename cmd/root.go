@@ -47,7 +47,7 @@ func init() {
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
 func configPath() string {
-	return configdir.LocalConfig("gridscale")
+	return configdir.LocalConfig("gscloud")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -74,10 +74,11 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
-	
+
 	if account == "" {
 		account = "default"
 	}
+
 	client = newCliClient(account)
 	if client == nil {
 		os.Exit(1)

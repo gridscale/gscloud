@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/kirsle/configdir"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -253,8 +254,7 @@ func fetchKubeConfigFromProvider(id string) *kubeConfig {
 }
 
 func kubeConfigCachePath() string {
-	dir, _ := filepath.Abs(filepath.Dir(cfgFile))
-	return filepath.Join(dir, "cache", "exec-credential")
+	return filepath.Join(configdir.LocalCache("gscloud"), "exec-credential")
 }
 
 func cachedKubeConfigPath(id string) string {
