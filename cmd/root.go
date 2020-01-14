@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kirsle/configdir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +32,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s/config.yaml", configPath()))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s/config.yaml", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 
 	rootCmd.AddCommand(kubernetesCmd)

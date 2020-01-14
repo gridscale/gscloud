@@ -93,7 +93,7 @@ var saveKubeconfigCmd = &cobra.Command{
 					Command:    cliPath(),
 					Args: []string{
 						"--config",
-						cfgFile,
+						cliConfigPath(),
 						"--account",
 						account,
 						"kubernetes",
