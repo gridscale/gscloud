@@ -102,6 +102,7 @@ var saveKubeconfigCmd = &cobra.Command{
 						"--cluster",
 						clusterID,
 					},
+					Env: []clientcmdapi.ExecEnvVar{},
 				},
 			}
 		} else {
