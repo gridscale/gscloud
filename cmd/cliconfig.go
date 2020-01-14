@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/kardianos/osext"
 	"github.com/kirsle/configdir"
@@ -36,7 +35,7 @@ func cliPath() string {
 func cliConfigPath() string {
 	path := viper.ConfigFileUsed()
 	if path == "" {
-		path = filepath.Join(configdir.LocalConfig("gscloud"), "config.yaml")
+		path = configdir.LocalConfig("gscloud")
 		viper.SetConfigFile(path)
 	}
 	return path
