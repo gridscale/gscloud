@@ -32,7 +32,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s/config.yaml", cliConfigPath()))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 
 	rootCmd.AddCommand(kubernetesCmd)
