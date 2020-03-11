@@ -20,7 +20,7 @@ Available Commands:
 
 Flags:
       --account string   the account used, 'default' if none given
-      --config string    configuration file, default /home/bk/.config/gridscale/config.yaml
+      --config string    configuration file, default /home/bk/.config/gscloud/config.yaml
   -h, --help             help for gscloud
 
 Use "gscloud [command] --help" for more information about a command.
@@ -69,7 +69,7 @@ users:
       command: $HOME/gscloud
       args:
         - "--config"
-        - "$HOME/.gscloud/config.yaml"
+        - "$HOME/.config/gscloud/config.yaml"
         - "--account"
         - "test"
         - "kubernetes"
