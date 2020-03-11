@@ -21,6 +21,6 @@ zip:
 clean:
 	$(foreach platform,$(PLATFORMS), \
             $(foreach arch,$(ARCHES), \
-                rm -f $(BUILDDIR)/$(EXECUTABLE_NAME)*;))
+                rm -f $(BUILDDIR)/gscloud_*;))
 
 .PHONY: buildall build clean zip
