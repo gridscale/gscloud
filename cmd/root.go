@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kirsle/configdir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,21 +32,13 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s/config.yaml", configPath()))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
 
-}
-
-// configPath construct platform specific path to the configuration file.
-// - on Linux: $XDG_CONFIG_HOME or $HOME/.config
-// - on macOS: $HOME/Library/Application Support
-// - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
-func configPath() string {
-	return configdir.LocalConfig("gridscale")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -59,7 +50,7 @@ func initConfig() {
 		// Use default paths.
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(configPath())
+		viper.AddConfigPath(cliConfigPath())
 		viper.AddConfigPath(".")
 	}
 	viper.AutomaticEnv() // read in environment variables that match
@@ -74,10 +65,11 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
-	
+
 	if account == "" {
 		account = "default"
 	}
+
 	client = newCliClient(account)
 	if client == nil {
 		os.Exit(1)

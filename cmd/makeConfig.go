@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,25 +29,22 @@ Create a new configuration file at a specified path:
 
 	gscloud --config ~/myconfig.yaml make-config
 
-`, configPath()),
+`, cliConfigPath()),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path := viper.ConfigFileUsed()
-		if path == "" {
-			path = configPath() + "/config.yaml"
-			viper.SetConfigFile(path)
-		}
+		filePath := cliConfigPath()
 
-		err := os.MkdirAll(configPath(), 0755)
-		if err != nil {
-			return err
-		}
+		if !fileExists(filePath) {
+			err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
+			if err != nil {
+				return err
+			}
 
-		err = ioutil.WriteFile(path, emptyConfig(), 0644)
-		if err != nil {
-			return err
+			err = ioutil.WriteFile(filePath, emptyConfig(), 0644)
+			if err != nil {
+				return err
+			}
 		}
-
-		fmt.Println(path)
+		fmt.Println(filePath)
 		return nil
 	},
 }

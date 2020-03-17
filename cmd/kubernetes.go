@@ -93,7 +93,7 @@ var saveKubeconfigCmd = &cobra.Command{
 					Command:    cliPath(),
 					Args: []string{
 						"--config",
-						cfgFile,
+						cliConfigPath(),
 						"--account",
 						account,
 						"kubernetes",
@@ -102,6 +102,7 @@ var saveKubeconfigCmd = &cobra.Command{
 						"--cluster",
 						clusterID,
 					},
+					Env: []clientcmdapi.ExecEnvVar{},
 				},
 			}
 		} else {
@@ -253,8 +254,7 @@ func fetchKubeConfigFromProvider(id string) *kubeConfig {
 }
 
 func kubeConfigCachePath() string {
-	dir, _ := filepath.Abs(filepath.Dir(cfgFile))
-	return filepath.Join(dir, "cache", "exec-credential")
+	return filepath.Join(cliCachePath(), "exec-credential")
 }
 
 func cachedKubeConfigPath(id string) string {
@@ -307,12 +307,4 @@ func loadCachedKubeConfig(id string) (*clientauth.ExecCredential, error) {
 	}
 
 	return execCredential, nil
-}
-
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
 }

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
 
+	"github.com/kardianos/osext"
+	"github.com/kirsle/configdir"
 	"github.com/spf13/viper"
 )
 
@@ -20,22 +21,39 @@ type cliConfig struct {
 }
 
 func cliPath() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	filePath, err := osext.Executable()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	return filepath.Join(dir, os.Args[0])
+	return filePath
+}
+
+// configPath construct platform specific path to the configuration file.
+// - on Linux: $XDG_CONFIG_HOME or $HOME/.config
+// - on macOS: $HOME/Library/Application Support
+// - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
+func cliConfigPath() string {
+	path := viper.ConfigFileUsed()
+	if path == "" {
+		path = configdir.LocalConfig("gscloud") + "/config.yaml"
+		viper.SetConfigFile(path)
+	}
+	return path
+}
+
+func cliCachePath() string {
+	return configdir.LocalCache("gscloud")
 }
 
 func newCliClient(account string) *gsclient {
 	var ac accountEntry
-	
+
 	cliConf := &cliConfig{}
 	err := viper.Unmarshal(cliConf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	
+
 	for _, a := range cliConf.Accounts {
 		if account == a.Name {
 			ac = a
@@ -51,4 +69,12 @@ func newCliClient(account string) *gsclient {
 		httpClient: http.DefaultClient,
 	}
 	return newClient(clientConf)
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
