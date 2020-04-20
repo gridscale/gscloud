@@ -17,7 +17,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 
-	"gitlab.com/gridscale/gscloud/endpoints"
+	"github.com/gridscale/gscloud/endpoints"
 )
 
 // clusterCmd represents the cluster command
