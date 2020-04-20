@@ -2,9 +2,13 @@ PLATFORMS=windows linux darwin
 ARCHES=amd64
 BUILDDIR=build
 VERSION=$$(cat VERSION)
+GIT_COMMIT=$$(git rev-list -1 HEAD)
 EXECUTABLE_NAME=gscloud_$(VERSION)
 
 buildall: clean build zip
+
+build-single:
+	go build -ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION) "
 
 build:
 	$(foreach platform,$(PLATFORMS), \
