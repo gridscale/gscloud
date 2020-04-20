@@ -1,4 +1,4 @@
-module gitlab.com/gridscale/gscloud
+module github.com/gridscale/gscloud
 
 go 1.13
 
