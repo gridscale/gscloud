@@ -3,10 +3,14 @@ module github.com/gridscale/gscloud
 go 1.13
 
 require (
+	github.com/fatih/color v1.9.0
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
+	github.com/mattn/go-colorable v0.1.6 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/rodaine/table v1.0.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.1
 	gopkg.in/inf.v0 v0.9.1 // indirect
