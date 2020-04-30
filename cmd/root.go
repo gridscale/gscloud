@@ -30,7 +30,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initClient)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
@@ -38,7 +38,6 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
-
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -65,7 +64,10 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
+}
 
+// initClient initializes the client for a given account.
+func initClient() {
 	if account == "" {
 		account = "default"
 	}
