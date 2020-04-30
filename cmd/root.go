@@ -57,7 +57,7 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Not found. Disregard
-		} else if _, ok := err.(*os.PathError); ok && contains(os.Args, "make-config") {
+		} else if _, ok := err.(*os.PathError); ok && (contains(os.Args, "make-config") || contains(os.Args, "version")) {
 			// --config given along with make-config → we're about to create that file. Disregard
 		} else {
 			fmt.Fprintln(os.Stderr, err)
