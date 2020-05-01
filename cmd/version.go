@@ -27,7 +27,7 @@ func init() {
 	// Hide some global persistent flags here that don't make sense on 'version'
 	origHelpFunc := versionCmd.HelpFunc()
 	rootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
-		if cmd.Name() == "version" || (cmd.Parent() != nil && cmd.Parent().Name() == "version") {
+		if cmd.Name() == "version" || (cmd.HasParent() && cmd.Parent().Name() == "version") {
 			cmd.Flags().MarkHidden("account")
 			cmd.Flags().MarkHidden("config")
 		}
