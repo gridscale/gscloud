@@ -12,6 +12,9 @@ buildall: clean release zip
 build:
 	go build -ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
 
+test: build
+	go test ./...
+
 release:
 	$(foreach platform,$(PLATFORMS), \
 		$(foreach arch,$(ARCHES), \
@@ -28,6 +31,7 @@ zip:
 	@if [ -f $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES).exe.zip ]; then mv $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES).exe.zip $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES).zip; fi
 
 clean:
+	go clean
 	rm -f $(BUILDDIR)/gscloud_*
 
 .PHONY: buildall build release clean zip
