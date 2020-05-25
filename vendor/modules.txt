@@ -9,6 +9,10 @@ github.com/gogo/protobuf/sortkeys
 github.com/golang/protobuf/proto
 # github.com/google/gofuzz v1.0.0
 github.com/google/gofuzz
+# github.com/google/uuid v1.1.1
+github.com/google/uuid
+# github.com/gridscale/gsclient-go/v3 v3.0.1
+github.com/gridscale/gsclient-go/v3
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
@@ -30,6 +34,8 @@ github.com/json-iterator/go
 github.com/kardianos/osext
 # github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
 github.com/kirsle/configdir
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
 # github.com/mitchellh/mapstructure v1.1.2
@@ -42,6 +48,8 @@ github.com/modern-go/reflect2
 github.com/pelletier/go-toml
 # github.com/rodaine/table v1.0.0
 github.com/rodaine/table
+# github.com/sirupsen/logrus v1.4.2
+github.com/sirupsen/logrus
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -59,7 +67,7 @@ github.com/spf13/viper
 github.com/subosito/gotenv
 # golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
 golang.org/x/crypto/ssh/terminal
-# golang.org/x/net v0.0.0-20190812203447-cdfb69ac37fc
+# golang.org/x/net v0.0.0-20200421231249-e086a090c8fd
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
@@ -69,7 +77,7 @@ golang.org/x/net/idna
 # golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20190616124812-15dcb6c0061f
+# golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # golang.org/x/text v0.3.2
