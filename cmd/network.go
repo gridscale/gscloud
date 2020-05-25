@@ -28,14 +28,14 @@ var networkCmd = &cobra.Command{
 				fill := [][]string{
 					{
 						netw.Properties.Name,
-						netw.Properties.LocationCountry,
-						netw.Properties.NetworkType,
+						netw.Properties.LocationName,
+						netw.Properties.CreateTime.String()[:10],
 						netw.Properties.Status,
 					},
 				}
 				networkinfos = append(networkinfos, fill...)
 			}
-			render.Table(out, []string{"network-name", "location", "network-type", "status"}, networkinfos)
+			render.Table(out, []string{"network", "location", "createtime", "status"}, networkinfos)
 			fmt.Print(out)
 		} else {
 			fmt.Println(render.AsJSON(networks))

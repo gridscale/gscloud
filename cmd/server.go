@@ -31,15 +31,15 @@ var serverCmd = &cobra.Command{
 				fill := [][]string{
 					{
 						server.Properties.Name,
-						strconv.FormatInt(int64(server.Properties.Cores), 10),
-						strconv.FormatInt(int64(server.Properties.Memory), 10),
-						server.Properties.Status,
+						string("Core/s " + strconv.FormatInt(int64(server.Properties.Cores), 10) + " RAM " + strconv.FormatInt(int64(server.Properties.Memory), 10)),
+						strconv.FormatBool(server.Properties.Power),
+						strconv.FormatInt(int64(server.Properties.CurrentPrice), 10),
 					},
 				}
 				serverinfos = append(serverinfos, fill...)
 
 			}
-			render.Table(out, []string{"server-name", "cores", "memory", "status"}, serverinfos)
+			render.Table(out, []string{"server", "specifications", "power", "currentprice"}, serverinfos)
 			fmt.Print(out)
 		} else {
 			fmt.Println(render.AsJSON(servers))
