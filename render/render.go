@@ -1,6 +1,7 @@
-package tablerendering
+package render
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -8,8 +9,8 @@ import (
 	"github.com/rodaine/table"
 )
 
-// RenderTable prints a table to the given io.Writer.
-func RenderTable(buf io.Writer, columns []string, rows [][]string) {
+// Table prints a table to the given io.Writer.
+func Table(buf io.Writer, columns []string, rows [][]string) {
 
 	s := make([]interface{}, len(columns))
 	for i, v := range columns {
@@ -28,6 +29,13 @@ func RenderTable(buf io.Writer, columns []string, rows [][]string) {
 
 	tbl.WithWriter(buf).Print()
 }
+
+// AsJSON prints infos as JSON instead table
+func AsJSON(infos ...interface{}) string {
+	json, _ := json.Marshal(infos)
+	return fmt.Sprintf("%s\n", json)
+}
+
 func init() {
 	table.DefaultHeaderFormatter = func(format string, vals ...interface{}) string {
 		return strings.ToUpper(fmt.Sprintf(format, vals...))

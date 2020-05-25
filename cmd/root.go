@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile string
-	account string
-	client  *gsclient
+	cfgFile  string
+	account  string
+	client   *gsclient.Client
+	jsonFlag bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -34,10 +36,12 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
+	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Returns a table as json.")
 
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -76,6 +80,7 @@ func initClient() {
 	if client == nil {
 		os.Exit(1)
 	}
+
 }
 
 // commandWithoutConfig return true if current command does not need a config file.

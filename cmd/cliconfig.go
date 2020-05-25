@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/kardianos/osext"
 	"github.com/kirsle/configdir"
 	"github.com/spf13/viper"
@@ -14,7 +14,6 @@ type accountEntry struct {
 	Name   string `yaml:"name"`
 	UserID string `yaml:"userId"`
 	Token  string `yaml:"token"`
-	URL    string `yaml:"url"`
 }
 type cliConfig struct {
 	Accounts []accountEntry `yaml:"accounts"`
@@ -45,7 +44,7 @@ func cliCachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
-func newCliClient(account string) *gsclient {
+func newCliClient(account string) *gsclient.Client {
 	var ac accountEntry
 
 	cliConf := &cliConfig{}
@@ -61,14 +60,20 @@ func newCliClient(account string) *gsclient {
 		}
 	}
 
-	clientConf := &clientConfig{
-		apiURL:     defaultAPIURL,
-		userUUID:   ac.UserID,
-		userToken:  ac.Token,
-		userAgent:  "gscloud",
-		httpClient: http.DefaultClient,
-	}
-	return newClient(clientConf)
+	// clientConf := &clientConfig{
+	// apiURL:     defaultAPIURL,
+	// userUUID:   ac.UserID,
+	// userToken:  ac.Token,
+	// userAgent:  "gscloud",
+	// httpClient: http.DefaultClient,
+	// }
+	// return newClient(clientConf)
+	config := gsclient.DefaultConfiguration(
+		ac.UserID,
+		ac.Token,
+	)
+	return gsclient.NewClient(config)
+
 }
 
 func fileExists(filename string) bool {
