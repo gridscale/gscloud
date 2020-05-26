@@ -13,9 +13,8 @@ import (
 // storageCmd represents the storage command
 var storageCmd = &cobra.Command{
 	Use:   "storage",
-	Short: "Print storage list",
-	Long: `Display a storage list as table by default 
-	as json by using the flag --json or -j`,
+	Short: "Print storage list.",
+	Long:  `Print all storage information.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)

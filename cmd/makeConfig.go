@@ -59,6 +59,7 @@ func emptyConfig() []byte {
 		Name:   "default",
 		UserID: "",
 		Token:  "",
+		URL:    defaultAPIURL,
 	}
 	c := cliConfig{
 		Accounts: []accountEntry{defaultAccount},

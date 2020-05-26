@@ -14,6 +14,7 @@ type accountEntry struct {
 	Name   string `yaml:"name"`
 	UserID string `yaml:"userId"`
 	Token  string `yaml:"token"`
+	URL    string `yaml:"url"`
 }
 type cliConfig struct {
 	Accounts []accountEntry `yaml:"accounts"`
@@ -60,14 +61,6 @@ func newCliClient(account string) *gsclient.Client {
 		}
 	}
 
-	// clientConf := &clientConfig{
-	// apiURL:     defaultAPIURL,
-	// userUUID:   ac.UserID,
-	// userToken:  ac.Token,
-	// userAgent:  "gscloud",
-	// httpClient: http.DefaultClient,
-	// }
-	// return newClient(clientConf)
 	config := gsclient.DefaultConfiguration(
 		ac.UserID,
 		ac.Token,

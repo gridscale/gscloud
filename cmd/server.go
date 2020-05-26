@@ -13,9 +13,8 @@ import (
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Print server list",
-	Long: `Display server list as table by default 
-	as json by using the flag --json or -j`,
+	Short: "Print server list.",
+	Long:  `Print all server information.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 

@@ -12,9 +12,8 @@ import (
 // networkCmd represents the network command
 var networkCmd = &cobra.Command{
 	Use:   "network",
-	Short: "Print network list",
-	Long: `Display a network list as table by default 
-	as json by using the flag --json or -j`,
+	Short: "Print network list.",
+	Long:  `Print all networks information.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
