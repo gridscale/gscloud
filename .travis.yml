@@ -1,0 +1,12 @@
+sudo: false
+
+branches:
+  only:
+    - test
+
+notifications:
+  email: false
+
+script:
+  - make build
+  - make test
