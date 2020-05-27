@@ -9,11 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// networkCmd represents the network command
 var networkCmd = &cobra.Command{
 	Use:   "network",
-	Short: "Print network list.",
-	Long:  `Print all networks information.`,
+	Short: "Print network list",
+	Long:  `Print all networks information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)

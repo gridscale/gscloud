@@ -21,14 +21,14 @@ import (
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Actions on a Kubernetes cluster",
-	Long:  "Actions on a Kubernetes cluster.",
+	Long:  "Actions on a Kubernetes cluster",
 }
 
 // kubernetesCmd represents the Kubernetes command
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
 	Short: "Operate managed Kubernetes clusters",
-	Long:  "Operate managed Kubernetes clusters.",
+	Long:  "Operate managed Kubernetes clusters",
 }
 
 // saveKubeconfigCmd represents the kubeconfig command

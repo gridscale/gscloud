@@ -14,8 +14,8 @@ var Version string
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version.",
-	Long:  `Print gscloud version information.`,
+	Short: "Print the version",
+	Long:  `Print gscloud version information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("Version:\t%s\nGit commit:\t%s\n", Version, GitCommit)
 	},

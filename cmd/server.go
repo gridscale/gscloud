@@ -10,11 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Print server list.",
-	Long:  `Print all server information.`,
+	Short: "Print server list",
+	Long:  `Print all server information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 
@@ -26,19 +25,22 @@ var serverCmd = &cobra.Command{
 		var serverinfos [][]string
 		if !jsonFlag {
 			for _, server := range servers {
-
+				status := "off"
+				if server.Properties.Power {
+					status = "on"
+				}
 				fill := [][]string{
 					{
 						server.Properties.Name,
-						string("Core/s " + strconv.FormatInt(int64(server.Properties.Cores), 10) + " RAM " + strconv.FormatInt(int64(server.Properties.Memory), 10)),
-						strconv.FormatBool(server.Properties.Power),
-						strconv.FormatInt(int64(server.Properties.CurrentPrice), 10),
+						strconv.FormatInt(int64(server.Properties.Cores), 10),
+						strconv.FormatInt(int64(server.Properties.Memory), 10),
+						status,
 					},
 				}
 				serverinfos = append(serverinfos, fill...)
 
 			}
-			render.Table(out, []string{"server", "specifications", "power", "currentprice"}, serverinfos)
+			render.Table(out, []string{"server", "core", "mem", "power"}, serverinfos)
 			fmt.Print(out)
 		} else {
 			fmt.Println(render.AsJSON(servers))
