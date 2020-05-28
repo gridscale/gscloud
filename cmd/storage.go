@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/c0dehard/gscloud/render"
+	"github.com/gridscale/gscloud/render"
 	"github.com/spf13/cobra"
 )
 

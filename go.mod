@@ -1,4 +1,4 @@
-module github.com/c0dehard/gscloud
+module github.com/gridscale/gscloud
 
 go 1.13
 

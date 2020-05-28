@@ -2,7 +2,7 @@
 ## v0.2.0-beta (March 11, 2020)
 
 FEATURES:
-* Use standard user-level cache directory https://github.com/c0dehard/gscloud/issues/11
+* Use standard user-level cache directory https://github.com/gridscale/gscloud/issues/11
  
 
 ## v0.1.0-beta (January 8, 2020)
