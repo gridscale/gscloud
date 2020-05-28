@@ -1,6 +1,6 @@
 package main
 
-import "github.com/c0dehard/gscloud/cmd"
+import "github.com/gridscale/gscloud/cmd"
 
 func main() {
 	cmd.Execute()
