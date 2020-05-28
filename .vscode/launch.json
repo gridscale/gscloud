@@ -13,7 +13,8 @@
             "program": "${workspaceFolder}/gscloud",
             "env": {},
             "args": [
-                "version"
+                "server",
+                "ls"
             ]
         }
     ]
