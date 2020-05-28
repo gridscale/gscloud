@@ -10,7 +10,7 @@ default: build
 buildall: clean release zip
 
 build:
-	go build -ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
+	go build -ldflags "-X github.com/c0dehard/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/c0dehard/gscloud/cmd.Version=$(VERSION)"
 
 test: build
 	go test ./...
@@ -20,7 +20,7 @@ release:
 		$(foreach arch,$(ARCHES), \
 			mkdir -p $(BUILDDIR); \
 			GOOS=$(platform) GOARCH=$(arch) go build \
-				-ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)" \
+				-ldflags "-X github.com/c0dehard/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/c0dehard/gscloud/cmd.Version=$(VERSION)" \
 				-o $(BUILDDIR)/$(EXECUTABLE_NAME)_$(platform)_$(arch);))
 	@echo "Renaming Windows file"
 	@if [ -f $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES) ]; then mv $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES) $(BUILDDIR)/$(EXECUTABLE_NAME)_windows_$(ARCHES).exe; fi
