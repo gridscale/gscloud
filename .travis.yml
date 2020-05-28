@@ -4,10 +4,10 @@ go:
 branches:
   only:
     - test
-
 notifications:
   email: false
-
 script:
+  - rm go.sum
+  - go clean -modcache
   - make build
   - make test
