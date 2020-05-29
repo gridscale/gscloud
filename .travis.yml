@@ -1,0 +1,9 @@
+language: go
+go:
+  - 1.12.x
+branches:
+  only:
+    - test
+script:
+  - make build
+  - make test
