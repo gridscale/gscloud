@@ -3,7 +3,7 @@ go:
   - 1.12.x
 branches:
   only:
-    - test
+    - travis-ci-pipeline
 script:
   - make build
   - make test
