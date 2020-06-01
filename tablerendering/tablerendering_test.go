@@ -11,7 +11,7 @@ func TestWithByteBuffer(t *testing.T) {
 	RenderTable(out, []string{"test", "version", "text"}, [][]string{{"1", "version 1", "empty"}, {"a2", "b2", "c3"}})
 
 	countedLines := strings.Count(out.String(), "\n")
-	if countedLines != 4 {
+	if countedLines != 3 {
 		t.Fail()
 	}
 

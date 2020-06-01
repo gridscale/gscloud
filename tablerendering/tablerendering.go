@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rodaine/table"
+	"github.com/gridscale/table"
 )
 
 // RenderTable prints a table to the given io.Writer.
