@@ -43,7 +43,7 @@ var serverCmd = &cobra.Command{
 			render.Table(out, []string{"server", "core", "mem", "power"}, serverinfos)
 			fmt.Print(out)
 		} else {
-			fmt.Println(render.AsJSON(servers))
+			render.AsJSON(servers)
 
 		}
 	},
