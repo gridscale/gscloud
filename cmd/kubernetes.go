@@ -1,12 +1,11 @@
 package cmd
 
 import (
+	"context"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"time"
 
@@ -16,22 +15,20 @@ import (
 	clientauth "k8s.io/client-go/pkg/apis/clientauthentication/v1beta1"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
-
-	"github.com/gridscale/gscloud/endpoints"
 )
 
 // clusterCmd represents the cluster command
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Actions on a Kubernetes cluster",
-	Long:  "Actions on a Kubernetes cluster.",
+	Long:  "Actions on a Kubernetes cluster",
 }
 
 // kubernetesCmd represents the Kubernetes command
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
 	Short: "Operate managed Kubernetes clusters",
-	Long:  "Operate managed Kubernetes clusters.",
+	Long:  "Operate managed Kubernetes clusters",
 }
 
 // saveKubeconfigCmd represents the kubeconfig command
@@ -226,22 +223,26 @@ func fetchKubeConfigFromProvider(id string) *kubeConfig {
 	var kc kubeConfig
 
 	// generate kubeconfig
-	r := request{
-		uri:    path.Join(apiPaasServiceBase, id, "renew_credentials"),
-		method: http.MethodPatch,
-		body:   endpoints.PaaSKubeCredentialBody{},
+	// r := request{
+	// 	uri:    path.Join(apiPaasServiceBase, id, "renew_credentials"),
+	// 	method: http.MethodPatch,
+	// 	body:   endpoints.PaaSKubeCredentialBody{},
+	// }
+	// r.execute(*client, nil)
+	if err := client.RenewK8sCredentials(context.Background(), id); err != nil {
+		os.Exit(1)
 	}
-	r.execute(*client, nil)
 
 	// retrieve kubeconfig
-	r = request{
-		uri:    path.Join(apiPaasServiceBase, id),
-		method: http.MethodGet,
-		body:   endpoints.PaaSKubeCredentialBody{},
+	// r = request{
+	// 	uri:    path.Join(apiPaasServiceBase, id),
+	// 	method: http.MethodGet,
+	// 	body:   endpoints.PaaSKubeCredentialBody{},
+	// }
+	paaSService, err := client.GetPaaSService(context.Background(), id)
+	if err != nil {
+		os.Exit(1)
 	}
-
-	var paaSService endpoints.PaaSService
-	r.execute(*client, &paaSService)
 
 	if len(paaSService.Properties.Credentials) != 0 {
 		err := yaml.Unmarshal([]byte(paaSService.Properties.Credentials[0].KubeConfig), &kc)
