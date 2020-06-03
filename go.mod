@@ -3,6 +3,7 @@ module github.com/gridscale/gscloud
 go 1.13
 
 require (
+	github.com/gridscale/gsclient-go/v3 v3.0.1
 	github.com/gridscale/table v1.0.1
 	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
@@ -11,7 +12,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.6.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/apimachinery v0.0.0-20190925235427-62598f38f24e
