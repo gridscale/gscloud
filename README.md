@@ -1,5 +1,7 @@
 # gscloud: The Command Line Interface for the gridscale cloud
-[![Build Status](https://travis-ci.org/c0dehard/gscloud.svg?branch=travis-simple-test)](https://travis-ci.org/c0dehard/gscloud)
+
+[![Build Status](https://travis-ci.org/gridscale/gscloud.svg?branch=develop)](https://travis-ci.org/gridscale/gscloud)
+
 ## Supported Services
 
     - kubernetes
