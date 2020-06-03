@@ -34,7 +34,7 @@ var storageCmd = &cobra.Command{
 				}
 				storage = append(storage, fill...)
 			}
-			render.Table(out, []string{"storage-name", "capacity", "changetime", "status"}, storage)
+			render.Table(out, []string{"name", "capacity", "changetime", "status"}, storage)
 			fmt.Print(out)
 		} else {
 			render.AsJSON(storages)

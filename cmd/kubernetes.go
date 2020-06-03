@@ -222,23 +222,10 @@ func init() {
 func fetchKubeConfigFromProvider(id string) *kubeConfig {
 	var kc kubeConfig
 
-	// generate kubeconfig
-	// r := request{
-	// 	uri:    path.Join(apiPaasServiceBase, id, "renew_credentials"),
-	// 	method: http.MethodPatch,
-	// 	body:   endpoints.PaaSKubeCredentialBody{},
-	// }
-	// r.execute(*client, nil)
 	if err := client.RenewK8sCredentials(context.Background(), id); err != nil {
 		os.Exit(1)
 	}
 
-	// retrieve kubeconfig
-	// r = request{
-	// 	uri:    path.Join(apiPaasServiceBase, id),
-	// 	method: http.MethodGet,
-	// 	body:   endpoints.PaaSKubeCredentialBody{},
-	// }
 	paaSService, err := client.GetPaaSService(context.Background(), id)
 	if err != nil {
 		os.Exit(1)
