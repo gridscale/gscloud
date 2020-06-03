@@ -4,14 +4,28 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile string
-	account string
-	client  *gsclient
+	cfgFile  string
+	account  string
+	client   *gsclient.Client
+	jsonFlag bool
+)
+
+const (
+	requestBase                    = "/requests/"
+	apiPaasServiceBase             = "/objects/paas/services"
+	defaultAPIURL                  = "https://api.gridscale.io"
+	bodyType                       = "application/json"
+	requestDoneStatus              = "done"
+	requestFailStatus              = "failed"
+	defaultCheckRequestTimeoutSecs = 120
+	defaultDelayIntervalMilliSecs  = 500
+	requestUUIDHeaderParam         = "X-Request-Id"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -31,10 +45,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig, initClient)
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
-
+	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print output as JSON")
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
@@ -76,6 +89,7 @@ func initClient() {
 	if client == nil {
 		os.Exit(1)
 	}
+
 }
 
 // commandWithoutConfig return true if current command does not need a config file.
