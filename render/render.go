@@ -31,10 +31,11 @@ func Table(buf io.Writer, columns []string, rows [][]string) {
 }
 
 // AsJSON prints infos as JSON instead table
-func AsJSON(s ...interface{}) {
+func AsJSON(buf io.Writer, s ...interface{}) {
 	json, _ := json.Marshal(s)
-	fmt.Printf("%s\n", json)
+	buf.Write([]byte(fmt.Sprintf("%s\n", json)))
 }
+
 func init() {
 	table.DefaultHeaderFormatter = func(format string, vals ...interface{}) string {
 		return strings.ToUpper(fmt.Sprintf(format, vals...))
