@@ -36,7 +36,7 @@ var networkCmd = &cobra.Command{
 			render.Table(out, []string{"network", "location", "createtime", "status"}, networkinfos)
 			fmt.Print(out)
 		} else {
-			fmt.Println(render.AsJSON(networks))
+			render.AsJSON(networks)
 		}
 	},
 }
