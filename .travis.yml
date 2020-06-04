@@ -4,6 +4,7 @@ go:
 
 install:
   - go get -u golang.org/x/lint/golint
+  - go list -f {{.Target}} golang.org/x/lint/golint
 
 script:
   - make build
