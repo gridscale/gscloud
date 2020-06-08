@@ -24,45 +24,29 @@ var serverCmd = &cobra.Command{
 		}
 		var serverinfos [][]string
 		if !jsonFlag {
-			if !idFlag {
-				for _, server := range servers {
-					status := "off"
-					if server.Properties.Power {
-						status = "on"
-					}
-					fill := [][]string{
-						{
-							server.Properties.Name,
-							strconv.FormatInt(int64(server.Properties.Cores), 10),
-							strconv.FormatInt(int64(server.Properties.Memory), 10),
-							status,
-						},
-					}
-					serverinfos = append(serverinfos, fill...)
-
+			heading := []string{"name", "core", "mem", "power", "uuid"}
+			for _, server := range servers {
+				status := "off"
+				if server.Properties.Power {
+					status = "on"
 				}
-				render.Table(out, []string{"name", "core", "mem", "power"}, serverinfos)
+				fill := [][]string{
+					{
+						server.Properties.Name,
+						strconv.FormatInt(int64(server.Properties.Cores), 10),
+						strconv.FormatInt(int64(server.Properties.Memory), 10),
+						status,
+						server.Properties.ObjectUUID,
+					},
+				}
+				serverinfos = append(serverinfos, fill...)
+
 			}
 			if idFlag {
-				for _, server := range servers {
-					status := "off"
-					if server.Properties.Power {
-						status = "on"
-					}
-					fill := [][]string{
-						{
-							server.Properties.Name,
-							strconv.FormatInt(int64(server.Properties.Cores), 10),
-							strconv.FormatInt(int64(server.Properties.Memory), 10),
-							status,
-							server.Properties.ObjectUUID,
-						},
-					}
-					serverinfos = append(serverinfos, fill...)
-
-				}
-				render.Table(out, []string{"name", "core", "mem", "power", "uuid"}, serverinfos)
+				rowsToDisplay = len(heading)
 			}
+			render.Table(out, heading[:rowsToDisplay], serverinfos)
+
 		} else {
 			render.AsJSON(out, servers)
 		}

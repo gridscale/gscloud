@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	cfgFile  string
-	account  string
-	client   *gsclient.Client
-	jsonFlag bool
-	idFlag   bool
+	cfgFile       string
+	account       string
+	client        *gsclient.Client
+	jsonFlag      bool
+	idFlag        bool
+	rowsToDisplay = 4
 )
 
 const (
