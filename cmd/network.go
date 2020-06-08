@@ -22,37 +22,25 @@ var networkCmd = &cobra.Command{
 		}
 		var networkinfos [][]string
 		if !jsonFlag {
-			if !idFlag {
-				for _, netw := range networks {
-					fill := [][]string{
-						{
-							netw.Properties.Name,
-							netw.Properties.LocationName,
-							netw.Properties.CreateTime.String()[:10],
-							netw.Properties.Status,
-						},
-					}
-					networkinfos = append(networkinfos, fill...)
-
+			heading := []string{"name", "location", "createtime", "status", "uuid"}
+			for _, netw := range networks {
+				fill := [][]string{
+					{
+						netw.Properties.Name,
+						netw.Properties.LocationName,
+						netw.Properties.CreateTime.String()[:10],
+						netw.Properties.Status,
+						netw.Properties.ObjectUUID,
+					},
 				}
-				render.Table(out, []string{"name", "location", "createtime", "status"}, networkinfos)
+				networkinfos = append(networkinfos, fill...)
+
 			}
 			if idFlag {
-				for _, netw := range networks {
-					fill := [][]string{
-						{
-							netw.Properties.Name,
-							netw.Properties.LocationName,
-							netw.Properties.CreateTime.String()[:10],
-							netw.Properties.Status,
-							netw.Properties.ObjectUUID,
-						},
-					}
-					networkinfos = append(networkinfos, fill...)
-
-				}
-				render.Table(out, []string{"name", "location", "createtime", "status", "uuid"}, networkinfos)
+				rowsToDisplay = len(heading)
 			}
+			render.Table(out, heading[:rowsToDisplay], networkinfos)
+
 		} else {
 			render.AsJSON(out, networks)
 		}
