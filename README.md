@@ -1,6 +1,6 @@
 # gscloud: The Command Line Interface for the gridscale cloud
 
-[![Build Status](https://travis-ci.org/gridscale/gscloud.svg?branch=develop)](https://travis-ci.org/gridscale/gscloud)
+[![Build Status](https://travis-ci.com/gridscale/gscloud.svg?branch=develop)](https://travis-ci.com/gridscale/gscloud)
 
 ## Supported Services
 
