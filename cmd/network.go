@@ -22,7 +22,7 @@ var networkCmd = &cobra.Command{
 		}
 		var networkinfos [][]string
 		if !jsonFlag {
-			heading := []string{"name", "location", "createtime", "status", "uuid"}
+			heading := []string{"name", "location", "createtime", "status", "id"}
 			for _, netw := range networks {
 				fill := [][]string{
 					{

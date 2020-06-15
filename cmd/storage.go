@@ -23,7 +23,7 @@ var storageCmd = &cobra.Command{
 		}
 		var storage [][]string
 		if !jsonFlag {
-			heading := []string{"name", "capacity", "changetime", "status", "uuid"}
+			heading := []string{"name", "capacity", "changetime", "status", "id"}
 			for _, stor := range storages {
 				fill := [][]string{
 					{

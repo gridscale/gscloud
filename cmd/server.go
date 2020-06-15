@@ -24,7 +24,7 @@ var serverCmd = &cobra.Command{
 		}
 		var serverinfos [][]string
 		if !jsonFlag {
-			heading := []string{"name", "core", "mem", "power", "uuid"}
+			heading := []string{"name", "core", "mem", "power", "id"}
 			for _, server := range servers {
 				status := "off"
 				if server.Properties.Power {
