@@ -1,4 +1,5 @@
 package cmd
+
 import (
 	"bytes"
 	"context"
@@ -7,6 +8,7 @@ import (
 	"github.com/gridscale/gscloud/render"
 	"github.com/spf13/cobra"
 	"github.com/gridscale/gsclient-go/v3"
+	log "github.com/sirupsen/logrus"
 )
 var (
 	nameFlag, fileFlag bool
@@ -20,8 +22,9 @@ var sshKeyCmd = &cobra.Command{
 		out := new(bytes.Buffer)
 		sshkeys, err := client.GetSshkeyList(ctx)
 		if err != nil {
-			panic(err)
-		}
+			log.Error("Couldn't get SSH-keys:", err)
+			return
+		}	
 		var sshkeyinfo [][]string
 		if !jsonFlag {
 			heading := []string{"name", "key", "user","createtime", "id"}
@@ -57,12 +60,19 @@ var addCmd, removeCmd = &cobra.Command{
 			ctx := context.Background()
 			publicKey, err := ioutil.ReadFile(args[1])
 			if err != nil {
-				panic(err)
+				log.Error("Failed to read public-key from "+args[1],err)
 			}
-			client.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{ 
+			key,err:= client.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{ 
 				Name: args[0],
-				Sshkey: fmt.Sprintf("{%s}",string(publicKey)),
+				Sshkey: string(publicKey),
 			})
+			if err != nil {
+				log.Error("Create SSH-key has failed with error", err)
+				return
+			}
+			log.WithFields(log.Fields{
+				"sshkey_uuid": key.ObjectUUID,
+			}).Infof("SSH-key [%s] successfully created",args[0])
 		}
 	},
 }, &cobra.Command{
@@ -75,11 +85,17 @@ var addCmd, removeCmd = &cobra.Command{
 			ctx := context.Background()
 			sshkeys, err := client.GetSshkeyList(ctx)
 			if err != nil {
-				panic(err)
-			}
+			log.Error("Couldn't get SSH-keys:", err)
+			return
+		}	
 			for _,key := range sshkeys{
 				if (args[0] == key.Properties.ObjectUUID || args[0] == key.Properties.Name){
-					client.DeleteSshkey(ctx, key.Properties.ObjectUUID)
+					err := client.DeleteSshkey(ctx, key.Properties.ObjectUUID)
+					if err != nil {
+						log.Error("Delete SSH-key has failed with error", err)
+						return
+					}
+					log.Infof("SSH-key [%s] successfully removed",args[0])
 				}
 			}
 		}
@@ -90,5 +106,4 @@ func init() {
 	sshKeyCmd.PersistentFlags().BoolVarP(&nameFlag, "name", "n", false, "Set ssh-key name")
 	sshKeyCmd.PersistentFlags().BoolVarP(&fileFlag, "file", "f", false, "Read ssh-key from file")
 	rootCmd.AddCommand(sshKeyCmd)
-
 }
