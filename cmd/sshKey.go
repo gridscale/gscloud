@@ -1,0 +1,94 @@
+package cmd
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"io/ioutil"
+	"github.com/gridscale/gscloud/render"
+	"github.com/spf13/cobra"
+	"github.com/gridscale/gsclient-go/v3"
+)
+var (
+	nameFlag, fileFlag bool
+)
+var sshKeyCmd = &cobra.Command{
+	Use:   "ssh-key",
+	Short: "Print ssh-key list",
+	Long:  `Print all ssh-key information`,
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+		out := new(bytes.Buffer)
+		sshkeys, err := client.GetSshkeyList(ctx)
+		if err != nil {
+			panic(err)
+		}
+		var sshkeyinfo [][]string
+		if !jsonFlag {
+			heading := []string{"name", "key", "user","createtime", "id"}
+			for _, key := range sshkeys {
+				fill := [][]string{
+					{
+						key.Properties.Name,
+						key.Properties.Sshkey[:25] + "..." + key.Properties.Sshkey[715:],
+						key.Properties.UserUUID[:8],
+						key.Properties.CreateTime.String()[:10],
+						key.Properties.ObjectUUID,
+					},
+				}
+				sshkeyinfo = append(sshkeyinfo, fill...)
+			}
+			if idFlag {
+				rowsToDisplay = len(heading)
+			}
+			render.Table(out, heading[:rowsToDisplay], sshkeyinfo)
+		} else {
+			render.AsJSON(out, sshkeys)
+		}
+		fmt.Print(out)
+	},
+}
+var addCmd, removeCmd = &cobra.Command{
+	Use:   "add",
+	Short: "add ssh-key",
+	Long:  `Add ssh-key via file`,
+	Args:  cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if nameFlag && fileFlag { 
+			ctx := context.Background()
+			publicKey, err := ioutil.ReadFile(args[1])
+			if err != nil {
+				panic(err)
+			}
+			client.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{ 
+				Name: args[0],
+				Sshkey: fmt.Sprintf("{%s}",string(publicKey)),
+			})
+		}
+	},
+}, &cobra.Command{
+	Use:   "remove",
+	Short: "remove ssh-key",
+	Long:  `Remove ssh-key via name or id`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+			if nameFlag{
+			ctx := context.Background()
+			sshkeys, err := client.GetSshkeyList(ctx)
+			if err != nil {
+				panic(err)
+			}
+			for _,key := range sshkeys{
+				if (args[0] == key.Properties.ObjectUUID || args[0] == key.Properties.Name){
+					client.DeleteSshkey(ctx, key.Properties.ObjectUUID)
+				}
+			}
+		}
+	},
+}
+func init() {
+	sshKeyCmd.AddCommand(addCmd, removeCmd)
+	sshKeyCmd.PersistentFlags().BoolVarP(&nameFlag, "name", "n", false, "Set ssh-key name")
+	sshKeyCmd.PersistentFlags().BoolVarP(&fileFlag, "file", "f", false, "Read ssh-key from file")
+	rootCmd.AddCommand(sshKeyCmd)
+
+}
