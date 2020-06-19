@@ -49,8 +49,8 @@ func init() {
 	cobra.OnInitialize(initConfig, initClient)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
-	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print output as JSON")
-	rootCmd.PersistentFlags().BoolVarP(&idFlag, "id", "i", false, "Adds UUID column")
+	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
+	rootCmd.PersistentFlags().BoolVarP(&idFlag, "id", "i", false, "Include ID column")
 
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
