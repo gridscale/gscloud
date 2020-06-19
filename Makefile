@@ -13,7 +13,7 @@ build:
 	go build -ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
 
 test: build
-	go test -v ./...
+	go test -v -cover ./...
 
 release:
 	$(foreach platform,$(PLATFORMS), \
