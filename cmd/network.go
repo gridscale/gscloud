@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gridscale/gscloud/render"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,8 @@ var networkCmd = &cobra.Command{
 		out := new(bytes.Buffer)
 		networks, err := client.GetNetworkList(ctx)
 		if err != nil {
-			panic(err)
+			log.Error("Couldn't get Networkinfo", err)
+			return
 		}
 		var networkinfos [][]string
 		if !jsonFlag {
