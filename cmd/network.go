@@ -39,9 +39,15 @@ var networkCmd = &cobra.Command{
 
 			}
 			if idFlag {
-				rowsToDisplay = len(heading)
+				upToColumn = len(heading)
 			}
-			render.Table(out, heading[:rowsToDisplay], networkinfos)
+			render.Table(out, heading[:upToColumn], networkinfos)
+			if quietFlag {
+				for _, info := range networkinfos {
+					fmt.Println(info[4])
+				}
+				return
+			}
 
 		} else {
 			render.AsJSON(out, networks)

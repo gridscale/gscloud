@@ -23,7 +23,7 @@ var storageCmd = &cobra.Command{
 			log.Error("Couldn't get Storageinfo", err)
 			return
 		}
-		var storage [][]string
+		var storageinfo [][]string
 		if !jsonFlag {
 			heading := []string{"name", "capacity", "changetime", "status", "id"}
 			for _, stor := range storages {
@@ -36,12 +36,18 @@ var storageCmd = &cobra.Command{
 						stor.Properties.ObjectUUID,
 					},
 				}
-				storage = append(storage, fill...)
+				storageinfo = append(storageinfo, fill...)
 			}
 			if idFlag {
-				rowsToDisplay = len(heading)
+				upToColumn = len(heading)
 			}
-			render.Table(out, heading[:rowsToDisplay], storage)
+			if quietFlag {
+				for _, info := range storageinfo {
+					fmt.Println(info[4])
+				}
+				return
+			}
+			render.Table(out, heading[:upToColumn], storageinfo)
 
 		} else {
 			render.AsJSON(out, storages)

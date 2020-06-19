@@ -10,12 +10,13 @@ import (
 )
 
 var (
-	cfgFile       string
-	account       string
-	client        *gsclient.Client
-	jsonFlag      bool
-	idFlag        bool
-	rowsToDisplay = 4
+	cfgFile    string
+	account    string
+	client     *gsclient.Client
+	jsonFlag   bool
+	idFlag     bool
+	quietFlag  bool
+	upToColumn = 4
 )
 
 const (
@@ -51,6 +52,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&idFlag, "id", "i", false, "Include ID column")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print ID column only")
 
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
