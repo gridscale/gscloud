@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gridscale/gscloud/render"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +22,8 @@ var serverCmd = &cobra.Command{
 		out := new(bytes.Buffer)
 		servers, err := client.GetServerList(ctx)
 		if err != nil {
-			panic(err)
+			log.Error("Couldn't get Serverinfo", err)
+			return
 		}
 		var serverinfos [][]string
 		if !jsonFlag {

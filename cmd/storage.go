@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gridscale/gscloud/render"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +20,8 @@ var storageCmd = &cobra.Command{
 		out := new(bytes.Buffer)
 		storages, err := client.GetStorageList(ctx)
 		if err != nil {
-			panic(err)
+			log.Error("Couldn't get Storageinfo", err)
+			return
 		}
 		var storage [][]string
 		if !jsonFlag {
