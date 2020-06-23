@@ -5,11 +5,6 @@ import (
 	"os"
 )
 
-var (
-	completionNoDesc bool
-	testFlag         string
-)
-
 // completionCmd represents the completion command
 var completionCmd = &cobra.Command{
 	Use:                   "completion [bash|zsh]",
