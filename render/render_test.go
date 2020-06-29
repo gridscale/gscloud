@@ -18,3 +18,14 @@ func TestWithByteBuffer(t *testing.T) {
 	fields := strings.Fields(out.String())
 	assert.Equal(t, fields[0], "TEST")
 }
+
+func Test_AsJSON(t *testing.T) {
+	type testJSON struct {
+		Test string `json:"test"`
+	}
+	testJSONVar := testJSON{Test: "test_value"}
+	expectedOutput := "[{\"test\":\"test_value\"}]\n"
+	buffer := new(bytes.Buffer)
+	AsJSON(buffer, testJSONVar)
+	assert.Equal(t, expectedOutput, buffer.String())
+}
