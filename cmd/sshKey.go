@@ -41,16 +41,14 @@ var sshKeyCmd = &cobra.Command{
 				}
 				sshkeyinfo = append(sshkeyinfo, fill...)
 			}
-			if idFlag {
-				upToColumn = len(heading)
-			}
+
 			if quietFlag {
 				for _, info := range sshkeyinfo {
 					fmt.Println(info[4])
 				}
 				return
 			}
-			render.Table(out, heading[:upToColumn], sshkeyinfo)
+			render.Table(out, heading[:], sshkeyinfo)
 		} else {
 			render.AsJSON(out, sshkeys)
 		}

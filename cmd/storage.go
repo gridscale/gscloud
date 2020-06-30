@@ -38,16 +38,13 @@ var storageCmd = &cobra.Command{
 				}
 				storageinfo = append(storageinfo, fill...)
 			}
-			if idFlag {
-				upToColumn = len(heading)
-			}
 			if quietFlag {
 				for _, info := range storageinfo {
 					fmt.Println(info[4])
 				}
 				return
 			}
-			render.Table(out, heading[:upToColumn], storageinfo)
+			render.Table(out, heading[:len(heading)], storageinfo)
 
 		} else {
 			render.AsJSON(out, storages)

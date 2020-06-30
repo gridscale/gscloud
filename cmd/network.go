@@ -38,10 +38,7 @@ var networkCmd = &cobra.Command{
 				networkinfos = append(networkinfos, fill...)
 
 			}
-			if idFlag {
-				upToColumn = len(heading)
-			}
-			render.Table(out, heading[:upToColumn], networkinfos)
+			render.Table(out, heading[:len(heading)], networkinfos)
 			if quietFlag {
 				for _, info := range networkinfos {
 					fmt.Println(info[4])

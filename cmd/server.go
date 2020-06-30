@@ -44,16 +44,13 @@ var serverCmd = &cobra.Command{
 				}
 				serverinfos = append(serverinfos, fill...)
 			}
-			if idFlag {
-				upToColumn = len(heading)
-			}
 			if quietFlag {
 				for _, info := range serverinfos {
 					fmt.Println(info[4])
 				}
 				return
 			}
-			render.Table(out, heading[:upToColumn], serverinfos)
+			render.Table(out, heading[:len(heading)], serverinfos)
 		} else {
 			render.AsJSON(out, servers)
 		}
