@@ -10,13 +10,12 @@ import (
 )
 
 var (
-	cfgFile    string
-	account    string
-	client     *gsclient.Client
-	jsonFlag   bool
-	idFlag     bool
-	quietFlag  bool
-	upToColumn = 4
+	cfgFile   string
+	account   string
+	client    *gsclient.Client
+	jsonFlag  bool
+	idFlag    bool
+	quietFlag bool
 )
 
 const (
