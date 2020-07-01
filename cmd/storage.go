@@ -25,29 +25,26 @@ var storageCmd = &cobra.Command{
 		}
 		var storageinfo [][]string
 		if !jsonFlag {
-			heading := []string{"name", "capacity", "changetime", "status", "id"}
+			heading := []string{"id", "name", "capacity", "changetime", "status"}
 			for _, stor := range storages {
 				fill := [][]string{
 					{
+						stor.Properties.ObjectUUID,
 						stor.Properties.Name,
 						strconv.FormatInt(int64(stor.Properties.Capacity), 10),
 						strconv.FormatInt(int64(stor.Properties.ChangeTime.Hour()), 10),
 						stor.Properties.Status,
-						stor.Properties.ObjectUUID,
 					},
 				}
 				storageinfo = append(storageinfo, fill...)
 			}
-			if idFlag {
-				upToColumn = len(heading)
-			}
 			if quietFlag {
 				for _, info := range storageinfo {
-					fmt.Println(info[4])
+					fmt.Println(info[0])
 				}
 				return
 			}
-			render.Table(out, heading[:upToColumn], storageinfo)
+			render.Table(out, heading[:], storageinfo)
 
 		} else {
 			render.AsJSON(out, storages)
