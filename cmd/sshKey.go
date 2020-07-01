@@ -28,15 +28,15 @@ var sshKeyCmd = &cobra.Command{
 		}
 		var sshkeyinfo [][]string
 		if !jsonFlag {
-			heading := []string{"name", "key", "user", "createtime", "id"}
+			heading := []string{"id", "name", "key", "user", "createtime"}
 			for _, key := range sshkeys {
 				fill := [][]string{
 					{
+						key.Properties.ObjectUUID,
 						key.Properties.Name,
 						key.Properties.Sshkey[:10] + "..." + key.Properties.Sshkey[len(key.Properties.Sshkey)-30:],
 						key.Properties.UserUUID[:8],
 						key.Properties.CreateTime.String()[:19],
-						key.Properties.ObjectUUID,
 					},
 				}
 				sshkeyinfo = append(sshkeyinfo, fill...)
@@ -44,7 +44,7 @@ var sshKeyCmd = &cobra.Command{
 
 			if quietFlag {
 				for _, info := range sshkeyinfo {
-					fmt.Println(info[4])
+					fmt.Println(info[0])
 				}
 				return
 			}

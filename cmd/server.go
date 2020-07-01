@@ -27,7 +27,7 @@ var serverCmd = &cobra.Command{
 		}
 		var serverinfos [][]string
 		if !jsonFlag {
-			heading := []string{"name", "core", "mem", "power", "id"}
+			heading := []string{"id", "name", "core", "mem", "power"}
 			for _, server := range servers {
 				status := "off"
 				if server.Properties.Power {
@@ -35,22 +35,22 @@ var serverCmd = &cobra.Command{
 				}
 				fill := [][]string{
 					{
+						server.Properties.ObjectUUID,
 						server.Properties.Name,
 						strconv.FormatInt(int64(server.Properties.Cores), 10),
 						strconv.FormatInt(int64(server.Properties.Memory), 10),
 						status,
-						server.Properties.ObjectUUID,
 					},
 				}
 				serverinfos = append(serverinfos, fill...)
 			}
 			if quietFlag {
 				for _, info := range serverinfos {
-					fmt.Println(info[4])
+					fmt.Println(info[0])
 				}
 				return
 			}
-			render.Table(out, heading[:len(heading)], serverinfos)
+			render.Table(out, heading[:], serverinfos)
 		} else {
 			render.AsJSON(out, servers)
 		}

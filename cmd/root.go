@@ -14,7 +14,6 @@ var (
 	account   string
 	client    *gsclient.Client
 	jsonFlag  bool
-	idFlag    bool
 	quietFlag bool
 )
 
@@ -50,7 +49,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
-	rootCmd.PersistentFlags().BoolVarP(&idFlag, "id", "i", false, "Include ID column")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print ID column only")
 
 	rootCmd.AddCommand(kubernetesCmd)
