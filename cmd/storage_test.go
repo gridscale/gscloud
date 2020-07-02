@@ -46,12 +46,12 @@ func Test_StorageCmdOutput(t *testing.T) {
 	type testCase struct {
 		expectedOutput string
 		jsonFlag       bool
-		idFlag         bool
 		quietFlag      bool
 	}
 	testCases := []testCase{
 		{
-			expectedOutput: fmt.Sprintf("NAME  CAPACITY  CHANGETIME  STATUS  \n%s  %d        %s          %s  \n",
+			expectedOutput: fmt.Sprintf("ID           NAME  CAPACITY  CHANGETIME  STATUS  \n%s  %s  %d        %s          %s  \n",
+				mockStorage.Properties.ObjectUUID,
 				mockStorage.Properties.Name,
 				mockStorage.Properties.Capacity,
 				strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
@@ -60,20 +60,7 @@ func Test_StorageCmdOutput(t *testing.T) {
 		},
 		{
 			jsonFlag:       true,
-			idFlag:         false,
-			quietFlag:      false,
 			expectedOutput: string(marshalledMockStorage) + "\n",
-		},
-		{
-			idFlag:    true,
-			quietFlag: false,
-			expectedOutput: fmt.Sprintf("NAME  CAPACITY  CHANGETIME  STATUS  ID           \n%s  %d        %s          %s  %s  \n",
-				mockStorage.Properties.Name,
-				mockStorage.Properties.Capacity,
-				strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
-				mockStorage.Properties.Status,
-				mockStorage.Properties.ObjectUUID,
-			),
 		},
 		{
 			quietFlag:      true,
@@ -88,7 +75,6 @@ func Test_StorageCmdOutput(t *testing.T) {
 
 		// Set the flags to test values
 		jsonFlag = test.jsonFlag
-		idFlag = test.idFlag
 		quietFlag = test.quietFlag
 
 		mockClient := mockStorageGetter{}
