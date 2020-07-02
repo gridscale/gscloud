@@ -50,6 +50,7 @@ func init() {
 	initStorageCmd()
 	initVersionCmd()
 	initSSHKeyCmd()
+	initServerCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
