@@ -5,19 +5,25 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-var networkCmd = &cobra.Command{
-	Use:   "network",
-	Short: "Print network list",
-	Long:  `Print all networks information`,
-	Run: func(cmd *cobra.Command, args []string) {
+// networkOperator is used for testing purpose,
+// we can mock data return from the gsclient via interface.
+type networkOperator interface {
+	GetNetworkList(ctx context.Context) ([]gsclient.Network, error)
+}
+
+// produceNetworkCmdRunFunc takes an instance of a struct that implements `networkOperator`
+// returns a `cmdRunFunc`
+func produceNetworkCmdRunFunc(o networkOperator) cmdRunFunc {
+	return func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
-		networks, err := client.GetNetworkList(ctx)
+		networks, err := o.GetNetworkList(ctx)
 		if err != nil {
 			log.Error("Couldn't get Networkinfo", err)
 			return
@@ -50,9 +56,15 @@ var networkCmd = &cobra.Command{
 			render.AsJSON(out, networks)
 		}
 		fmt.Print(out)
-	},
+	}
 }
 
-func init() {
+func initNetworkCmd() {
+	var networkCmd = &cobra.Command{
+		Use:   "network",
+		Short: "Print network list",
+		Long:  `Print all networks information`,
+		Run:   produceNetworkCmdRunFunc(client),
+	}
 	rootCmd.AddCommand(networkCmd)
 }
