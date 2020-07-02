@@ -6,10 +6,17 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
+
+// istorageRetriever is used for testing purpose,
+// we can mock data return from the gsclient via interface.
+type storageGetter interface {
+	GetStorageList(ctx context.Context) ([]gsclient.Storage, error)
+}
 
 var storageCmd = &cobra.Command{
 	Use:   "storage",
