@@ -52,7 +52,9 @@ func produceStorageCmdRunFunc(g storageGetter) cmdRunFunc {
 			}
 			render.Table(out, heading[:], storageinfo)
 		} else {
-			render.AsJSON(out, storages)
+			for _, storage := range storages {
+				render.AsJSON(out, storage)
+			}
 		}
 		fmt.Print(out)
 	}
