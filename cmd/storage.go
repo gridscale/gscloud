@@ -24,7 +24,7 @@ func produceStorageCmdRunFunc(g storageGetter) cmdRunFunc {
 	return func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
-		storages, err := client.GetStorageList(ctx)
+		storages, err := g.GetStorageList(ctx)
 		if err != nil {
 			log.Error("Couldn't get Storageinfo", err)
 			return
