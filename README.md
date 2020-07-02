@@ -27,6 +27,17 @@ Flags:
 
 Use "gscloud [command] --help" for more information about a command.
 ```
+## Example to add Tab-Completion
+zsh
+```
+$ ./gscloud completion zsh >> ~/.zshrc
+```
+bash
+```
+$ ./gscloud completion bash >> ~/.bash_profile
+```
+> Note: You need to uncomment compdef to make it: work</br>
+`#compdef _gscloud gscloud`
 
 ## Example Configuration
 
