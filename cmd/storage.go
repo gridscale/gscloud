@@ -18,8 +18,8 @@ type storageOperator interface {
 	GetStorageList(ctx context.Context) ([]gsclient.Storage, error)
 }
 
-// produceStorageCmdRunFunc takes an instance of a struct that implements `storageGetter`
-// returns a `cmdRunFun`
+// produceStorageCmdRunFunc takes an instance of a struct that implements `storageOperator`
+// returns a `cmdRunFunc`
 func produceStorageCmdRunFunc(o storageOperator) cmdRunFunc {
 	return func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()

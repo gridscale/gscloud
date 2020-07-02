@@ -31,6 +31,8 @@ var (
 	nameFlag, fileFlag bool
 )
 
+// produceSSHKeyCmdRunFunc takes an instance of a struct that implements `sshKeysOperator`
+// returns a `cmdRunFunc`
 func produceSSHKeyCmdRunFunc(o sshKeysOperator, action int) cmdRunFunc {
 	switch action {
 	case sshKeyMainAction:

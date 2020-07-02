@@ -21,6 +21,7 @@ type serverOperator interface {
 	ShutdownServer(ctx context.Context, id string) error
 }
 
+// Server action enums
 const (
 	serverMainAction = iota
 	serverStartAction
@@ -30,6 +31,8 @@ const (
 
 var forceFlag bool
 
+// produceServerCmdRunFunc takes an instance of a struct that implements `serverOperator`
+// returns a `cmdRunFunc`
 func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 	switch action {
 	case serverMainAction:
