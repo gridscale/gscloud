@@ -49,6 +49,7 @@ func init() {
 	clusterCmd.AddCommand(execCredentialCmd)
 	initStorageCmd()
 	initVersionCmd()
+	initSSHKeyCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
