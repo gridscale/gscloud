@@ -7,8 +7,12 @@ import (
 
 // completionCmd represents the completion command
 var completionCmd = &cobra.Command{
-	Use:                   "completion [bash|zsh]",
-	Short:                 "Generate completion script",
+	Use:   "completion [bash|zsh]",
+	Short: "Generate completion script",
+	Long: `Example to append a profile:
+$ ./gscloud completion zsh >> ~/.zshrc
+NOTE: You need to uncomment the first line: 
+#compdef _gscloud gscloud`,
 	DisableFlagsInUseLine: true,
 	ValidArgs:             []string{"bash", "zsh"},
 	Args:                  cobra.ExactValidArgs(1),
