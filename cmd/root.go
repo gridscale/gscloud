@@ -44,6 +44,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print ID column only")
 
+	initMakeConfCmd()
 	initK8SCmd()
 	initStorageCmd()
 	initVersionCmd()
