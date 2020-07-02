@@ -18,15 +18,7 @@ var (
 )
 
 const (
-	requestBase                    = "/requests/"
-	apiPaasServiceBase             = "/objects/paas/services"
-	defaultAPIURL                  = "https://api.gridscale.io"
-	bodyType                       = "application/json"
-	requestDoneStatus              = "done"
-	requestFailStatus              = "failed"
-	defaultCheckRequestTimeoutSecs = 120
-	defaultDelayIntervalMilliSecs  = 500
-	requestUUIDHeaderParam         = "X-Request-Id"
+	defaultAPIURL = "https://api.gridscale.io"
 )
 
 // rootCmd represents the base command when called without any subcommands
