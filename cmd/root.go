@@ -48,6 +48,7 @@ func init() {
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
 	initStorageCmd()
+	initVersionCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
