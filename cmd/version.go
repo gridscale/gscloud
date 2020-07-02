@@ -12,16 +12,17 @@ var GitCommit string
 // Version value set by a linker flag
 var Version string
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version",
-	Long:  `Display gscloud version information.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Version:\t%s\nGit commit:\t%s\n", Version, GitCommit)
-	},
+func versionCmdRun(cmd *cobra.Command, args []string) {
+	fmt.Printf("Version:\t%s\nGit commit:\t%s\n", Version, GitCommit)
 }
 
 func init() {
+	var versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the version",
+		Long:  `Display gscloud version information.`,
+		Run:   versionCmdRun,
+	}
 	rootCmd.AddCommand(versionCmd)
 
 	// Hide some global persistent flags here that don't make sense on 'version'
