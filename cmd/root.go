@@ -37,7 +37,8 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initClient)
+	initConfig()
+	initClient()
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
