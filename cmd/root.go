@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/spf13/cobra"
@@ -37,8 +38,11 @@ func Execute() {
 }
 
 func init() {
-	initConfig()
-	initClient()
+	// Init config and gsclient, if the test is not running
+	if !strings.HasSuffix(os.Args[0], ".test") {
+		initConfig()
+		initClient()
+	}
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
