@@ -51,6 +51,7 @@ func init() {
 	initVersionCmd()
 	initSSHKeyCmd()
 	initServerCmd()
+	initNetworkCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
