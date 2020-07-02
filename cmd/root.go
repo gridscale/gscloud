@@ -46,6 +46,7 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 	kubernetesCmd.AddCommand(clusterCmd)
 	clusterCmd.AddCommand(execCredentialCmd)
+	initStorageCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.

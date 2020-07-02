@@ -58,7 +58,8 @@ func produceStorageCmdRunFunc(g storageGetter) cmdRunFunc {
 	}
 }
 
-func init() {
+// initStorageCmd adds storage cmd to the root cmd
+func initStorageCmd() {
 	var storageCmd = &cobra.Command{
 		Use:   "storage",
 		Short: "Print storage list",
