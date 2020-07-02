@@ -12,19 +12,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// istorageRetriever is used for testing purpose,
+// storageOperator is used for testing purpose,
 // we can mock data return from the gsclient via interface.
-type storageGetter interface {
+type storageOperator interface {
 	GetStorageList(ctx context.Context) ([]gsclient.Storage, error)
 }
 
 // produceStorageCmdRunFunc takes an instance of a struct that implements `storageGetter`
 // returns a `cmdRunFun`
-func produceStorageCmdRunFunc(g storageGetter) cmdRunFunc {
+func produceStorageCmdRunFunc(o storageOperator) cmdRunFunc {
 	return func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
-		storages, err := g.GetStorageList(ctx)
+		storages, err := o.GetStorageList(ctx)
 		if err != nil {
 			log.Error("Couldn't get Storageinfo", err)
 			return

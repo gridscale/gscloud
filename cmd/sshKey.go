@@ -31,13 +31,13 @@ var (
 	nameFlag, fileFlag bool
 )
 
-func produceSSHKeyCmdRunFunc(g sshKeysOperator, action int) cmdRunFunc {
+func produceSSHKeyCmdRunFunc(o sshKeysOperator, action int) cmdRunFunc {
 	switch action {
 	case sshKeyMainAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 			out := new(bytes.Buffer)
-			sshkeys, err := g.GetSshkeyList(ctx)
+			sshkeys, err := o.GetSshkeyList(ctx)
 			if err != nil {
 				log.Error("Couldn't get SSH-keys:", err)
 				return
@@ -79,7 +79,7 @@ func produceSSHKeyCmdRunFunc(g sshKeysOperator, action int) cmdRunFunc {
 				if err != nil {
 					log.Error("Failed to read public-key from "+args[1], err)
 				}
-				key, err := g.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
+				key, err := o.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
 					Name:   args[0],
 					Sshkey: string(publicKey),
 				})
@@ -97,14 +97,14 @@ func produceSSHKeyCmdRunFunc(g sshKeysOperator, action int) cmdRunFunc {
 		return func(cmd *cobra.Command, args []string) {
 			if nameFlag {
 				ctx := context.Background()
-				sshkeys, err := g.GetSshkeyList(ctx)
+				sshkeys, err := o.GetSshkeyList(ctx)
 				if err != nil {
 					log.Error("Couldn't get SSH-keys:", err)
 					return
 				}
 				for _, key := range sshkeys {
 					if args[0] == key.Properties.ObjectUUID || args[0] == key.Properties.Name {
-						err := g.DeleteSshkey(ctx, key.Properties.ObjectUUID)
+						err := o.DeleteSshkey(ctx, key.Properties.ObjectUUID)
 						if err != nil {
 							log.Error("Delete SSH-key has failed with error", err)
 							return
