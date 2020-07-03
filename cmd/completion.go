@@ -9,7 +9,7 @@ import (
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh]",
 	Short: "Generate completion script",
-	Long: `Example to append a profile:
+	Long: `Example:
 $ ./gscloud completion zsh >> ~/.zshrc
 NOTE: You need to uncomment the first line: 
 #compdef _gscloud gscloud`,

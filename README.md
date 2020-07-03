@@ -27,7 +27,7 @@ Flags:
 
 Use "gscloud [command] --help" for more information about a command.
 ```
-## Example to add Tab-Completion
+## Example add Tab-Completion
 zsh
 ```
 $ ./gscloud completion zsh >> ~/.zshrc
