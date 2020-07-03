@@ -117,7 +117,7 @@ func initServerCmd() {
 	}, &cobra.Command{
 		Use:   "ls",
 		Short: "List server",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Run:   produceServerCmdRunFunc(client, serverMainAction),
 	}
 	serverCmd.AddCommand(lsCmd, onCmd, offCmd)

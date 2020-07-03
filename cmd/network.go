@@ -68,7 +68,7 @@ func initNetworkCmd() {
 	}, &cobra.Command{
 		Use:   "ls",
 		Short: "List networks",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Run:   produceNetworkCmdRunFunc(client),
 	}
 	rootCmd.AddCommand(networkCmd)

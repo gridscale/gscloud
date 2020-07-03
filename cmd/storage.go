@@ -70,7 +70,7 @@ func initStorageCmd() {
 	}, &cobra.Command{
 		Use:   "ls",
 		Short: "List server",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Run:   produceStorageCmdRunFunc(client),
 	}
 	rootCmd.AddCommand(storageCmd)

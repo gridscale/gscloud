@@ -144,7 +144,7 @@ func initSSHKeyCmd() {
 	}, &cobra.Command{
 		Use:   "ls",
 		Short: "List ssh-keys",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Run:   produceNetworkCmdRunFunc(client),
 	}
 	sshKeyCmd.AddCommand(addCmd, removeCmd, lsCmd)
