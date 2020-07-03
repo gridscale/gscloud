@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/spf13/cobra"
@@ -18,15 +19,7 @@ var (
 )
 
 const (
-	requestBase                    = "/requests/"
-	apiPaasServiceBase             = "/objects/paas/services"
-	defaultAPIURL                  = "https://api.gridscale.io"
-	bodyType                       = "application/json"
-	requestDoneStatus              = "done"
-	requestFailStatus              = "failed"
-	defaultCheckRequestTimeoutSecs = 120
-	defaultDelayIntervalMilliSecs  = 500
-	requestUUIDHeaderParam         = "X-Request-Id"
+	defaultAPIURL = "https://api.gridscale.io"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -45,15 +38,23 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initClient)
+	// Init config and gsclient, if the test is not running
+	if !strings.HasSuffix(os.Args[0], ".test") {
+		initConfig()
+		initClient()
+	}
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
 	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print ID column only")
 
-	rootCmd.AddCommand(kubernetesCmd)
-	kubernetesCmd.AddCommand(clusterCmd)
-	clusterCmd.AddCommand(execCredentialCmd)
+	initMakeConfCmd()
+	initK8SCmd()
+	initStorageCmd()
+	initVersionCmd()
+	initSSHKeyCmd()
+	initServerCmd()
+	initNetworkCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
