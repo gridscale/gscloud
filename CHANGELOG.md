@@ -4,7 +4,7 @@
 
 FEATURES:
 
-* We added `gscloud {server,storage,network}` commands.
+* We added `gscloud {server,storage,network,ssh-key}` commands.
 
 ## v0.2.0-beta (March 11, 2020)
 
