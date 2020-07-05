@@ -113,8 +113,8 @@ github.com/gorilla/websocket v1.4.0/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoA
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/gregjones/httpcache v0.0.0-20170728041850-787624de3eb7 h1:6TSoaYExHper8PYsJu23GWVNOyYRCSnIFyxKgLSZ54w=
 github.com/gregjones/httpcache v0.0.0-20170728041850-787624de3eb7/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
-github.com/gridscale/gsclient-go/v3 v3.0.1 h1:EFaX21m/uG4wS2j6pNgZZDO63fEUQq0UIIVSpbCcpKY=
-github.com/gridscale/gsclient-go/v3 v3.0.1/go.mod h1:hXZrJ+mDDcI2Xw+BhfrbYfiyA2xZNCDSOpB9XwEk19o=
+github.com/gridscale/gsclient-go/v3 v3.1.0 h1:TyJwIsv5aMUOcj09Y2DlcLfVvL6CDUWOy1HjuvExzLE=
+github.com/gridscale/gsclient-go/v3 v3.1.0/go.mod h1:hXZrJ+mDDcI2Xw+BhfrbYfiyA2xZNCDSOpB9XwEk19o=
 github.com/gridscale/table v1.0.1 h1:SnJBK17HZOjO/1WSS3rpgZ2cmjGyaNtNjvcSAxTLClg=
 github.com/gridscale/table v1.0.1/go.mod h1:JGKj9i9wpHTTovCvoKY+JY2wRVgmOoZ71WtgUMurpiM=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
