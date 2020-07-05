@@ -25,8 +25,8 @@ const (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gscloud",
-	Short: "is the command line interface for the gridscale cloud.",
-	Long:  "gscloud is the command line interface for the gridscale cloud.",
+	Short: "is the CLI for the gridscale cloud.",
+	Long:  "gscloud is the CLI for the gridscale cloud.",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -43,10 +43,11 @@ func init() {
 		initConfig()
 		initClient()
 	}
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
-	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", cliConfigPath()))
+	rootCmd.PersistentFlags().StringVar(&account, "account", "", "Specify the account used; 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
-	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print ID column only")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")
+	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 
 	initMakeConfCmd()
 	initK8SCmd()
