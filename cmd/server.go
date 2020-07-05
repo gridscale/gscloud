@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// sshKeysOperator is used for testing purpose,
+// serverOperator is used for testing purpose,
 // we can mock data return from the gsclient via interface.
 type serverOperator interface {
 	GetServerList(ctx context.Context) ([]gsclient.Server, error)
@@ -23,7 +23,7 @@ type serverOperator interface {
 
 // Server action enums
 const (
-	serverMainAction = iota
+	serverListAction = iota
 	serverStartAction
 	serverStopAction
 	serverShutdownAction
@@ -35,14 +35,13 @@ var forceFlag bool
 // returns a `cmdRunFunc`
 func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 	switch action {
-	case serverMainAction:
+	case serverListAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 			out := new(bytes.Buffer)
 			servers, err := o.GetServerList(ctx)
 			if err != nil {
-				log.Error("Couldn't get Serverinfo", err)
-				return
+				log.Fatalf("Couldn't get server list: %s", err)
 			}
 			var serverinfos [][]string
 			if !jsonFlag {
@@ -79,16 +78,26 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 	case serverStartAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
-			o.StartServer(ctx, args[0])
+			err := o.StartServer(ctx, args[0])
+			if err != nil {
+				log.Fatalf("Failed starting server: %s", err)
+			}
 		}
 
 	case serverStopAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 			if forceFlag {
-				o.StopServer(ctx, args[0])
+				err := o.StopServer(ctx, args[0])
+				if err != nil {
+					log.Fatalf("Failed stopping server: %s", err)
+				}
+			} else {
+				err := o.ShutdownServer(ctx, args[0])
+				if err != nil {
+					log.Fatalf("Failed shutting down server: %s", err)
+				}
 			}
-			o.ShutdownServer(ctx, args[0])
 		}
 
 	default:
@@ -99,23 +108,33 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 func initServerCmd() {
 	var serverCmd = &cobra.Command{
 		Use:   "server",
-		Short: "Print server list",
-		Long:  `Print all server information`,
-		Run:   produceServerCmdRunFunc(client, serverMainAction),
+		Short: "Operations on servers",
+		Long:  `List, create, or remove servers.`,
 	}
 
-	var onCmd, offCmd = &cobra.Command{
-		Use:   "on",
+	var serverLsCmd = &cobra.Command{
+		Use:     "ls [flags]",
+		Aliases: []string{"list"},
+		Short:   "List servers",
+		Long:    `List server objects.`,
+		Run:     produceServerCmdRunFunc(client, serverListAction),
+	}
+
+	var serverOnCmd = &cobra.Command{
+		Use:   "on [ID]",
 		Short: "Turn server on",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.ExactArgs(1),
 		Run:   produceServerCmdRunFunc(client, serverStartAction),
-	}, &cobra.Command{
-		Use:   "off",
-		Short: "Turn server off",
-		Args:  cobra.MinimumNArgs(1),
+	}
+
+	var serverOffCmd = &cobra.Command{
+		Use:   "off [flags] [ID]",
+		Short: "Turn server off via ACPI",
+		Args:  cobra.ExactArgs(1),
 		Run:   produceServerCmdRunFunc(client, serverStopAction),
 	}
-	serverCmd.AddCommand(onCmd, offCmd)
-	serverCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown")
+	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
+
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd)
 	rootCmd.AddCommand(serverCmd)
 }
