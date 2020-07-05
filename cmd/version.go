@@ -31,6 +31,8 @@ func initVersionCmd() {
 		if cmd.Name() == "version" || (cmd.HasParent() && cmd.Parent().Name() == "version") {
 			cmd.Flags().MarkHidden("account")
 			cmd.Flags().MarkHidden("config")
+			cmd.Flags().MarkHidden("json")
+			cmd.Flags().MarkHidden("quiet")
 		}
 		origHelpFunc(cmd, args)
 	})
