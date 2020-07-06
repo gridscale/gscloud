@@ -1,16 +1,16 @@
-# gscloud: The Command Line Interface for the gridscale cloud
+# gscloud: CLI for the gridscale cloud
 
 [![Build Status](https://travis-ci.com/gridscale/gscloud.svg?branch=develop)](https://travis-ci.com/gridscale/gscloud)
 
-## Supported Services
-
-    - kubernetes
-
 ## Overview
 
+gscloud lets you manage objects on [gridscale.io](https://my.gridscale.io) via shell.
+
+Note: this tool is still in the making and beta quality. Feel free to try it out. Feedback very welcome.
+
 ```txt
-gscloud --help
-gscloud is the command line interface for the gridscale cloud.
+$ gscloud --help
+gscloud is the CLI for the gridscale cloud.
 
 Usage:
   gscloud [command]
@@ -19,11 +19,18 @@ Available Commands:
   help        Help about any command
   kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
+  network     Operations on networks
+  server      Operations on servers
+  ssh-key     Operations on SSH keys
+  storage     Operations on storages
+  version     Print the version
 
 Flags:
-      --account string   the account used, 'default' if none given
-      --config string    configuration file, default /home/bk/.config/gscloud/config.yaml
-  -h, --help             help for gscloud
+      --account string   Specify the account used; 'default' if none given
+      --config string    Specify a configuration file; default ~/.config/gscloud/config.yaml
+  -h, --help             Print usage
+  -j, --json             Print JSON to stdout instead of a table
+  -q, --quiet            Print only IDs of objects
 
 Use "gscloud [command] --help" for more information about a command.
 ```

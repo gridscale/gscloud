@@ -26,8 +26,7 @@ func produceStorageCmdRunFunc(o storageOperator) cmdRunFunc {
 		out := new(bytes.Buffer)
 		storages, err := o.GetStorageList(ctx)
 		if err != nil {
-			log.Error("Couldn't get Storageinfo", err)
-			return
+			log.Fatalf("Couldn't get storage list: %s", err)
 		}
 		var storageinfo [][]string
 		if !jsonFlag {
@@ -64,9 +63,19 @@ func produceStorageCmdRunFunc(o storageOperator) cmdRunFunc {
 func initStorageCmd() {
 	var storageCmd = &cobra.Command{
 		Use:   "storage",
-		Short: "Print storage list",
-		Long:  `Print all storage information`,
+		Short: "Operations on storages",
+		Long:  `List, create, or remove storages.`,
 		Run:   produceStorageCmdRunFunc(client),
 	}
+
+	var storageLsCmd = &cobra.Command{
+		Use:     "ls [flags]",
+		Aliases: []string{"list"},
+		Short:   "List storages",
+		Long:    `List storage objects.`,
+		Run:     produceStorageCmdRunFunc(client),
+	}
+
+	storageCmd.AddCommand(storageLsCmd)
 	rootCmd.AddCommand(storageCmd)
 }

@@ -25,8 +25,7 @@ func produceNetworkCmdRunFunc(o networkOperator) cmdRunFunc {
 		out := new(bytes.Buffer)
 		networks, err := o.GetNetworkList(ctx)
 		if err != nil {
-			log.Error("Couldn't get Networkinfo", err)
-			return
+			log.Fatalf("Couldn't get network list: %s", err)
 		}
 		var networkinfos [][]string
 		if !jsonFlag {
@@ -62,9 +61,18 @@ func produceNetworkCmdRunFunc(o networkOperator) cmdRunFunc {
 func initNetworkCmd() {
 	var networkCmd = &cobra.Command{
 		Use:   "network",
-		Short: "Print network list",
-		Long:  `Print all networks information`,
-		Run:   produceNetworkCmdRunFunc(client),
+		Short: "Operations on networks",
+		Long:  `List, create, or remove networks.`,
 	}
+
+	var networkLsCmd = &cobra.Command{
+		Use:     "ls [flags]",
+		Aliases: []string{"list"},
+		Short:   "List networks",
+		Long:    `List network objects.`,
+		Run:     produceNetworkCmdRunFunc(client),
+	}
+
+	networkCmd.AddCommand(networkLsCmd)
 	rootCmd.AddCommand(networkCmd)
 }

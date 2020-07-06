@@ -20,7 +20,7 @@ func initVersionCmd() {
 	var versionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "Print the version",
-		Long:  `Display gscloud version information.`,
+		Long:  `Print version information.`,
 		Run:   versionCmdRun,
 	}
 	rootCmd.AddCommand(versionCmd)

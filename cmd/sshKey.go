@@ -14,7 +14,7 @@ import (
 
 // SSH keys action enums
 const (
-	sshKeyMainAction = iota
+	sshKeyListAction = iota
 	sshKeyAddAction
 	sshKeyDeleteAction
 )
@@ -28,21 +28,20 @@ type sshKeysOperator interface {
 }
 
 var (
-	nameFlag, fileFlag bool
+	nameFlag, fileFlag string
 )
 
 // produceSSHKeyCmdRunFunc takes an instance of a struct that implements `sshKeysOperator`
 // returns a `cmdRunFunc`
 func produceSSHKeyCmdRunFunc(o sshKeysOperator, action int) cmdRunFunc {
 	switch action {
-	case sshKeyMainAction:
+	case sshKeyListAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 			out := new(bytes.Buffer)
 			sshkeys, err := o.GetSshkeyList(ctx)
 			if err != nil {
-				log.Error("Couldn't get SSH-keys:", err)
-				return
+				log.Fatalf("Couldn't get SSH key list: %s", err)
 			}
 			var sshkeyinfo [][]string
 			if !jsonFlag {
@@ -75,45 +74,33 @@ func produceSSHKeyCmdRunFunc(o sshKeysOperator, action int) cmdRunFunc {
 
 	case sshKeyAddAction:
 		return func(cmd *cobra.Command, args []string) {
-			if nameFlag && fileFlag {
-				ctx := context.Background()
-				publicKey, err := ioutil.ReadFile(args[1])
-				if err != nil {
-					log.Error("Failed to read public-key from "+args[1], err)
-				}
-				key, err := o.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
-					Name:   args[0],
-					Sshkey: string(publicKey),
-				})
-				if err != nil {
-					log.Error("Create SSH-key has failed with error", err)
-					return
-				}
-				log.WithFields(log.Fields{
-					"sshkey_uuid": key.ObjectUUID,
-				}).Infof("SSH-key [%s] successfully created", args[0])
+			if !cmd.Flag("name").Changed {
+				log.Fatalf("Mandatory flag missing: name")
+			}
+			if !cmd.Flag("file").Changed {
+				log.Fatalf("Mandatory flag missing: file")
+			}
+
+			publicKey, err := ioutil.ReadFile(fileFlag)
+			if err != nil {
+				log.Fatalf("Error reading file: %s", err)
+			}
+			ctx := context.Background()
+			_, err = o.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
+				Name:   nameFlag,
+				Sshkey: string(publicKey),
+			})
+			if err != nil {
+				log.Fatalf("Creating SSH key failed: %s", err)
 			}
 		}
 
 	case sshKeyDeleteAction:
 		return func(cmd *cobra.Command, args []string) {
-			if nameFlag {
-				ctx := context.Background()
-				sshkeys, err := o.GetSshkeyList(ctx)
-				if err != nil {
-					log.Error("Couldn't get SSH-keys:", err)
-					return
-				}
-				for _, key := range sshkeys {
-					if args[0] == key.Properties.ObjectUUID || args[0] == key.Properties.Name {
-						err := o.DeleteSshkey(ctx, key.Properties.ObjectUUID)
-						if err != nil {
-							log.Error("Delete SSH-key has failed with error", err)
-							return
-						}
-						log.Infof("SSH-key [%s] successfully removed", args[0])
-					}
-				}
+			ctx := context.Background()
+			err := o.DeleteSshkey(ctx, args[0])
+			if err != nil {
+				log.Fatalf("Removing SSH key failed: %s", err)
 			}
 		}
 
@@ -125,25 +112,36 @@ func produceSSHKeyCmdRunFunc(o sshKeysOperator, action int) cmdRunFunc {
 func initSSHKeyCmd() {
 	var sshKeyCmd = &cobra.Command{
 		Use:   "ssh-key",
-		Short: "Print ssh-key list",
-		Long:  `Print all ssh-key information`,
-		Run:   produceSSHKeyCmdRunFunc(client, sshKeyMainAction),
+		Short: "Operations on SSH keys",
+		Long:  `List, create, or remove SSH keys.`,
 	}
-	var addCmd, removeCmd = &cobra.Command{
-		Use:   "add",
-		Short: "add ssh-key",
-		Long:  `Add ssh-key via file`,
-		Args:  cobra.MinimumNArgs(2),
+
+	var lsCmd = &cobra.Command{
+		Use:     "ls [flags]",
+		Aliases: []string{"list"},
+		Short:   "List SSH keys",
+		Long:    `List SSH key objects.`,
+		Run:     produceSSHKeyCmdRunFunc(client, sshKeyListAction),
+	}
+
+	var addCmd = &cobra.Command{
+		Use:   "add [flags]",
+		Short: "Add a new SSH key",
+		Long:  `Create a new SSH key.`,
 		Run:   produceSSHKeyCmdRunFunc(client, sshKeyAddAction),
-	}, &cobra.Command{
-		Use:   "remove",
-		Short: "remove ssh-key",
-		Long:  `Remove ssh-key via name or id`,
-		Args:  cobra.MinimumNArgs(1),
-		Run:   produceSSHKeyCmdRunFunc(client, sshKeyDeleteAction),
 	}
-	sshKeyCmd.AddCommand(addCmd, removeCmd)
-	sshKeyCmd.PersistentFlags().BoolVarP(&nameFlag, "name", "n", false, "Set ssh-key name")
-	sshKeyCmd.PersistentFlags().BoolVarP(&fileFlag, "file", "f", false, "Read ssh-key from file")
+	addCmd.PersistentFlags().StringVarP(&nameFlag, "name", "n", "", "Name of the new key")
+	addCmd.PersistentFlags().StringVarP(&fileFlag, "file", "f", "", "Path to public key file")
+
+	var removeCmd = &cobra.Command{
+		Use:     "rm [flags] [ID]",
+		Aliases: []string{"remove"},
+		Short:   "Remove SSH key",
+		Long:    `Remove an existing SSH key.`,
+		Args:    cobra.ExactArgs(1),
+		Run:     produceSSHKeyCmdRunFunc(client, sshKeyDeleteAction),
+	}
+
+	sshKeyCmd.AddCommand(lsCmd, addCmd, removeCmd)
 	rootCmd.AddCommand(sshKeyCmd)
 }
