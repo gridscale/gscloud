@@ -27,7 +27,7 @@ Available Commands:
 
 Flags:
       --account string   Specify the account used; 'default' if none given
-      --config string    Specify a configuration file; default /home/bk/.config/gscloud/config.yaml
+      --config string    Specify a configuration file; default ~/.config/gscloud/config.yaml
   -h, --help             Print usage
   -j, --json             Print JSON to stdout instead of a table
   -q, --quiet            Print only IDs of objects
