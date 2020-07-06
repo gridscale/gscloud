@@ -5,6 +5,7 @@
 FEATURES:
 
 * We added `gscloud {server,storage,network,ssh-key}` commands.
+* There are now shell completions available for bash and zsh.
 
 ## v0.2.0-beta (March 11, 2020)
 
