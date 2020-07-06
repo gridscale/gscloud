@@ -3,10 +3,8 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"testing"
 	"time"
 
@@ -50,13 +48,7 @@ func Test_StorageCmdOutput(t *testing.T) {
 	}
 	testCases := []testCase{
 		{
-			expectedOutput: fmt.Sprintf("ID           NAME  CAPACITY  CHANGETIME  STATUS  \n%s  %s  %d        %s          %s  \n",
-				mockStorage.Properties.ObjectUUID,
-				mockStorage.Properties.Name,
-				mockStorage.Properties.Capacity,
-				strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
-				mockStorage.Properties.Status,
-			),
+			expectedOutput: "ID           NAME  CAPACITY  CHANGETIME  STATUS  \nxxx-xxx-xxx  test  10        8           active  \n",
 		},
 		{
 			jsonFlag:       true,
