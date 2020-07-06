@@ -24,6 +24,7 @@ Available Commands:
   ssh-key     Operations on SSH keys
   storage     Operations on storages
   version     Print the version
+  completion  Generate shell Tab-Completion
 
 Flags:
       --account string   Specify the account used; 'default' if none given
@@ -86,4 +87,18 @@ users:
         - "exec-credential"
         - "--cluster"
         - "9489f3a7-c8f8-4b38-bc9b-aa472a1c0d2a"
+```
+## Example add Tab-Completion
+
+Uncomment compdef, otherwise it won't work.
+
+`#compdef _gscloud gscloud`
+
+zsh
+```
+$ ./gscloud completion zsh >> ~/.zshrc
+```
+bash
+```
+$ ./gscloud completion bash >> ~/.bash_profile
 ```
