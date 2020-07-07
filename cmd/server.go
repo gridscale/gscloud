@@ -19,6 +19,7 @@ type serverOperator interface {
 	StartServer(ctx context.Context, id string) error
 	StopServer(ctx context.Context, id string) error
 	ShutdownServer(ctx context.Context, id string) error
+	DeleteServer(ctx context.Context, id string) error
 }
 
 // Server action enums
@@ -27,6 +28,7 @@ const (
 	serverStartAction
 	serverStopAction
 	serverShutdownAction
+	serverDeleteAction
 )
 
 var forceFlag bool
@@ -99,6 +101,14 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 				}
 			}
 		}
+	case serverDeleteAction:
+		return func(cmd *cobra.Command, args []string) {
+			ctx := context.Background()
+			err := o.DeleteServer(ctx, args[0])
+			if err != nil {
+				log.Fatalf("Removing Server failed: %s", err)
+			}
+		}
 
 	default:
 	}
@@ -133,8 +143,16 @@ func initServerCmd() {
 		Args:  cobra.ExactArgs(1),
 		Run:   produceServerCmdRunFunc(client, serverStopAction),
 	}
-	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
+	var removeCmd = &cobra.Command{
+		Use:     "rm [flags] [ID]",
+		Aliases: []string{"remove"},
+		Short:   "Remove Server",
+		Long:    `Remove an existing Server.`,
+		Args:    cobra.ExactArgs(1),
+		Run:     produceServerCmdRunFunc(client, serverDeleteAction),
+	}
 
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd)
+	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd)
 	rootCmd.AddCommand(serverCmd)
 }
