@@ -41,6 +41,10 @@ func (g mockStorageGetter) GetStorageList(ctx context.Context) ([]gsclient.Stora
 	return mockStorageList, nil
 }
 
+func (g mockStorageGetter) DeleteStorage(ctx context.Context, id string) error {
+	return nil
+}
+
 func Test_StorageCmdOutput(t *testing.T) {
 	marshalledMockStorage, _ := json.Marshal(mockStorageList)
 	type testCase struct {
@@ -78,7 +82,45 @@ func Test_StorageCmdOutput(t *testing.T) {
 		quietFlag = test.quietFlag
 
 		mockClient := mockStorageGetter{}
-		cmd := produceStorageCmdRunFunc(mockClient)
+		cmd := produceStorageCmdRunFunc(mockClient, storageListAction)
+		cmd(new(cobra.Command), []string{})
+
+		// reset the flags back to the default values
+		resetFlags()
+
+		// close the write side of the pipe so that we can start reading from
+		// the read side of the pipe
+		w.Close()
+		// Read the standard output's result from the read side of the pipe
+		out, _ := ioutil.ReadAll(r)
+		assert.Equal(t, test.expectedOutput, string(out))
+	}
+}
+
+func Test_StorageCmdDeleteOutput(t *testing.T) {
+
+	type testCase struct {
+		expectedOutput string
+	}
+	testCases := []testCase{
+		{
+			expectedOutput: fmt.Sprintf("ID           NAME  CAPACITY  CHANGETIME  STATUS  \n%s  %s  %d        %s          %s  \n",
+				mockStorage.Properties.ObjectUUID,
+				mockStorage.Properties.Name,
+				mockStorage.Properties.Capacity,
+				strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
+				mockStorage.Properties.Status,
+			),
+		},
+	}
+	for _, test := range testCases {
+		// Create a pipe
+		r, w, _ := os.Pipe()
+		// Change the standard output to the write side of the pipe
+		os.Stdout = w
+
+		mockClient := mockStorageGetter{}
+		cmd := produceStorageCmdRunFunc(mockClient, storageDeleteAction)
 		cmd(new(cobra.Command), []string{})
 
 		// reset the flags back to the default values
