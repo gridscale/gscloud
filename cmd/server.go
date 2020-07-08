@@ -146,8 +146,8 @@ func initServerCmd() {
 	var removeCmd = &cobra.Command{
 		Use:     "rm [flags] [ID]",
 		Aliases: []string{"remove"},
-		Short:   "Remove Server",
-		Long:    `Remove an existing Server.`,
+		Short:   "Remove server",
+		Long:    `Remove an existing server.`,
 		Args:    cobra.ExactArgs(1),
 		Run:     produceServerCmdRunFunc(client, serverDeleteAction),
 	}
