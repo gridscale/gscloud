@@ -91,7 +91,6 @@ func Test_StorageCmdOutput(t *testing.T) {
 		// close the write side of the pipe so that we can start reading from
 		// the read side of the pipe
 		w.Close()
-		// Read the standard output's result from the read side of the pipe
 		out, _ := ioutil.ReadAll(r)
 		assert.Equal(t, test.expectedOutput, string(out))
 	}
@@ -111,7 +110,6 @@ func Test_StorageCmdDeleteOutput(t *testing.T) {
 	// close the write side of the pipe so that we can start reading from
 	// the read side of the pipe
 	w.Close()
-	// Read the standard output's result from the read side of the pipe
 	out, _ := ioutil.ReadAll(r)
 	assert.Equal(t, err.expectedOutput, string(out))
 }

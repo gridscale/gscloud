@@ -98,8 +98,8 @@ func initStorageCmd() {
 	var removeCmd = &cobra.Command{
 		Use:     "rm [flags] [ID]",
 		Aliases: []string{"remove"},
-		Short:   "Remove Storage",
-		Long:    `Remove an existing Storage.`,
+		Short:   "Remove storage",
+		Long:    `Remove an existing storage.`,
 		Args:    cobra.ExactArgs(1),
 		Run:     produceStorageCmdRunFunc(client, storageDeleteAction),
 	}
