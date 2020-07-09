@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gridscale/gsclient-go/v3"
+	"github.com/gridscale/gscloud/render"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
@@ -48,15 +49,21 @@ func Test_StorageCmdOutput(t *testing.T) {
 		jsonFlag       bool
 		quietFlag      bool
 	}
+	mockRes := new(bytes.Buffer)
+	headers := []string{"id", "name", "capacity", "changetime", "status"}
+	mockRows := [][]string{
+		{
+			mockStorage.Properties.ObjectUUID,
+			mockStorage.Properties.Name,
+			strconv.Itoa(mockStorage.Properties.Capacity),
+			strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
+			mockStorage.Properties.Status,
+		},
+	}
+	render.Table(mockRes, headers, mockRows)
 	testCases := []testCase{
 		{
-			expectedOutput: fmt.Sprintf("ID           NAME  CAPACITY  CHANGETIME  STATUS  \n%s  %s  %d        %s          %s  \n",
-				mockStorage.Properties.ObjectUUID,
-				mockStorage.Properties.Name,
-				mockStorage.Properties.Capacity,
-				strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
-				mockStorage.Properties.Status,
-			),
+			expectedOutput: mockRes.String(),
 		},
 		{
 			jsonFlag:       true,
