@@ -16,6 +16,7 @@ Usage:
   gscloud [command]
 
 Available Commands:
+  completion  Generate completion script
   help        Help about any command
   kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
@@ -24,7 +25,6 @@ Available Commands:
   ssh-key     Operations on SSH keys
   storage     Operations on storages
   version     Print the version
-  completion  Generate shell Tab-Completion
 
 Flags:
       --account string   Specify the account used; 'default' if none given
@@ -36,25 +36,28 @@ Flags:
 Use "gscloud [command] --help" for more information about a command.
 ```
 
-## Example Configuration
+## Configuration
+
+You can use `gscloud make-config` to generate a new config file. Make sure to add your user ID and API token here.
+
+Example config:
 
 ```yml
 accounts:
 - account:
   name: default
-  userId: a13e84c9-852d-484-xxx-xxxx
-  token: "9b6590592c65f7daa707d88"
+  userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
+  token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
 - account:
   name: liveaccount
-  userId: a13e84c9-852d-2222-xxx-xxxx
-  token: 2222290592c6522222f7daa707d88
+  userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
+  token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
   url: https://api.gridscale.io
-
 ```
 
 ## Example configuration for ~/.kubeconfig/config
 
-To use gscloud for user authentication in kubectl, here is a sample of kubeconfig
+To use gscloud for user authentication in kubectl, here is an example kubeconfig:
 
 ```yml
 apiVersion: v1
@@ -88,17 +91,19 @@ users:
         - "--cluster"
         - "9489f3a7-c8f8-4b38-bc9b-aa472a1c0d2a"
 ```
-## Example add Tab-Completion
 
-Uncomment compdef, otherwise it won't work.
-
-`#compdef _gscloud gscloud`
+## Add completion scripts to your shell
 
 zsh
+
+```shell
+$ gscloud completion zsh >> ~/.zshrc
 ```
-$ ./gscloud completion zsh >> ~/.zshrc
-```
+
+Note:  Make sure to uncomment `compdef` line (`#compdef _gscloud gscloud`), otherwise it won't work.
+
 bash
-```
-$ ./gscloud completion bash >> ~/.bash_profile
+
+```shell
+$ gscloud completion bash >> ~/.bash_profile
 ```
