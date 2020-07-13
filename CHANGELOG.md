@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0-beta (UNRELEASED)
+## v0.3.0-beta (July 13, 2020)
 
 FEATURES:
 
