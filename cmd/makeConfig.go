@@ -10,11 +10,30 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// makeConfigCmd represents the make-config command
-var makeConfigCmd = &cobra.Command{
-	Use:   "make-config",
-	Short: "Create a new configuration file",
-	Long: fmt.Sprintf(`Create a new and possibly almost empty configuration file overwriting an
+func makeConFCmdRun(cmd *cobra.Command, args []string) error {
+	filePath := cliConfigPath()
+
+	if !fileExists(filePath) {
+		err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
+		if err != nil {
+			return err
+		}
+
+		err = ioutil.WriteFile(filePath, emptyConfig(), 0644)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println(filePath)
+	return nil
+}
+
+func initMakeConfCmd() {
+	// makeConfigCmd represents the make-config command
+	var makeConfigCmd = &cobra.Command{
+		Use:   "make-config",
+		Short: "Create a new configuration file",
+		Long: fmt.Sprintf(`Create a new and possibly almost empty configuration file overwriting an
 existing one if it exists. Prints the path to the newly created file to
 stdout.
 
@@ -30,26 +49,8 @@ Create a new configuration file at a specified path:
 	gscloud --config ~/myconfig.yaml make-config
 
 `, cliConfigPath()),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		filePath := cliConfigPath()
-
-		if !fileExists(filePath) {
-			err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
-			if err != nil {
-				return err
-			}
-
-			err = ioutil.WriteFile(filePath, emptyConfig(), 0644)
-			if err != nil {
-				return err
-			}
-		}
-		fmt.Println(filePath)
-		return nil
-	},
-}
-
-func init() {
+		RunE: makeConFCmdRun,
+	}
 	rootCmd.AddCommand(makeConfigCmd)
 }
 

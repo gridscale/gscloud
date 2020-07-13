@@ -3,22 +3,30 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile string
-	account string
-	client  *gsclient
+	cfgFile   string
+	account   string
+	client    *gsclient.Client
+	jsonFlag  bool
+	quietFlag bool
+)
+
+const (
+	defaultAPIURL = "https://api.gridscale.io"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gscloud",
-	Short: "is the command line interface for the gridscale cloud.",
-	Long:  "gscloud is the command line interface for the gridscale cloud.",
+	Short: "is the CLI for the gridscale cloud.",
+	Long:  "gscloud is the CLI for the gridscale cloud.",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -30,15 +38,24 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	// Init config and gsclient, if the test is not running
+	if !strings.HasSuffix(os.Args[0], ".test") {
+		initConfig()
+		initClient()
+	}
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", cliConfigPath()))
+	rootCmd.PersistentFlags().StringVar(&account, "account", "", "Specify the account used; 'default' if none given")
+	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")
+	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("configuration file, default %s", cliConfigPath()))
-	rootCmd.PersistentFlags().StringVar(&account, "account", "", "the account used, 'default' if none given")
-
-	rootCmd.AddCommand(kubernetesCmd)
-	kubernetesCmd.AddCommand(clusterCmd)
-	clusterCmd.AddCommand(execCredentialCmd)
-
+	initMakeConfCmd()
+	initK8SCmd()
+	initStorageCmd()
+	initVersionCmd()
+	initSSHKeyCmd()
+	initServerCmd()
+	initNetworkCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -58,14 +75,17 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Not found. Disregard
-		} else if _, ok := err.(*os.PathError); ok && contains(os.Args, "make-config") {
+		} else if _, ok := err.(*os.PathError); ok && commandWithoutConfig(os.Args) {
 			// --config given along with make-config → we're about to create that file. Disregard
 		} else {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 	}
+}
 
+// initClient initializes the client for a given account.
+func initClient() {
 	if account == "" {
 		account = "default"
 	}
@@ -74,6 +94,23 @@ func initConfig() {
 	if client == nil {
 		os.Exit(1)
 	}
+
+}
+
+// commandWithoutConfig return true if current command does not need a config file.
+// Called from within a cobra initializer function. Unfortunately there is no
+// way of getting the current command from an cobra initializer so we scan the
+// command line again.
+func commandWithoutConfig(cmdLine []string) bool {
+	var noConfigNeeded = []string{
+		"make-config", "version",
+	}
+	for _, cmd := range noConfigNeeded {
+		if contains(cmdLine, cmd) {
+			return true
+		}
+	}
+	return false
 }
 
 // contains tests whether string e is in slice s.
