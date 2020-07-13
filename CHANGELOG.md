@@ -4,8 +4,11 @@
 
 FEATURES:
 
-* We added `gscloud {server,storage,network,ssh-key}` commands.
+* We added `gscloud {server,storage,network,ssh-key}` commands. These commands allow you to list and manipulate the objects in various ways.
+* You can now output all data as JSON by passing `--json` flag on the command line.
 * There are now shell completions available for bash and zsh.
+
+And much more.
 
 ## v0.2.0-beta (March 11, 2020)
 
