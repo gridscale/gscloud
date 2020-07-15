@@ -103,7 +103,7 @@ func initClient() {
 // command line again.
 func commandWithoutConfig(cmdLine []string) bool {
 	var noConfigNeeded = []string{
-		"make-config", "version",
+		"make-config", "version", "help",
 	}
 	for _, cmd := range noConfigNeeded {
 		if contains(cmdLine, cmd) {
