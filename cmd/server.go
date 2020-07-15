@@ -20,6 +20,7 @@ type serverOperator interface {
 	StopServer(ctx context.Context, id string) error
 	ShutdownServer(ctx context.Context, id string) error
 	DeleteServer(ctx context.Context, id string) error
+	//CreateServer(ctx context.Context, request gsclient.ServerCreateRequest) error
 }
 
 // Server action enums
@@ -29,6 +30,7 @@ const (
 	serverStopAction
 	serverShutdownAction
 	serverDeleteAction
+	serverCreateAction
 )
 
 var forceFlag bool
@@ -109,7 +111,29 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 				log.Fatalf("Removing Server failed: %s", err)
 			}
 		}
-
+	case serverCreateAction:
+		return func(cmd *cobra.Command, args []string) {
+			ctx := context.Background()
+			c, m := args[1], args[2]
+			cor, mem := 0, 0
+			if n, err := strconv.Atoi(c); err == nil {
+				cor = n
+			}
+			if n, err := strconv.Atoi(m); err == nil {
+				mem = n
+			}
+			cServer, err := client.CreateServer(ctx, gsclient.ServerCreateRequest{
+				Name:   args[0],
+				Cores:  cor,
+				Memory: mem,
+			})
+			if err != nil {
+				log.Fatal("Create server has failed with error", err)
+			}
+			log.WithFields(log.Fields{
+				"server_uuid": cServer.ObjectUUID,
+			}).Info("Server successfully created")
+		}
 	default:
 	}
 	return nil
@@ -151,8 +175,15 @@ func initServerCmd() {
 		Args:    cobra.ExactArgs(1),
 		Run:     produceServerCmdRunFunc(client, serverDeleteAction),
 	}
-
+	var createCmd = &cobra.Command{
+		Use:     "create [Name] [Cores] [Memory]",
+		Aliases: []string{"create"},
+		Short:   "Create server",
+		Long:    `Create a new server.`,
+		Args:    cobra.ExactArgs(3),
+		Run:     produceServerCmdRunFunc(client, serverCreateAction),
+	}
 	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd)
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(serverCmd)
 }

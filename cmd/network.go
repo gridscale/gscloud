@@ -16,12 +16,14 @@ import (
 type networkOperator interface {
 	GetNetworkList(ctx context.Context) ([]gsclient.Network, error)
 	DeleteNetwork(ctx context.Context, id string) error
+	// CreateNetwork(ctx context.Context,request gsclient.NetworkCreateRequest) error
 }
 
 // Network action enums
 const (
 	networkListAction = iota
 	networkDeleteAction
+	networkCreateAction
 )
 
 // produceNetworkCmdRunFunc takes an instance of a struct that implements `networkOperator`
@@ -73,7 +75,20 @@ func produceNetworkCmdRunFunc(o networkOperator, action int) cmdRunFunc {
 				log.Fatalf("Removing Network failed: %s", err)
 			}
 		}
-
+	case networkCreateAction:
+		return func(cmd *cobra.Command, args []string) {
+			ctx := context.Background()
+			cNetwork, err := client.CreateNetwork(ctx, gsclient.NetworkCreateRequest{
+				Name: args[0],
+			})
+			if err != nil {
+				log.Error("Create network has failed with error", err)
+				return
+			}
+			log.WithFields(log.Fields{
+				"network_uuid": cNetwork.ObjectUUID,
+			}).Info("Network successfully created")
+		}
 	default:
 	}
 	return nil
@@ -101,7 +116,14 @@ func initNetworkCmd() {
 		Args:    cobra.ExactArgs(1),
 		Run:     produceNetworkCmdRunFunc(client, networkDeleteAction),
 	}
-
-	networkCmd.AddCommand(networkLsCmd, removeCmd)
+	var createCmd = &cobra.Command{
+		Use:     "create [Name]",
+		Aliases: []string{"create"},
+		Short:   "Create network",
+		Long:    `Create a new network.`,
+		Args:    cobra.MaximumNArgs(2),
+		Run:     produceNetworkCmdRunFunc(client, networkCreateAction),
+	}
+	networkCmd.AddCommand(networkLsCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(networkCmd)
 }

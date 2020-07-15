@@ -17,12 +17,14 @@ import (
 type storageOperator interface {
 	GetStorageList(ctx context.Context) ([]gsclient.Storage, error)
 	DeleteStorage(ctx context.Context, id string) error
+	//	CreateStorage(ctx, capacity gsclient.StorageCreateRequest) error
 }
 
 // Storage action enums
 const (
 	storageListAction = iota
 	storageDeleteAction
+	storageCreateAction
 )
 
 // produceStorageCmdRunFunc takes an instance of a struct that implements `storageOperator`
@@ -74,7 +76,27 @@ func produceStorageCmdRunFunc(o storageOperator, action int) cmdRunFunc {
 				log.Fatalf("Removing Storage failed: %s", err)
 			}
 		}
-
+	case storageCreateAction:
+		return func(cmd *cobra.Command, args []string) {
+			ctx := context.Background()
+			s := args[1]
+			cap := 0
+			if n, err := strconv.Atoi(s); err == nil {
+				cap = n
+			}
+			cStorage, err := client.CreateStorage(ctx, gsclient.StorageCreateRequest{
+				Name:        args[0],
+				Capacity:    cap,
+				StorageType: gsclient.InsaneStorageType,
+			})
+			if err != nil {
+				log.Error("Create storage has failed with error", err)
+				return
+			}
+			log.WithFields(log.Fields{
+				"storage_uuid": cStorage.ObjectUUID,
+			}).Info("Storage successfully created")
+		}
 	default:
 	}
 	return nil
@@ -103,7 +125,13 @@ func initStorageCmd() {
 		Args:    cobra.ExactArgs(1),
 		Run:     produceStorageCmdRunFunc(client, storageDeleteAction),
 	}
-
-	storageCmd.AddCommand(storageLsCmd, removeCmd)
+	var createCmd = &cobra.Command{
+		Use:   "create [Name] [Capacity]",
+		Short: "Create storage",
+		Long:  `Create a new storage.`,
+		Args:  cobra.MaximumNArgs(3),
+		Run:   produceStorageCmdRunFunc(client, storageCreateAction),
+	}
+	storageCmd.AddCommand(storageLsCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(storageCmd)
 }
