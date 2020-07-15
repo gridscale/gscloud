@@ -40,7 +40,7 @@ stdout.
 Examples:
 
 Create a new configuration file at the default configuration path
-(%s/config.yaml):
+(%s):
 
 	gscloud make-config
 
