@@ -6,3 +6,4 @@
 * Ibrahim Takouna <ibrahim@gridscale.io>
 * Marc Harriss <mharriss@gridscale.io>
 * Van Thong Nguyen <tom@gridscale.io>
+* Wouter Wijsman <wwijsman@live.nl>
