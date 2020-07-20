@@ -20,7 +20,6 @@ type serverOperator interface {
 	StopServer(ctx context.Context, id string) error
 	ShutdownServer(ctx context.Context, id string) error
 	DeleteServer(ctx context.Context, id string) error
-	//CreateServer(ctx context.Context, request gsclient.ServerCreateRequest) error
 }
 
 // Server action enums
@@ -34,6 +33,8 @@ const (
 )
 
 var forceFlag bool
+var servernameFlag, templateFlag, passwordFlag, hostnameFlag string
+var cpuFlag, memFlag, storageFlag int
 
 // produceServerCmdRunFunc takes an instance of a struct that implements `serverOperator`
 // returns a `cmdRunFunc`
@@ -114,18 +115,10 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 	case serverCreateAction:
 		return func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
-			c, m := args[1], args[2]
-			cor, mem := 0, 0
-			if n, err := strconv.Atoi(c); err == nil {
-				cor = n
-			}
-			if n, err := strconv.Atoi(m); err == nil {
-				mem = n
-			}
 			cServer, err := client.CreateServer(ctx, gsclient.ServerCreateRequest{
-				Name:   args[0],
-				Cores:  cor,
-				Memory: mem,
+				Name:   servernameFlag,
+				Cores:  cpuFlag,
+				Memory: memFlag,
 			})
 			if err != nil {
 				log.Fatal("Create server has failed with error", err)
@@ -133,6 +126,41 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 			log.WithFields(log.Fields{
 				"server_uuid": cServer.ObjectUUID,
 			}).Info("Server successfully created")
+
+			if templateFlag != "" {
+				template, _ := client.GetTemplateByName(ctx, templateFlag)
+				cStorage, err := client.CreateStorage(ctx, gsclient.StorageCreateRequest{
+					Name:        string(servernameFlag),
+					Capacity:    storageFlag,
+					StorageType: gsclient.DefaultStorageType,
+					Template: &gsclient.StorageTemplate{
+						TemplateUUID: template.Properties.ObjectUUID,
+						Password:     passwordFlag,
+						PasswordType: gsclient.PlainPasswordType,
+						Hostname:     hostnameFlag,
+					},
+					Labels: []string{"label"},
+				})
+
+				client.CreateServerStorage(
+					ctx,
+					cServer.ObjectUUID,
+					gsclient.ServerStorageRelationCreateRequest{
+						ObjectUUID: cStorage.ObjectUUID,
+						BootDevice: true,
+					})
+
+				if err != nil {
+					log.Error("Create storage has failed with error", err)
+					return
+				}
+				log.WithFields(log.Fields{
+					"storage_uuid": cStorage.ObjectUUID,
+				}).Info("Storage successfully created")
+				produceStorageCmdRunFunc(client, storageCreateAction)
+
+			}
+
 		}
 	default:
 	}
@@ -176,14 +204,25 @@ func initServerCmd() {
 		Run:     produceServerCmdRunFunc(client, serverDeleteAction),
 	}
 	var createCmd = &cobra.Command{
-		Use:     "create [Name] [Cores] [Memory]",
+		Use:     "create [flags]",
+		Example: `./gscloud server create --name "Server Name" --cpu 6 --mem 4 --with-template "Debian 10" --password "p4ssw0rd" --hostname "gridscale"`,
 		Aliases: []string{"create"},
 		Short:   "Create server",
 		Long:    `Create a new server.`,
-		Args:    cobra.ExactArgs(3),
 		Run:     produceServerCmdRunFunc(client, serverCreateAction),
 	}
+
+	// Flags
 	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
+	createCmd.PersistentFlags().StringVarP(&servernameFlag, "name", "n", "default_server", "Define servername")
+	createCmd.PersistentFlags().IntVarP(&cpuFlag, "cpu", "c", 1, "Define cpu cores")
+	createCmd.PersistentFlags().IntVarP(&memFlag, "mem", "m", 1, "Define Memory")
+	createCmd.PersistentFlags().StringVarP(&passwordFlag, "password", "p", "pass", "Define password")
+	createCmd.PersistentFlags().StringVarP(&hostnameFlag, "hostname", "H", "no_hostname", "Define hostname")
+	createCmd.PersistentFlags().StringVarP(&templateFlag, "with-template", "t", "Debian 10", "Define Operating System")
+	createCmd.PersistentFlags().IntVarP(&storageFlag, "storage-size", "s", 10, "Storage size")
+	//
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(serverCmd)
+
 }
