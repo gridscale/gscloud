@@ -117,7 +117,7 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 			ctx := context.Background()
 			err := o.DeleteServer(ctx, args[0])
 			if err != nil {
-				log.Fatalf("Removing Server failed: %s", err)
+				log.Fatalf("Removing server failed: %s", err)
 			}
 		}
 	case serverCreateAction:
@@ -129,11 +129,9 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 				Memory: memory,
 			})
 			if err != nil {
-				log.Fatal("Create server has failed with error", err)
+				log.Fatalf("Creating server failed: %s", err)
 			}
-			log.WithFields(log.Fields{
-				"server_uuid": cServer.ObjectUUID,
-			}).Info("Server successfully created")
+			cmd.Println("Server created:", cServer.ObjectUUID)
 
 			if template != "" {
 				template, _ := client.GetTemplateByName(ctx, template)
@@ -156,11 +154,9 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 						BootDevice: true,
 					})
 				if err != nil {
-					log.Fatalf("Create storage has failed with error %s", err)
+					log.Fatalf("Create storage failed: %s", err)
 				}
-				log.WithFields(log.Fields{
-					"storage_uuid": cStorage.ObjectUUID,
-				}).Info("Storage successfully created")
+				cmd.Println("Storage created:", cStorage.ObjectUUID)
 				produceStorageCmdRunFunc(client, serverCreateAction)
 			}
 		}
