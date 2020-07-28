@@ -131,7 +131,7 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 			if err != nil {
 				log.Fatalf("Creating server failed: %s", err)
 			}
-			cmd.Println("Server created:", cServer.ObjectUUID)
+			fmt.Println("Server created:", cServer.ObjectUUID)
 
 			if template != "" {
 				template, _ := client.GetTemplateByName(ctx, template)
@@ -156,7 +156,7 @@ func produceServerCmdRunFunc(o serverOperator, action int) cmdRunFunc {
 				if err != nil {
 					log.Fatalf("Create storage failed: %s", err)
 				}
-				cmd.Println("Storage created:", cStorage.ObjectUUID)
+				fmt.Println("Storage created:", cStorage.ObjectUUID)
 				produceStorageCmdRunFunc(client, serverCreateAction)
 			}
 		}
