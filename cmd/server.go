@@ -206,18 +206,18 @@ func initServerCmd() {
 
 	var createCmd = &cobra.Command{
 		Use:     "create [flags]",
-		Example: `./gscloud server create --name "Server Name" --cpu 6 --mem 4 --with-template "Debian 10" --password "p4ssw0rd" --hostname "gridscale"`,
+		Example: `./gscloud server create --name "My machine" --cpu 6 --mem 4 --with-template "Debian 10" --password mysecret --hostname myhost`,
 		Short:   "Create server",
 		Long:    `Create a new server.`,
 		Run:     produceServerCmdRunFunc(client, serverCreateAction),
 	}
-	createCmd.PersistentFlags().IntVarP(&memory, "mem", "m", 1, "Memory (GB)")
-	createCmd.PersistentFlags().IntVarP(&cpu, "cpu", "c", 1, "Cores (CPU)")
-	createCmd.PersistentFlags().IntVarP(&storage, "storage-size", "s", 10, "Storage-size (GB)")
-	createCmd.PersistentFlags().StringVarP(&serverName, "name", "n", "", "Servername")
-	createCmd.PersistentFlags().StringVarP(&template, "with-template", "t", "", "Template (Alias)")
-	createCmd.PersistentFlags().StringVarP(&hostName, "hostname", "H", "", "Hostname")
-	createCmd.PersistentFlags().StringVarP(&plainPassword, "password", "p", "", "Password (Plaintext)")
+	createCmd.PersistentFlags().IntVar(&memory, "mem", 1, "Memory (GB)")
+	createCmd.PersistentFlags().IntVar(&cpu, "cpu", 1, "No. of CPUs")
+	createCmd.PersistentFlags().IntVar(&storage, "storage-size", 10, "Storage size (GB)")
+	createCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
+	createCmd.PersistentFlags().StringVar(&template, "with-template", "", "Template")
+	createCmd.PersistentFlags().StringVar(&hostName, "hostname", "", "Hostname")
+	createCmd.PersistentFlags().StringVar(&plainPassword, "password", "", "Plain-text password")
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(serverCmd)
