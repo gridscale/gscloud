@@ -213,9 +213,9 @@ func initServerCmd() {
 	}
 	createCmd.PersistentFlags().IntVar(&memory, "mem", 1, "Memory (GB)")
 	createCmd.PersistentFlags().IntVar(&cpu, "cpu", 1, "No. of CPUs")
-	createCmd.PersistentFlags().IntVar(&storage, "storage-size", 10, "Storage size (GB)")
+	createCmd.PersistentFlags().IntVar(&storage, "storage-size", 10, "Storage capacity (GB)")
 	createCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
-	createCmd.PersistentFlags().StringVar(&template, "with-template", "", "Template")
+	createCmd.PersistentFlags().StringVar(&template, "with-template", "", "Name of template to use")
 	createCmd.PersistentFlags().StringVar(&hostName, "hostname", "", "Hostname")
 	createCmd.PersistentFlags().StringVar(&plainPassword, "password", "", "Plain-text password")
 
