@@ -24,9 +24,10 @@ const (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gscloud",
-	Short: "is the CLI for the gridscale cloud.",
-	Long:  "gscloud is the CLI for the gridscale cloud.",
+	Use:               "gscloud",
+	Short:             "is the CLI for the gridscale cloud.",
+	Long:              "gscloud is the CLI for the gridscale cloud.",
+	DisableAutoGenTag: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -56,6 +57,7 @@ func init() {
 	initSSHKeyCmd()
 	initServerCmd()
 	initNetworkCmd()
+	initManpageCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
