@@ -193,6 +193,8 @@ func initServerCmd() {
 		Args:  cobra.ExactArgs(1),
 		Run:   produceServerCmdRunFunc(client, serverStopAction),
 	}
+	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
+
 	var removeCmd = &cobra.Command{
 		Use:     "rm [flags] [ID]",
 		Aliases: []string{"remove"},
@@ -201,6 +203,7 @@ func initServerCmd() {
 		Args:    cobra.ExactArgs(1),
 		Run:     produceServerCmdRunFunc(client, serverDeleteAction),
 	}
+
 	var createCmd = &cobra.Command{
 		Use:     "create [flags]",
 		Example: `./gscloud server create --name "Server Name" --cpu 6 --mem 4 --with-template "Debian 10" --password "p4ssw0rd" --hostname "gridscale"`,
@@ -208,17 +211,14 @@ func initServerCmd() {
 		Long:    `Create a new server.`,
 		Run:     produceServerCmdRunFunc(client, serverCreateAction),
 	}
-
-	serverOffCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "Force shutdown (no ACPI)")
 	createCmd.PersistentFlags().IntVarP(&memory, "mem", "m", 1, "Memory (GB)")
 	createCmd.PersistentFlags().IntVarP(&cpu, "cpu", "c", 1, "Cores (CPU)")
-	createCmd.PersistentFlags().IntVarP(&storage, "storage-size", "s", 1, "Storage-size (GB)")
-	createCmd.PersistentFlags().StringVarP(&serverName, "name", "n", "server", "Servername")
-	createCmd.PersistentFlags().StringVarP(&template, "with-template", "t", "template", "Template (Alias)")
-	createCmd.PersistentFlags().StringVarP(&hostName, "hostname", "H", "host", "Hostname")
-	createCmd.PersistentFlags().StringVarP(&plainPassword, "password", "p", "pass", "Password (Plaintext)")
+	createCmd.PersistentFlags().IntVarP(&storage, "storage-size", "s", 10, "Storage-size (GB)")
+	createCmd.PersistentFlags().StringVarP(&serverName, "name", "n", "", "Servername")
+	createCmd.PersistentFlags().StringVarP(&template, "with-template", "t", "", "Template (Alias)")
+	createCmd.PersistentFlags().StringVarP(&hostName, "hostname", "H", "", "Hostname")
+	createCmd.PersistentFlags().StringVarP(&plainPassword, "password", "p", "", "Password (Plaintext)")
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, removeCmd, createCmd)
 	rootCmd.AddCommand(serverCmd)
-
 }
