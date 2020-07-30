@@ -25,8 +25,8 @@ const (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:               "gscloud",
-	Short:             "is the CLI for the gridscale cloud.",
-	Long:              "gscloud is the CLI for the gridscale cloud.",
+	Short:             "the CLI for the gridscale cloud",
+	Long:              `gscloud lets you manage objects on gridscale.io via command line. It provides a Docker-CLI comparable command line that allows you to create, manipulate, and remove objects on gridscale.io.`,
 	DisableAutoGenTag: true,
 }
 
@@ -96,7 +96,6 @@ func initClient() {
 	if client == nil {
 		os.Exit(1)
 	}
-
 }
 
 // commandWithoutConfig return true if current command does not need a config file.
@@ -105,7 +104,7 @@ func initClient() {
 // command line again.
 func commandWithoutConfig(cmdLine []string) bool {
 	var noConfigNeeded = []string{
-		"make-config", "version",
+		"make-config", "version", "manpage", "completion",
 	}
 	for _, cmd := range noConfigNeeded {
 		if contains(cmdLine, cmd) {
