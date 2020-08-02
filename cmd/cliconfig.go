@@ -61,12 +61,16 @@ func newCliClient(account string) *gsclient.Client {
 		}
 	}
 
-	config := gsclient.DefaultConfiguration(
+	config := gsclient.NewConfiguration(
+		ac.URL,
 		ac.UserID,
 		ac.Token,
+		false,
+		true,
+		500,
+		0, // no retries
 	)
 	return gsclient.NewClient(config)
-
 }
 
 func fileExists(filename string) bool {
