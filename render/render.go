@@ -9,7 +9,7 @@ import (
 	"github.com/rodaine/table"
 )
 
-// Table prints a table to the given io.Writer. example render.Table
+// Table prints header and rows as table to given io.Writer.
 func Table(buf io.Writer, columns []string, rows [][]string) {
 
 	s := make([]interface{}, len(columns))
@@ -30,7 +30,7 @@ func Table(buf io.Writer, columns []string, rows [][]string) {
 	tbl.WithWriter(buf).Print()
 }
 
-// AsJSON prints infos as JSON instead table
+// AsJSON prints elements s JSON to given io.Writer.
 func AsJSON(buf io.Writer, s ...interface{}) {
 	json, _ := json.Marshal(s)
 	buf.Write([]byte(fmt.Sprintf("%s\n", json)))

@@ -219,17 +219,19 @@ var execCredentialCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(kubernetesCmd)
-	kubernetesCmd.AddCommand(clusterCmd)
-	clusterCmd.AddCommand(execCredentialCmd)
-	clusterCmd.AddCommand(saveKubeconfigCmd)
 	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's uuid")
 	saveKubeconfigCmd.MarkFlagRequired("cluster")
 	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentication method (exec-credential)")
+	clusterCmd.AddCommand(saveKubeconfigCmd)
+
 	execCredentialCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	execCredentialCmd.Flags().String("cluster", "", "The cluster's uuid")
 	execCredentialCmd.MarkFlagRequired("cluster")
+	clusterCmd.AddCommand(execCredentialCmd)
+
+	kubernetesCmd.AddCommand(clusterCmd)
+	rootCmd.AddCommand(kubernetesCmd)
 }
 
 func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) *kubeConfig {

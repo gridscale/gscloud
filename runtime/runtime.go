@@ -49,7 +49,7 @@ type ServerOperator interface {
 	CreateServerStorage(ctx context.Context, id string, body gsclient.ServerStorageRelationCreateRequest) error
 }
 
-// NetworkOperator interface tha amalgamates all operations regarding network objects.
+// NetworkOperator interface that amalgamates all operations regarding network objects.
 type NetworkOperator interface {
 	GetNetworkList(ctx context.Context) ([]gsclient.Network, error)
 	DeleteNetwork(ctx context.Context, id string) error
