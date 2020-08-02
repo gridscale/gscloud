@@ -6,6 +6,6 @@ install:
   - go get -u golang.org/x/lint/golint
 
 script:
-  - golint
   - make build
   - make test
+  - make lint
