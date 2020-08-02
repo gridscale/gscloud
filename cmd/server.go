@@ -15,7 +15,7 @@ import (
 var (
 	forceShutdown bool
 	memory        int
-	cpu           int
+	cores         int
 	storage       int
 	serverName    string
 	template      string
@@ -128,7 +128,7 @@ var serverRmCmd = &cobra.Command{
 
 var serverCreateCmd = &cobra.Command{
 	Use:     "create [flags]",
-	Example: `./gscloud server create --name "My machine" --cpu 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
+	Example: `./gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
 	Short:   "Create server",
 	Long:    `Create a new server.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -136,7 +136,7 @@ var serverCreateCmd = &cobra.Command{
 		ctx := context.Background()
 		cServer, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
 			Name:   serverName,
-			Cores:  cpu,
+			Cores:  cores,
 			Memory: memory,
 		})
 		if err != nil {
@@ -176,7 +176,7 @@ func init() {
 	serverOffCmd.PersistentFlags().BoolVarP(&forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
 
 	serverCreateCmd.PersistentFlags().IntVar(&memory, "mem", 1, "Memory (GB)")
-	serverCreateCmd.PersistentFlags().IntVar(&cpu, "cpu", 1, "No. of CPUs")
+	serverCreateCmd.PersistentFlags().IntVar(&cores, "cores", 1, "No. of cores")
 	serverCreateCmd.PersistentFlags().IntVar(&storage, "storage-size", 10, "Storage capacity (GB)")
 	serverCreateCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
 	serverCreateCmd.PersistentFlags().StringVar(&template, "with-template", "", "Name of template to use")
