@@ -16,7 +16,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var changeTime, _ = time.Parse(time.RFC3339, "2020-07-02T16:15:00+02:00")
+var loc, _ = time.LoadLocation("Local")
+var changeTime, _ = time.ParseInLocation(time.RFC3339, "2020-07-02T16:15:00+02:00", loc)
 
 var mockStorage = gsclient.Storage{
 	Properties: gsclient.StorageProperties{
