@@ -2,20 +2,20 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"strings"
 
-	"github.com/gridscale/gsclient-go/v3"
+	"github.com/gridscale/gscloud/runtime"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile   string
-	account   string
-	client    *gsclient.Client
-	jsonFlag  bool
-	quietFlag bool
+	configFile string
+	account    string
+	rt         *runtime.Runtime
+	jsonFlag   bool
+	quietFlag  bool
 )
 
 const (
@@ -39,37 +39,28 @@ func Execute() {
 }
 
 func init() {
-	// Init config and gsclient, if the test is not running
-	if !strings.HasSuffix(os.Args[0], ".test") {
-		initConfig()
-		initClient()
+	// Register following initializers only when we are not running tests.
+	if !runtime.UnderTest() {
+		cobra.OnInitialize(initConfig, initRuntime)
 	}
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", cliConfigPath()))
-	rootCmd.PersistentFlags().StringVar(&account, "account", "", "Specify the account used; 'default' if none given")
+
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", runtime.ConfigPath()))
+	rootCmd.PersistentFlags().StringVarP(&account, "account", "", "default", "Specify the account used; 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
-
-	initMakeConfCmd()
-	initK8SCmd()
-	initStorageCmd()
-	initVersionCmd()
-	initSSHKeyCmd()
-	initServerCmd()
-	initNetworkCmd()
-	initManpageCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
+	if configFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(configFile)
 	} else {
 		// Use default paths.
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(cliConfigPath())
+		viper.AddConfigPath(runtime.ConfigPath())
 		viper.AddConfigPath(".")
 	}
 	viper.AutomaticEnv() // read in environment variables that match
@@ -86,16 +77,13 @@ func initConfig() {
 	}
 }
 
-// initClient initializes the client for a given account.
-func initClient() {
-	if account == "" {
-		account = "default"
+// initRuntime initializes the client for a given account.
+func initRuntime() {
+	theRuntime, err := runtime.NewRuntime(account)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	client = newCliClient(account)
-	if client == nil {
-		os.Exit(1)
-	}
+	rt = theRuntime
 }
 
 // commandWithoutConfig return true if current command does not need a config file.
