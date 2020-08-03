@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
@@ -17,7 +18,7 @@ var storageCmd = &cobra.Command{
 	Long:  `List, create, or remove storages.`,
 }
 
-var storageListCmd = &cobra.Command{
+var storageLsCmd = &cobra.Command{
 	Use:     "ls [flags]",
 	Aliases: []string{"list"},
 	Short:   "List storages",
@@ -33,14 +34,14 @@ var storageListCmd = &cobra.Command{
 		var storageinfo [][]string
 		if !jsonFlag {
 			heading := []string{"id", "name", "capacity", "changetime", "status"}
-			for _, stor := range storages {
+			for _, storage := range storages {
 				fill := [][]string{
 					{
-						stor.Properties.ObjectUUID,
-						stor.Properties.Name,
-						strconv.FormatInt(int64(stor.Properties.Capacity), 10),
-						strconv.FormatInt(int64(stor.Properties.ChangeTime.Hour()), 10),
-						stor.Properties.Status,
+						storage.Properties.ObjectUUID,
+						storage.Properties.Name,
+						strconv.FormatInt(int64(storage.Properties.Capacity), 10),
+						storage.Properties.ChangeTime.Local().Format(time.RFC3339),
+						storage.Properties.Status,
 					},
 				}
 				storageinfo = append(storageinfo, fill...)
@@ -61,7 +62,7 @@ var storageListCmd = &cobra.Command{
 	},
 }
 
-var storageRemoveCmd = &cobra.Command{
+var storageRmCmd = &cobra.Command{
 	Use:     "rm [flags] [ID]",
 	Aliases: []string{"remove"},
 	Short:   "Remove storage",
@@ -72,12 +73,12 @@ var storageRemoveCmd = &cobra.Command{
 		ctx := context.Background()
 		err := storageOp.DeleteStorage(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Removing Storage failed: %s", err)
+			log.Fatalf("Removing storage failed: %s", err)
 		}
 	},
 }
 
 func init() {
-	storageCmd.AddCommand(storageListCmd, storageRemoveCmd)
+	storageCmd.AddCommand(storageLsCmd, storageRmCmd)
 	rootCmd.AddCommand(storageCmd)
 }

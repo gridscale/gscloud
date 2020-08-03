@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"testing"
 	"time"
 
@@ -17,6 +16,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var changeTime, _ = time.Parse(time.RFC3339, "2020-07-02T16:15:00+02:00")
+
 var mockStorage = gsclient.Storage{
 	Properties: gsclient.StorageProperties{
 		ObjectUUID: "xxx-xxx-xxx",
@@ -24,7 +25,7 @@ var mockStorage = gsclient.Storage{
 		Capacity:   10,
 		Status:     "active",
 		ChangeTime: gsclient.GSTime{
-			Time: time.Now(),
+			Time: changeTime,
 		},
 	},
 }
@@ -53,11 +54,11 @@ func Test_StorageListCmd(t *testing.T) {
 	headers := []string{"id", "name", "capacity", "changetime", "status"}
 	rows := [][]string{
 		{
-			mockStorage.Properties.ObjectUUID,
-			mockStorage.Properties.Name,
-			strconv.Itoa(mockStorage.Properties.Capacity),
-			strconv.FormatInt(int64(mockStorage.Properties.ChangeTime.Hour()), 10),
-			mockStorage.Properties.Status,
+			"xxx-xxx-xxx",
+			"test",
+			"10",
+			"2020-07-02T16:15:00+02:00",
+			"active",
 		},
 	}
 	render.Table(buf, headers, rows)
@@ -85,7 +86,7 @@ func Test_StorageListCmd(t *testing.T) {
 		rt, _ = runtime.NewTestRuntime()
 		rt.SetStorageOperator(mockClient)
 
-		cmd := storageListCmd.Run
+		cmd := storageLsCmd.Run
 		cmd(new(cobra.Command), []string{})
 
 		resetFlags()
@@ -107,7 +108,7 @@ func Test_StorageCmdDelete(t *testing.T) {
 	rt, _ = runtime.NewTestRuntime()
 	rt.SetStorageOperator(mockClient)
 
-	cmd := storageRemoveCmd.Run
+	cmd := storageRmCmd.Run
 	cmd(new(cobra.Command), []string{"rm", mockStorage.Properties.ObjectUUID})
 
 	w.Close()
