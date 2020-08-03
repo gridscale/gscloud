@@ -4,7 +4,12 @@
 
 FEATURES:
 
-* … lots of good stuff
+* Add `manpage` command to generate man-pages for gscloud.
+
+FIXED:
+
+* Fixed working with multiple accounts ([#58](https://github.com/gridscale/gscloud/issues/58)).
+* Fixed printing CHANGETIME column ([#60](https://github.com/gridscale/gscloud/issues/60)).
 
 ## v0.3.0-beta (July 13, 2020)
 
