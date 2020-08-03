@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
@@ -44,11 +45,11 @@ var serverLsCmd = &cobra.Command{
 		}
 		var serverinfos [][]string
 		if !jsonFlag {
-			heading := []string{"id", "name", "core", "mem", "power"}
+			heading := []string{"id", "name", "core", "mem", "changetime", "power"}
 			for _, server := range servers {
-				status := "off"
+				power := "off"
 				if server.Properties.Power {
-					status = "on"
+					power = "on"
 				}
 				fill := [][]string{
 					{
@@ -56,7 +57,8 @@ var serverLsCmd = &cobra.Command{
 						server.Properties.Name,
 						strconv.FormatInt(int64(server.Properties.Cores), 10),
 						strconv.FormatInt(int64(server.Properties.Memory), 10),
-						status,
+						server.Properties.ChangeTime.Local().Format(time.RFC3339),
+						power,
 					},
 				}
 				serverinfos = append(serverinfos, fill...)

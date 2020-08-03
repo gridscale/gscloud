@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
@@ -20,7 +21,7 @@ var networkLsCmd = &cobra.Command{
 	Use:     "ls [flags]",
 	Aliases: []string{"list"},
 	Short:   "List networks",
-	Long:    `List network objects.`,
+	Long:    `List networks.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
@@ -31,15 +32,15 @@ var networkLsCmd = &cobra.Command{
 		}
 		var networkinfos [][]string
 		if !jsonFlag {
-			heading := []string{"id", "name", "location", "createtime", "status"}
-			for _, netw := range networks {
+			heading := []string{"id", "name", "location", "changetime", "status"}
+			for _, network := range networks {
 				fill := [][]string{
 					{
-						netw.Properties.ObjectUUID,
-						netw.Properties.Name,
-						netw.Properties.LocationName,
-						netw.Properties.CreateTime.String()[:10],
-						netw.Properties.Status,
+						network.Properties.ObjectUUID,
+						network.Properties.Name,
+						network.Properties.LocationName,
+						network.Properties.ChangeTime.Local().Format(time.RFC3339),
+						network.Properties.Status,
 					},
 				}
 				networkinfos = append(networkinfos, fill...)
@@ -63,8 +64,8 @@ var networkLsCmd = &cobra.Command{
 var networkRmCmd = &cobra.Command{
 	Use:     "rm [flags] [ID]",
 	Aliases: []string{"remove"},
-	Short:   "Remove Network",
-	Long:    `Remove an existing Network.`,
+	Short:   "Remove network",
+	Long:    `Remove an existing network.`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
