@@ -23,6 +23,11 @@ type StorageOperator interface {
 	GetStorageList(ctx context.Context) ([]gsclient.Storage, error)
 }
 
+// TemplateOperator represents operations on templates.
+type TemplateOperator interface {
+	GetTemplateList(ctx context.Context) ([]gsclient.Template, error)
+}
+
 // KubernetesOperator amalgamates operations for Kubernetes PaaS.
 type KubernetesOperator interface {
 	RenewK8sCredentials(ctx context.Context, id string) error
@@ -70,6 +75,22 @@ func (r *Runtime) StorageOperator() StorageOperator {
 
 // SetStorageOperator set operation to delete storages.
 func (r *Runtime) SetStorageOperator(op StorageOperator) {
+	if !UnderTest() {
+		panic("unexpected use")
+	}
+	r.client = op
+}
+
+// TemplateOperator return an operation to remove a storage.
+func (r *Runtime) TemplateOperator() TemplateOperator {
+	if UnderTest() {
+		return r.client.(TemplateOperator)
+	}
+	return r.client.(*gsclient.Client)
+}
+
+// SetTemplateOperator set operation to delete storages.
+func (r *Runtime) SetTemplateOperator(op TemplateOperator) {
 	if !UnderTest() {
 		panic("unexpected use")
 	}

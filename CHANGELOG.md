@@ -5,6 +5,7 @@
 FEATURES:
 
 * Add `manpage` command to generate man-pages for gscloud.
+* Add `gscloud template ls` to list available templates ([#59](https://github.com/gridscale/gscloud/issues/59)).
 
 FIXED:
 
