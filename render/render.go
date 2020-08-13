@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/rodaine/table"
+	"github.com/gridscale/gscloud/render/table"
 )
 
 // Table prints header and rows as table to given io.Writer.
