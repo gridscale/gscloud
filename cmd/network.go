@@ -46,7 +46,7 @@ var networkLsCmd = &cobra.Command{
 				rows = append(rows, fill...)
 
 			}
-			render.Table(out, heading, rows, renderOpts)
+			render.AsTable(out, heading, rows, renderOpts)
 			if quietFlag {
 				for _, info := range rows {
 					fmt.Println(info[0])

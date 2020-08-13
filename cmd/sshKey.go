@@ -57,7 +57,7 @@ var sshKeyLsCmd = &cobra.Command{
 				}
 				return
 			}
-			render.Table(out, heading, rows, renderOpts)
+			render.AsTable(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, sshkeys)
 		}

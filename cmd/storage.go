@@ -52,7 +52,7 @@ var storageLsCmd = &cobra.Command{
 				}
 				return
 			}
-			render.Table(out, heading, rows, renderOpts)
+			render.AsTable(out, heading, rows, renderOpts)
 		} else {
 			for _, storage := range storages {
 				render.AsJSON(out, storage)

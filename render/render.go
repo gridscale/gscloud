@@ -14,8 +14,8 @@ type Options struct {
 	NoHeader bool
 }
 
-// Table prints header and rows as table to given io.Writer.
-func Table(buf io.Writer, columns []string, rows [][]string, opts Options) {
+// AsTable prints header and rows as table to given io.Writer.
+func AsTable(buf io.Writer, columns []string, rows [][]string, opts Options) {
 
 	columnHeaders := make([]interface{}, len(columns))
 	for i, v := range columns {

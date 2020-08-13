@@ -56,7 +56,7 @@ var templateLsCmd = &cobra.Command{
 				}
 				return
 			}
-			render.Table(out, heading, rows, renderOpts)
+			render.AsTable(out, heading, rows, renderOpts)
 		}
 		fmt.Print(out)
 	},
