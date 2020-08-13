@@ -46,8 +46,8 @@ func init() {
 		cobra.OnInitialize(initConfig, initRuntime)
 	}
 
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", runtime.ConfigPath()))
-	rootCmd.PersistentFlags().StringVarP(&account, "account", "", "default", "Specify the account used; 'default' if none given")
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", runtime.ConfigPath(), fmt.Sprintf("Specify a configuration file"))
+	rootCmd.PersistentFlags().StringVarP(&account, "account", "", "default", "Specify the account used")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")

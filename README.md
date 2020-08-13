@@ -10,27 +10,30 @@ Note: this tool is still in the making and beta quality. Feel free to try it out
 
 ```txt
 $ gscloud --help
-gscloud is the CLI for the gridscale cloud.
+gscloud lets you manage objects on gridscale.io via command line. It provides a Docker-CLI comparable command line that allows you to create, manipulate, and remove objects on gridscale.io.
 
 Usage:
   gscloud [command]
 
 Available Commands:
-  completion  Generate completion script
+  completion  Generate shell completion scripts
   help        Help about any command
   kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
+  manpage     Create man-pages for gscloud
   network     Operations on networks
   server      Operations on servers
   ssh-key     Operations on SSH keys
   storage     Operations on storages
+  template    Operations on templates
   version     Print the version
 
 Flags:
-      --account string   Specify the account used; 'default' if none given
-      --config string    Specify a configuration file; default ~/.config/gscloud/config.yaml
+      --account string   Specify the account used (default "default")
+      --config string    Specify a configuration file (default "~/.config/gscloud/config.yaml")
   -h, --help             Print usage
   -j, --json             Print JSON to stdout instead of a table
+      --noheading        Do not print column headings
   -q, --quiet            Print only IDs of objects
 
 Use "gscloud [command] --help" for more information about a command.
