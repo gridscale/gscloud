@@ -35,7 +35,7 @@ var sshKeyLsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get SSH key list: %s", err)
 		}
-		var sshkeyinfo [][]string
+		var rows [][]string
 		if !jsonFlag {
 			heading := []string{"id", "name", "key", "user", "createtime"}
 			for _, key := range sshkeys {
@@ -48,16 +48,16 @@ var sshKeyLsCmd = &cobra.Command{
 						key.Properties.CreateTime.String()[:19],
 					},
 				}
-				sshkeyinfo = append(sshkeyinfo, fill...)
+				rows = append(rows, fill...)
 			}
 
 			if quietFlag {
-				for _, info := range sshkeyinfo {
+				for _, info := range rows {
 					fmt.Println(info[0])
 				}
 				return
 			}
-			render.Table(out, heading[:], sshkeyinfo)
+			render.Table(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, sshkeys)
 		}

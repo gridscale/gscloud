@@ -123,7 +123,7 @@ type Table interface {
 	WithWidthFunc(f WidthFunc) Table
 
 	AddRow(vals ...interface{}) Table
-	Print()
+	Print(includeHeader bool)
 }
 
 // New creates a Table instance with the specified header(s) provided. The number
@@ -203,11 +203,13 @@ func (t *table) AddRow(vals ...interface{}) Table {
 	return t
 }
 
-func (t *table) Print() {
+func (t *table) Print(includeHeader bool) {
 	format := strings.Repeat("%s", len(t.header)) + "\n"
 	t.calculateWidths()
 
-	t.printHeader(format)
+	if includeHeader {
+		t.printHeader(format)
+	}
 	for _, row := range t.rows {
 		t.printRow(format, row)
 	}

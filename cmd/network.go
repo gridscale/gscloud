@@ -30,7 +30,7 @@ var networkLsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get network list: %s", err)
 		}
-		var networkinfos [][]string
+		var rows [][]string
 		if !jsonFlag {
 			heading := []string{"id", "name", "location", "changetime", "status"}
 			for _, network := range networks {
@@ -43,12 +43,12 @@ var networkLsCmd = &cobra.Command{
 						network.Properties.Status,
 					},
 				}
-				networkinfos = append(networkinfos, fill...)
+				rows = append(rows, fill...)
 
 			}
-			render.Table(out, heading[:], networkinfos)
+			render.Table(out, heading, rows, renderOpts)
 			if quietFlag {
-				for _, info := range networkinfos {
+				for _, info := range rows {
 					fmt.Println(info[0])
 				}
 				return

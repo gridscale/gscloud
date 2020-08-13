@@ -9,25 +9,30 @@ import (
 	"github.com/gridscale/gscloud/render/table"
 )
 
-// Table prints header and rows as table to given io.Writer.
-func Table(buf io.Writer, columns []string, rows [][]string) {
+// Options holds parameters for rendering.
+type Options struct {
+	NoHeader bool
+}
 
-	s := make([]interface{}, len(columns))
+// Table prints header and rows as table to given io.Writer.
+func Table(buf io.Writer, columns []string, rows [][]string, opts Options) {
+
+	columnHeaders := make([]interface{}, len(columns))
 	for i, v := range columns {
-		s[i] = v
+		columnHeaders[i] = v
 	}
-	tbl := table.New(s...)
+	tbl := table.New(columnHeaders...)
 
 	for _, row := range rows {
-		s := make([]interface{}, len(row))
+		vals := make([]interface{}, len(row))
 		for i, v := range row {
-			s[i] = v
+			vals[i] = v
 		}
-		tbl.AddRow(s...)
+		tbl.AddRow(vals...)
 
 	}
 
-	tbl.WithWriter(buf).Print()
+	tbl.WithWriter(buf).Print(!opts.NoHeader)
 }
 
 // AsJSON prints elements s JSON to given io.Writer.

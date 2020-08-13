@@ -31,7 +31,7 @@ var storageLsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get storage list: %s", err)
 		}
-		var storageinfo [][]string
+		var rows [][]string
 		if !jsonFlag {
 			heading := []string{"id", "name", "capacity", "changetime", "status"}
 			for _, storage := range storages {
@@ -44,15 +44,15 @@ var storageLsCmd = &cobra.Command{
 						storage.Properties.Status,
 					},
 				}
-				storageinfo = append(storageinfo, fill...)
+				rows = append(rows, fill...)
 			}
 			if quietFlag {
-				for _, info := range storageinfo {
+				for _, info := range rows {
 					fmt.Println(info[0])
 				}
 				return
 			}
-			render.Table(out, heading[:], storageinfo)
+			render.Table(out, heading, rows, renderOpts)
 		} else {
 			for _, storage := range storages {
 				render.AsJSON(out, storage)

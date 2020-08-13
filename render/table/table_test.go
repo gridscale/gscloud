@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var includeHeader = true
+
 func TestFormatter(t *testing.T) {
 	t.Parallel()
 
@@ -27,14 +29,14 @@ func TestTable_New(t *testing.T) {
 	t.Parallel()
 
 	buf := bytes.Buffer{}
-	New("foo", "bar").WithWriter(&buf).Print()
+	New("foo", "bar").WithWriter(&buf).Print(includeHeader)
 	out := buf.String()
 
 	assert.Contains(t, out, "foo")
 	assert.Contains(t, out, "bar")
 
 	buf.Reset()
-	New().WithWriter(&buf).Print()
+	New().WithWriter(&buf).Print(includeHeader)
 	out = buf.String()
 
 	assert.Empty(t, strings.TrimSpace(out))
@@ -49,14 +51,14 @@ func TestTable_WithHeaderFormatter(t *testing.T) {
 	buf := bytes.Buffer{}
 
 	tbl := New("foo", "bar").WithWriter(&buf).WithHeaderFormatter(uppercase)
-	tbl.Print()
+	tbl.Print(includeHeader)
 	out := buf.String()
 
 	assert.Contains(t, out, "FOO")
 	assert.Contains(t, out, "BAR")
 
 	buf.Reset()
-	tbl.WithHeaderFormatter(nil).Print()
+	tbl.WithHeaderFormatter(nil).Print(includeHeader)
 	out = buf.String()
 
 	assert.Contains(t, out, "foo")
@@ -73,7 +75,7 @@ func TestTable_WithFirstColumnFormatter(t *testing.T) {
 	buf := bytes.Buffer{}
 
 	tbl := New("foo", "bar").WithWriter(&buf).WithFirstColumnFormatter(uppercase).AddRow("fizz", "buzz")
-	tbl.Print()
+	tbl.Print(includeHeader)
 	out := buf.String()
 
 	assert.Contains(t, out, "foo")
@@ -82,7 +84,7 @@ func TestTable_WithFirstColumnFormatter(t *testing.T) {
 	assert.Contains(t, out, "buzz")
 
 	buf.Reset()
-	tbl.WithFirstColumnFormatter(nil).Print()
+	tbl.WithFirstColumnFormatter(nil).Print(includeHeader)
 	out = buf.String()
 
 	assert.Contains(t, out, "fizz")
@@ -95,19 +97,19 @@ func TestTable_WithPadding(t *testing.T) {
 	// zero value
 	buf := bytes.Buffer{}
 	tbl := New("foo", "bar").WithWriter(&buf).WithPadding(0)
-	tbl.Print()
+	tbl.Print(includeHeader)
 	out := buf.String()
 	assert.Contains(t, out, "foobar")
 
 	// positive value
 	buf.Reset()
-	tbl.WithPadding(4).Print()
+	tbl.WithPadding(4).Print(includeHeader)
 	out = buf.String()
 	assert.Contains(t, out, "foo    bar    ")
 
 	// negative value
 	buf.Reset()
-	tbl.WithPadding(-1).Print()
+	tbl.WithPadding(-1).Print(includeHeader)
 	out = buf.String()
 	assert.Contains(t, out, "foobar")
 }
@@ -117,7 +119,7 @@ func TestTable_WithWriter(t *testing.T) {
 
 	// not that we haven't been using it in all these tests but:
 	buf := bytes.Buffer{}
-	New("foo", "bar").WithWriter(&buf).Print()
+	New("foo", "bar").WithWriter(&buf).Print(includeHeader)
 	assert.NotEmpty(t, buf.String())
 
 	stdout := os.Stdout
@@ -128,7 +130,7 @@ func TestTable_WithWriter(t *testing.T) {
 		temp.Close()
 	}()
 
-	New("foo", "bar").WithWriter(nil).Print()
+	New("foo", "bar").WithWriter(nil).Print(includeHeader)
 	temp.Seek(0, 0)
 
 	out, _ := ioutil.ReadAll(temp)
@@ -140,7 +142,7 @@ func TestTable_AddRow(t *testing.T) {
 
 	buf := bytes.Buffer{}
 	tbl := New("foo", "bar").WithWriter(&buf).AddRow("fizz", "buzz")
-	tbl.Print()
+	tbl.Print(includeHeader)
 	out := buf.String()
 	assert.Contains(t, out, "fizz")
 	assert.Contains(t, out, "buzz")
@@ -148,17 +150,17 @@ func TestTable_AddRow(t *testing.T) {
 
 	// empty should add empty line
 	buf.Reset()
-	tbl.AddRow().Print()
+	tbl.AddRow().Print(includeHeader)
 	assert.Equal(t, lines+1, strings.Count(buf.String(), "\n"))
 
 	// less than one will fill left-to-right
 	buf.Reset()
-	tbl.AddRow("cat").Print()
+	tbl.AddRow("cat").Print(includeHeader)
 	assert.Contains(t, buf.String(), "\ncat")
 
 	// more than initial length are truncated
 	buf.Reset()
-	tbl.AddRow("bippity", "boppity", "boo").Print()
+	tbl.AddRow("bippity", "boppity", "boo").Print(includeHeader)
 	assert.NotContains(t, buf.String(), "boo")
 }
 
@@ -173,7 +175,7 @@ func TestTable_WithWidthFunc(t *testing.T) {
 		WithWidthFunc(runewidth.StringWidth).
 		AddRow("请求", "alpha").
 		AddRow("abc", "beta").
-		Print()
+		Print(includeHeader)
 
 	actual := buf.String()
 	assert.Contains(t, actual, "请求 alpha")

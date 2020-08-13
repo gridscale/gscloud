@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -16,6 +17,7 @@ var (
 	rt         *runtime.Runtime
 	jsonFlag   bool
 	quietFlag  bool
+	renderOpts render.Options
 )
 
 const (
@@ -47,6 +49,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", fmt.Sprintf("Specify a configuration file; default %s", runtime.ConfigPath()))
 	rootCmd.PersistentFlags().StringVarP(&account, "account", "", "default", "Specify the account used; 'default' if none given")
 	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
+	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 }

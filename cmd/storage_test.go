@@ -61,7 +61,7 @@ func Test_StorageListCmd(t *testing.T) {
 			"active",
 		},
 	}
-	render.Table(buf, headers, rows)
+	render.Table(buf, headers, rows, render.Options{})
 	testCases := []testCase{
 		{
 			expectedOutput: buf.String(),

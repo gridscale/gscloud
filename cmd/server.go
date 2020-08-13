@@ -43,7 +43,7 @@ var serverLsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get server list: %s", err)
 		}
-		var serverinfos [][]string
+		var rows [][]string
 		if !jsonFlag {
 			heading := []string{"id", "name", "core", "mem", "changetime", "power"}
 			for _, server := range servers {
@@ -61,15 +61,15 @@ var serverLsCmd = &cobra.Command{
 						power,
 					},
 				}
-				serverinfos = append(serverinfos, fill...)
+				rows = append(rows, fill...)
 			}
 			if quietFlag {
-				for _, info := range serverinfos {
+				for _, info := range rows {
 					fmt.Println(info[0])
 				}
 				return
 			}
-			render.Table(out, heading[:], serverinfos)
+			render.Table(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, servers)
 		}
