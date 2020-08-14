@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -62,30 +63,26 @@ var saveKubeconfigCmd = &cobra.Command{
 		if kubeConfigEnv != "" && !utils.FileExists(kubeConfigEnv) {
 			_, err := os.Create(kubeConfigEnv)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				log.Fatalln(err)
 			}
 		}
 
 		currentKubeConfig, err := pathOptions.GetStartingConfig()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			log.Fatalf("Couldn't get starting config: %s", err)
 		}
 
 		op := rt.KubernetesOperator()
-		newKubeConfig := fetchKubeConfigFromProvider(op, clusterID)
-		if len(newKubeConfig.Clusters) == 0 || len(newKubeConfig.Users) == 0 {
-			fmt.Fprintln(os.Stderr, "Error: Invalid kubeconfig")
-			os.Exit(1)
+		newKubeConfig, err := fetchKubeConfigFromProvider(op, clusterID)
+		if err != nil {
+			log.Fatalf("Invalid kubeconfig: %s", err)
 		}
 		c := newKubeConfig.Clusters[0]
 		u := newKubeConfig.Users[0]
 
 		certificateAuthorityData, err := b64.StdEncoding.DecodeString(c.Cluster.CertificateAuthorityData)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			log.Fatalln(err)
 		}
 
 		currentKubeConfig.Clusters[c.Name] = &clientcmdapi.Cluster{
@@ -118,14 +115,12 @@ var saveKubeconfigCmd = &cobra.Command{
 		} else {
 			clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				log.Fatalln(err)
 			}
 
 			clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				log.Fatalln(err)
 			}
 
 			currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
@@ -142,8 +137,7 @@ var saveKubeconfigCmd = &cobra.Command{
 
 		err = clientcmd.ModifyConfig(pathOptions, *currentKubeConfig, true)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			log.Fatalln(err)
 		}
 	},
 }
@@ -169,41 +163,42 @@ var execCredentialCmd = &cobra.Command{
 
 		execCredential, err := loadCachedKubeConfig(clusterID)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			log.Fatalf("Couldn't load cached kubeconfig: %s", err)
 		}
 
 		op := rt.KubernetesOperator()
 
 		if execCredential == nil {
-			newKubeConfig := fetchKubeConfigFromProvider(op, clusterID)
-			if len(newKubeConfig.Users) != 0 {
-				u := newKubeConfig.Users[0]
-				clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
-				if err != nil {
-					fmt.Println(err)
-				}
-				clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				execCredential = &clientauth.ExecCredential{
-					TypeMeta: metav1.TypeMeta{
-						Kind:       "ExecCredential",
-						APIVersion: clientauth.SchemeGroupVersion.String(),
-					},
-					Status: &clientauth.ExecCredentialStatus{
-						ClientKeyData:         string(clientKeyData),
-						ClientCertificateData: string(clientCertificateData),
-						ExpirationTimestamp:   &metav1.Time{Time: time.Now().Add(time.Hour)},
-					},
-				}
-
-				if err := cacheKubeConfig(clusterID, execCredential); err != nil {
-					fmt.Fprintln(os.Stderr, err)
-				}
+			newKubeConfig, err := fetchKubeConfigFromProvider(op, clusterID)
+			if err != nil {
+				log.Fatalf("Couldn't fetch kubeconfig: %s", err)
 			}
 
+			u := newKubeConfig.Users[0]
+			clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
+			if err != nil {
+				fmt.Println(err)
+			}
+			clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			execCredential = &clientauth.ExecCredential{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "ExecCredential",
+					APIVersion: clientauth.SchemeGroupVersion.String(),
+				},
+				Status: &clientauth.ExecCredentialStatus{
+					ClientKeyData:         string(clientKeyData),
+					ClientCertificateData: string(clientCertificateData),
+					ExpirationTimestamp:   &metav1.Time{Time: time.Now().Add(time.Hour)},
+				},
+			}
+
+			if err := cacheKubeConfig(clusterID, execCredential); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		}
 		if execCredential == nil {
 			fmt.Println("Error: Could not retrieve kubeconfig from provider for account: ", account)
@@ -234,26 +229,26 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
-func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) *kubeConfig {
+func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (*kubeConfig, error) {
 	var kc kubeConfig
 
 	if err := op.RenewK8sCredentials(context.Background(), id); err != nil {
-		os.Exit(1)
+		return nil, err
 	}
 
-	paaSService, err := op.GetPaaSService(context.Background(), id)
+	platformService, err := op.GetPaaSService(context.Background(), id)
 	if err != nil {
-		os.Exit(1)
+		return nil, err
 	}
 
-	if len(paaSService.Properties.Credentials) != 0 {
-		err := yaml.Unmarshal([]byte(paaSService.Properties.Credentials[0].KubeConfig), &kc)
+	if len(platformService.Properties.Credentials) != 0 {
+		err := yaml.Unmarshal([]byte(platformService.Properties.Credentials[0].KubeConfig), &kc)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			return nil, err
 		}
 	}
 
-	return &kc
+	return &kc, nil
 }
 
 func kubeConfigCachePath() string {
