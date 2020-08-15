@@ -6,8 +6,6 @@
 
 gscloud lets you manage objects on [gridscale.io](https://my.gridscale.io) via shell.
 
-Note: this tool is still in the making and beta quality. Feel free to try it out. Feedback very welcome.
-
 ```txt
 $ gscloud --help
 gscloud lets you manage objects on gridscale.io via command line. It provides a Docker-CLI comparable command line that allows you to create, manipulate, and remove objects on gridscale.io.
