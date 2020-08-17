@@ -183,7 +183,7 @@ var serverSetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
-		uServer, err := serverOp.SetServer(
+		err := serverOp.UpdateServer(
 			ctx,
 			args[0],
 			gsclient.ServerUpdateRequest{
@@ -192,9 +192,8 @@ var serverSetCmd = &cobra.Command{
 				Name:   serverName,
 			})
 		if err != nil {
-			log.Fatalf("Update of server: %s failed: %s", uServer.ObjectUUID, err)
+			log.Fatalf("Failed: %s", err)
 		}
-		fmt.Println("Server updated:", uServer.ObjectUUID)
 	},
 }
 

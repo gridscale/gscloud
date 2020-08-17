@@ -52,7 +52,7 @@ type ServerOperator interface {
 	GetTemplateByName(ctx context.Context, name string) (gsclient.Template, error)
 	CreateStorage(ctx context.Context, body gsclient.StorageCreateRequest) (gsclient.CreateResponse, error)
 	CreateServerStorage(ctx context.Context, id string, body gsclient.ServerStorageRelationCreateRequest) error
-	SetServer(ctx context.Context, id string, body gsclient.ServerUpdateRequest) error
+	UpdateServer(ctx context.Context, id string, body gsclient.ServerUpdateRequest) error
 }
 
 // NetworkOperator interface that amalgamates all operations regarding network objects.
