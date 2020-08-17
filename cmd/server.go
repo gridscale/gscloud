@@ -189,12 +189,13 @@ var serverSetCmd = &cobra.Command{
 			gsclient.ServerUpdateRequest{
 				Cores:  cores,
 				Memory: memory,
-				Name: serverName,
+				Name:   serverName,
 			})
 		if err != nil {
 			log.Fatalf("Update of server: %s failed: %s", uServer.ObjectUUID, err)
 		}
 		fmt.Println("Server updated:", uServer.ObjectUUID)
+	},
 }
 
 func init() {
@@ -212,6 +213,6 @@ func init() {
 	serverSetCmd.PersistentFlags().IntVar(&cores, "cores", 1, "No. of cores")
 	serverSetCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
 
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd,serverSetCmd)
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd)
 	rootCmd.AddCommand(serverCmd)
 }
