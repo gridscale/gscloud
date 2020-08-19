@@ -178,7 +178,7 @@ var serverSetCmd = &cobra.Command{
 	Use:     "set [ID] [flags]",
 	Example: `./gscloud server set ID --cores N`,
 	Short:   "Update server",
-	Long:    `Update values of an existing server.`,
+	Long:    `Update properties of an existing server.`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		serverOp := rt.ServerOperator()
