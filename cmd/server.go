@@ -192,7 +192,7 @@ var serverSetCmd = &cobra.Command{
 				Name:   serverName,
 			})
 		if err != nil {
-			log.Fatalf("Failed: %s", err)
+			log.Fatal("You cannot downsize the number of CPU cores while your server is running. Switch server off first.")
 		}
 	},
 }
