@@ -50,7 +50,6 @@ func (o mockServerOp) CreateServerStorage(ctx context.Context, id string, body g
 
 func (o mockServerOp) UpdateServer(ctx context.Context, id string, body gsclient.ServerUpdateRequest) error {
 	return nil
-
 }
 
 func Test_ServerCommmandDelete(t *testing.T) {
