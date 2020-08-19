@@ -208,8 +208,8 @@ func init() {
 	serverCreateCmd.PersistentFlags().StringVar(&hostName, "hostname", "", "Hostname")
 	serverCreateCmd.PersistentFlags().StringVar(&plainPassword, "password", "", "Plain-text password")
 
-	serverSetCmd.PersistentFlags().IntVar(&memory, "mem", 1, "Memory (GB)")
-	serverSetCmd.PersistentFlags().IntVar(&cores, "cores", 1, "No. of cores")
+	serverSetCmd.PersistentFlags().IntVar(&memory, "mem", 0, "Memory (GB)")
+	serverSetCmd.PersistentFlags().IntVar(&cores, "cores", 0, "No. of cores")
 	serverSetCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd)
