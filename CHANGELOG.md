@@ -7,6 +7,7 @@ FEATURES:
 * Add `manpage` command to generate man-pages for gscloud.
 * Add `gscloud template ls` to list available templates ([#59](https://github.com/gridscale/gscloud/issues/59)).
 * Add `--noheading` flag to print tables without header ([#53](https://github.com/gridscale/gscloud/issues/53)).
+* Add `gscloud server set` to allow changing server properties and hot-plugging (see [e48c149](https://github.com/gridscale/gscloud/commit/e48c149af4ff19fb846c7fb8288d0a6029880066)).
 
 FIXED:
 
