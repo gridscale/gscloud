@@ -9,6 +9,7 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
+	"github.com/grpc-ecosystem/grpc-gateway/examples/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -192,7 +193,7 @@ var serverSetCmd = &cobra.Command{
 				Name:   serverName,
 			})
 		if err != nil {
-			log.Fatal("You cannot downsize the number of CPU cores while your server is running. Switch server off first.")
+			log.Fatalf("Failed: %s", err)
 		}
 	},
 }
