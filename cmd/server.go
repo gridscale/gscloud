@@ -9,7 +9,6 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
-	"github.com/grpc-ecosystem/grpc-gateway/examples/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
