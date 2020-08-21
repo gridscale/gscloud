@@ -174,6 +174,29 @@ var serverCreateCmd = &cobra.Command{
 	},
 }
 
+var serverSetCmd = &cobra.Command{
+	Use:     "set [ID] [flags]",
+	Example: `./gscloud server set ID --cores N`,
+	Short:   "Update server",
+	Long:    `Update properties of an existing server.`,
+	Args:    cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		serverOp := rt.ServerOperator()
+		ctx := context.Background()
+		err := serverOp.UpdateServer(
+			ctx,
+			args[0],
+			gsclient.ServerUpdateRequest{
+				Cores:  cores,
+				Memory: memory,
+				Name:   serverName,
+			})
+		if err != nil {
+			log.Fatalf("Failed: %s", err)
+		}
+	},
+}
+
 func init() {
 	serverOffCmd.PersistentFlags().BoolVarP(&forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
 
@@ -185,6 +208,10 @@ func init() {
 	serverCreateCmd.PersistentFlags().StringVar(&hostName, "hostname", "", "Hostname")
 	serverCreateCmd.PersistentFlags().StringVar(&plainPassword, "password", "", "Plain-text password")
 
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd)
+	serverSetCmd.PersistentFlags().IntVar(&memory, "mem", 0, "Memory (GB)")
+	serverSetCmd.PersistentFlags().IntVar(&cores, "cores", 0, "No. of cores")
+	serverSetCmd.PersistentFlags().StringVar(&serverName, "name", "", "Name of the server")
+
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd)
 	rootCmd.AddCommand(serverCmd)
 }
