@@ -15,6 +15,7 @@ import (
 var mockServer = gsclient.Server{
 	Properties: gsclient.ServerProperties{
 		ObjectUUID: "xxx",
+		Name:       "change-me",
 	},
 }
 
@@ -63,4 +64,15 @@ func Test_ServerCommmandDelete(t *testing.T) {
 	w.Close()
 	out, _ := ioutil.ReadAll(r)
 	assert.Equal(t, "", string(out))
+}
+
+func Test_ServerCommandUpdate(t *testing.T) {
+	rt, _ = runtime.NewTestRuntime()
+	op := mockServerOp{}
+	rt.SetServerOperator(op)
+	cmd := serverSetCmd.Run
+	nameFlag = "new-name"
+	cmd(new(cobra.Command), []string{"set", mockServer.Properties.ObjectUUID, "--name", nameFlag})
+	assert.Equal(t, nameFlag, mockServer.Properties.Name)
+
 }
