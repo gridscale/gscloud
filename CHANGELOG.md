@@ -13,6 +13,7 @@ FIXED:
 
 * Fixed working with multiple accounts ([#58](https://github.com/gridscale/gscloud/issues/58)).
 * Fixed printing CHANGETIME column ([#60](https://github.com/gridscale/gscloud/issues/60)).
+* `kubernetes` command's error handling has been improved ([#18](https://github.com/gridscale/gscloud/issues/18)).
 
 ## v0.3.0-beta (July 13, 2020)
 
