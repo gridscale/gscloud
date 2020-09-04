@@ -199,10 +199,10 @@ var execCredentialCmd = &cobra.Command{
 			if err := cacheKubeConfig(clusterID, execCredential); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
-		}
-		if execCredential == nil {
-			fmt.Println("Error: Could not retrieve kubeconfig from provider for account: ", account)
-			return
+
+			if execCredential == nil {
+				log.Fatalf("Could not retrieve kubeconfig from provider for account: %s", account)
+			}
 		}
 		execCredentialJSON, err := json.MarshalIndent(execCredential, "", "    ")
 		if err != nil {
