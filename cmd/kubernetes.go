@@ -233,28 +233,28 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
-func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (*kubeConfig, time.Time, error) {
+func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (kubeConfig, time.Time, error) {
 	var kc kubeConfig
 	var expirationTime time.Time
 
 	if err := op.RenewK8sCredentials(context.Background(), id); err != nil {
-		return nil, time.Time{}, err
+		return kubeConfig{}, time.Time{}, err
 	}
 
 	platformService, err := op.GetPaaSService(context.Background(), id)
 	if err != nil {
-		return nil, time.Time{}, err
+		return kubeConfig{}, time.Time{}, err
 	}
 
 	if len(platformService.Properties.Credentials) != 0 {
 		err := yaml.Unmarshal([]byte(platformService.Properties.Credentials[0].KubeConfig), &kc)
 		if err != nil {
-			return nil, time.Time{}, err
+			return kubeConfig{}, time.Time{}, err
 		}
 		expirationTime = platformService.Properties.Credentials[0].ExpirationTime.Time
 	}
 
-	return &kc, expirationTime, nil
+	return kc, expirationTime, nil
 }
 
 func kubeConfigCachePath() string {
