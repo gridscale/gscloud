@@ -184,6 +184,10 @@ var execCredentialCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
+			if expirationTime.IsZero() {
+				expirationTime = time.Now().Add(time.Hour)
+			}
+
 			execCredential = &clientauth.ExecCredential{
 				TypeMeta: metav1.TypeMeta{
 					Kind:       "ExecCredential",
