@@ -45,7 +45,7 @@ gscloud --config ~/myconfig.yaml make-config
 				return err
 			}
 		}
-		fmt.Println(filePath)
+		fmt.Printf("Written: %s\n", filePath)
 		return nil
 	},
 }
