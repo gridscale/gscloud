@@ -73,7 +73,7 @@ var saveKubeconfigCmd = &cobra.Command{
 		}
 
 		op := rt.KubernetesOperator()
-		newKubeConfig, err := fetchKubeConfigFromProvider(op, clusterID)
+		newKubeConfig, _, err := fetchKubeConfigFromProvider(op, clusterID)
 		if err != nil {
 			log.Fatalf("Invalid kubeconfig: %s", err)
 		}
@@ -169,7 +169,7 @@ var execCredentialCmd = &cobra.Command{
 		op := rt.KubernetesOperator()
 
 		if execCredential == nil {
-			newKubeConfig, err := fetchKubeConfigFromProvider(op, clusterID)
+			newKubeConfig, expirationTime, err := fetchKubeConfigFromProvider(op, clusterID)
 			if err != nil {
 				log.Fatalf("Couldn't fetch kubeconfig: %s", err)
 			}
@@ -184,6 +184,10 @@ var execCredentialCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
+			if expirationTime.IsZero() {
+				expirationTime = time.Now().Add(time.Hour)
+			}
+
 			execCredential = &clientauth.ExecCredential{
 				TypeMeta: metav1.TypeMeta{
 					Kind:       "ExecCredential",
@@ -192,17 +196,13 @@ var execCredentialCmd = &cobra.Command{
 				Status: &clientauth.ExecCredentialStatus{
 					ClientKeyData:         string(clientKeyData),
 					ClientCertificateData: string(clientCertificateData),
-					ExpirationTimestamp:   &metav1.Time{Time: time.Now().Add(time.Hour)},
+					ExpirationTimestamp:   &metav1.Time{Time: expirationTime},
 				},
 			}
 
 			if err := cacheKubeConfig(clusterID, execCredential); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
-		}
-		if execCredential == nil {
-			fmt.Println("Error: Could not retrieve kubeconfig from provider for account: ", account)
-			return
 		}
 		execCredentialJSON, err := json.MarshalIndent(execCredential, "", "    ")
 		if err != nil {
@@ -229,26 +229,28 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
-func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (*kubeConfig, error) {
+func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (kubeConfig, time.Time, error) {
 	var kc kubeConfig
+	var expirationTime time.Time
 
 	if err := op.RenewK8sCredentials(context.Background(), id); err != nil {
-		return nil, err
+		return kubeConfig{}, time.Time{}, err
 	}
 
 	platformService, err := op.GetPaaSService(context.Background(), id)
 	if err != nil {
-		return nil, err
+		return kubeConfig{}, time.Time{}, err
 	}
 
 	if len(platformService.Properties.Credentials) != 0 {
 		err := yaml.Unmarshal([]byte(platformService.Properties.Credentials[0].KubeConfig), &kc)
 		if err != nil {
-			return nil, err
+			return kubeConfig{}, time.Time{}, err
 		}
+		expirationTime = platformService.Properties.Credentials[0].ExpirationTime.Time
 	}
 
-	return &kc, nil
+	return kc, expirationTime, nil
 }
 
 func kubeConfigCachePath() string {
