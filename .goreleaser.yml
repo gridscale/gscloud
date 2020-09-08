@@ -10,7 +10,7 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - "-s -w -X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
+      - "-s -w -X github.com/gridscale/gscloud/cmd.GitCommit={{.Commit}} -X github.com/gridscale/gscloud/cmd.Version={{.Version}}"
     goos:
       - freebsd
       - windows
