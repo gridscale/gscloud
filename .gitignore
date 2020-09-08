@@ -2,3 +2,4 @@
 build
 cover.out
 gscloud
+dist/
