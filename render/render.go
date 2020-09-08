@@ -6,31 +6,36 @@ import (
 	"io"
 	"strings"
 
-	"github.com/gridscale/table"
+	"github.com/gridscale/gscloud/render/table"
 )
 
-// Table prints a table to the given io.Writer. example render.Table
-func Table(buf io.Writer, columns []string, rows [][]string) {
-
-	s := make([]interface{}, len(columns))
-	for i, v := range columns {
-		s[i] = v
-	}
-	tbl := table.New(s...)
-
-	for _, row := range rows {
-		s := make([]interface{}, len(row))
-		for i, v := range row {
-			s[i] = v
-		}
-		tbl.AddRow(s...)
-
-	}
-
-	tbl.WithWriter(buf).Print()
+// Options holds parameters for rendering.
+type Options struct {
+	NoHeader bool
 }
 
-// AsJSON prints infos as JSON instead table
+// AsTable prints header and rows as table to given io.Writer.
+func AsTable(buf io.Writer, columns []string, rows [][]string, opts Options) {
+
+	columnHeaders := make([]interface{}, len(columns))
+	for i, v := range columns {
+		columnHeaders[i] = v
+	}
+	tbl := table.New(columnHeaders...)
+
+	for _, row := range rows {
+		vals := make([]interface{}, len(row))
+		for i, v := range row {
+			vals[i] = v
+		}
+		tbl.AddRow(vals...)
+
+	}
+
+	tbl.WithWriter(buf).Print(!opts.NoHeader)
+}
+
+// AsJSON prints elements s JSON to given io.Writer.
 func AsJSON(buf io.Writer, s ...interface{}) {
 	json, _ := json.Marshal(s)
 	buf.Write([]byte(fmt.Sprintf("%s\n", json)))

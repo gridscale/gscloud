@@ -6,11 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// completionCmd represents the completion command
 var completionCmd = &cobra.Command{
 	Use:                   "completion [bash|zsh]",
-	Short:                 "Generate completion script",
-	Long:                  `Generate Tab-Completion script for bash or zsh shell`,
+	Short:                 "Generate shell completion scripts",
+	Long:                  `Generate tab completion script for bash and zsh shells.`,
 	DisableFlagsInUseLine: true,
 	ValidArgs:             []string{"bash", "zsh"},
 	Args:                  cobra.ExactValidArgs(1),

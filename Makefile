@@ -16,6 +16,9 @@ test: build
 	go test -coverprofile=cover.out ./...
 	go tool cover -func=cover.out
 
+lint: build
+	golint ./...
+
 release:
 	$(foreach platform,$(PLATFORMS), \
 		$(foreach arch,$(ARCHES), \
@@ -35,4 +38,4 @@ clean:
 	go clean
 	rm -f $(BUILDDIR)/gscloud_*
 
-.PHONY: buildall build release clean zip
+.PHONY: buildall build release test lint clean zip

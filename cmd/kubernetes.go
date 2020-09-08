@@ -5,11 +5,14 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/gridscale/gsclient-go/v3"
+	"github.com/gridscale/gscloud/runtime"
+	"github.com/gridscale/gscloud/utils"
+	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,259 +21,240 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-// k8sOperator is used for testing purpose,
-// we can mock data return from the gsclient via interface.
-type k8sOperator interface {
-	RenewK8sCredentials(ctx context.Context, id string) error
-	GetPaaSService(ctx context.Context, id string) (gsclient.PaaSService, error)
+func executablePath() string {
+	filePath, err := osext.Executable()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	return filePath
 }
 
-// k8s action enums
-const (
-	k8sSaveConfigAction = iota
-	k8sExecCredAction
-)
+// clusterCmd represents the cluster command
+var clusterCmd = &cobra.Command{
+	Use:   "cluster",
+	Short: "Actions on a Kubernetes cluster",
+	Long:  "Actions on a Kubernetes cluster",
+}
 
-// produceK8SCmdRunFunc takes an instance of a struct that implements `k8sOperator`
-// returns a `cmdRunFunc`
-func produceK8SCmdRunFunc(o k8sOperator, action int) cmdRunFunc {
-	switch action {
-	case k8sSaveConfigAction:
-		return func(cmd *cobra.Command, args []string) {
-			kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
-			clusterID, _ := cmd.Flags().GetString("cluster")
-			credentialPlugin, _ := cmd.Flags().GetBool("credential-plugin")
-			kubeConfigEnv := os.Getenv("KUBECONFIG")
+// kubernetesCmd represents the Kubernetes command
+var kubernetesCmd = &cobra.Command{
+	Use:   "kubernetes",
+	Short: "Operate managed Kubernetes clusters",
+	Long:  "Operate managed Kubernetes clusters",
+}
 
-			pathOptions := clientcmd.NewDefaultPathOptions()
-			if kubeConfigFile != "" {
-				kubeConfigEnv = kubeConfigFile
-				pathOptions.GlobalFile = kubeConfigFile
-			}
+// saveKubeconfigCmd represents the kubeconfig command
+var saveKubeconfigCmd = &cobra.Command{
+	Use:   "save-kubeconfig",
+	Short: "Saves configuration of the given cluster into a kubeconfig",
+	Long:  "Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.",
+	Run: func(cmd *cobra.Command, args []string) {
+		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
+		clusterID, _ := cmd.Flags().GetString("cluster")
+		credentialPlugin, _ := cmd.Flags().GetBool("credential-plugin")
+		kubeConfigEnv := os.Getenv("KUBECONFIG")
 
-			if kubeConfigEnv != "" && !fileExists(kubeConfigEnv) {
-				_, err := os.Create(kubeConfigEnv)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
-				}
-			}
+		pathOptions := clientcmd.NewDefaultPathOptions()
+		if kubeConfigFile != "" {
+			kubeConfigEnv = kubeConfigFile
+			pathOptions.GlobalFile = kubeConfigFile
+		}
 
-			currentKubeConfig, err := pathOptions.GetStartingConfig()
+		if kubeConfigEnv != "" && !utils.FileExists(kubeConfigEnv) {
+			_, err := os.Create(kubeConfigEnv)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				log.Fatalln(err)
 			}
-			newKubeConfig := fetchKubeConfigFromProvider(o, clusterID)
-			if len(newKubeConfig.Clusters) == 0 || len(newKubeConfig.Users) == 0 {
-				fmt.Fprintln(os.Stderr, "Error: Invalid kubeconfig")
-				os.Exit(1)
-			}
-			c := newKubeConfig.Clusters[0]
-			u := newKubeConfig.Users[0]
+		}
 
-			certificateAuthorityData, err := b64.StdEncoding.DecodeString(c.Cluster.CertificateAuthorityData)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
+		currentKubeConfig, err := pathOptions.GetStartingConfig()
+		if err != nil {
+			log.Fatalf("Couldn't get starting config: %s", err)
+		}
 
-			currentKubeConfig.Clusters[c.Name] = &clientcmdapi.Cluster{
-				Server:                   c.Cluster.Server,
-				CertificateAuthorityData: certificateAuthorityData,
-			}
+		op := rt.KubernetesOperator()
+		newKubeConfig, _, err := fetchKubeConfigFromProvider(op, clusterID)
+		if err != nil {
+			log.Fatalf("Invalid kubeconfig: %s", err)
+		}
+		c := newKubeConfig.Clusters[0]
+		u := newKubeConfig.Users[0]
+
+		certificateAuthorityData, err := b64.StdEncoding.DecodeString(c.Cluster.CertificateAuthorityData)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		currentKubeConfig.Clusters[c.Name] = &clientcmdapi.Cluster{
+			Server:                   c.Cluster.Server,
+			CertificateAuthorityData: certificateAuthorityData,
+		}
+		currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
+			ClientCertificate: u.User.ClientKeyData,
+			ClientKey:         u.User.ClientCertificateData,
+		}
+		if credentialPlugin {
 			currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
-				ClientCertificate: u.User.ClientKeyData,
-				ClientKey:         u.User.ClientCertificateData,
-			}
-			if credentialPlugin {
-				currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
-					Exec: &clientcmdapi.ExecConfig{
-						APIVersion: clientauth.SchemeGroupVersion.String(),
-						Command:    cliPath(),
-						Args: []string{
-							"--config",
-							cliConfigPath(),
-							"--account",
-							account,
-							"kubernetes",
-							"cluster",
-							"exec-credential",
-							"--cluster",
-							clusterID,
-						},
-						Env: []clientcmdapi.ExecEnvVar{},
+				Exec: &clientcmdapi.ExecConfig{
+					APIVersion: clientauth.SchemeGroupVersion.String(),
+					Command:    executablePath(),
+					Args: []string{
+						"--config",
+						runtime.ConfigPath(),
+						"--account",
+						rt.Account(),
+						"kubernetes",
+						"cluster",
+						"exec-credential",
+						"--cluster",
+						clusterID,
 					},
-				}
-			} else {
-				clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
-				}
-
-				clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
-				}
-
-				currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
-					ClientCertificateData: clientCertificateData,
-					ClientKeyData:         clientKeyData,
-				}
+					Env: []clientcmdapi.ExecEnvVar{},
+				},
 			}
-
-			currentKubeConfig.Contexts[newKubeConfig.CurrentContext] = &clientcmdapi.Context{
-				Cluster:  c.Name,
-				AuthInfo: u.Name,
-			}
-			currentKubeConfig.CurrentContext = newKubeConfig.CurrentContext
-
-			err = clientcmd.ModifyConfig(pathOptions, *currentKubeConfig, true)
+		} else {
+			clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				log.Fatalln(err)
 			}
 
+			clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
+				ClientCertificateData: clientCertificateData,
+				ClientKeyData:         clientKeyData,
+			}
 		}
 
-	case k8sExecCredAction:
-		return func(cmd *cobra.Command, args []string) {
-			kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
-			clusterID, _ := cmd.Flags().GetString("cluster")
-
-			kubectlDefaults := clientcmd.NewDefaultPathOptions()
-			if kubeConfigFile != "" {
-				kubectlDefaults.GlobalFile = kubeConfigFile
-			}
-
-			_, err := kubectlDefaults.GetStartingConfig()
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-			}
-
-			execCredential, err := loadCachedKubeConfig(clusterID)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-			}
-
-			if execCredential == nil {
-				newKubeConfig := fetchKubeConfigFromProvider(o, clusterID)
-				if len(newKubeConfig.Users) != 0 {
-					u := newKubeConfig.Users[0]
-					clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
-					if err != nil {
-						fmt.Println(err)
-					}
-					clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					execCredential = &clientauth.ExecCredential{
-						TypeMeta: metav1.TypeMeta{
-							Kind:       "ExecCredential",
-							APIVersion: clientauth.SchemeGroupVersion.String(),
-						},
-						Status: &clientauth.ExecCredentialStatus{
-							ClientKeyData:         string(clientKeyData),
-							ClientCertificateData: string(clientCertificateData),
-							ExpirationTimestamp:   &metav1.Time{Time: time.Now().Add(time.Hour)},
-						},
-					}
-
-					if err := cacheKubeConfig(clusterID, execCredential); err != nil {
-						fmt.Fprintln(os.Stderr, err)
-					}
-				}
-
-			}
-			if execCredential == nil {
-				fmt.Println("Error: Could not retrieve kubeconfig from provider for account: ", account)
-				return
-			}
-			execCredentialJSON, err := json.MarshalIndent(execCredential, "", "    ")
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-			}
-			// this output will be used by kubectl
-			fmt.Println(string(execCredentialJSON))
+		currentKubeConfig.Contexts[newKubeConfig.CurrentContext] = &clientcmdapi.Context{
+			Cluster:  c.Name,
+			AuthInfo: u.Name,
 		}
+		currentKubeConfig.CurrentContext = newKubeConfig.CurrentContext
 
-	default:
-	}
-	return nil
+		err = clientcmd.ModifyConfig(pathOptions, *currentKubeConfig, true)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	},
 }
 
-func initK8SCmd() {
-	// clusterCmd represents the cluster command
-	var clusterCmd = &cobra.Command{
-		Use:   "cluster",
-		Short: "Actions on a Kubernetes cluster",
-		Long:  "Actions on a Kubernetes cluster",
-	}
+// execCredentialCmd represents the getCertificate command
+var execCredentialCmd = &cobra.Command{
+	Use:   "exec-credential",
+	Short: "Provides client credentials to kubectl command",
+	Long:  "exec-credential provides client credentials to kubectl command.",
+	Run: func(cmd *cobra.Command, args []string) {
+		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
+		clusterID, _ := cmd.Flags().GetString("cluster")
 
-	// kubernetesCmd represents the Kubernetes command
-	var kubernetesCmd = &cobra.Command{
-		Use:   "kubernetes",
-		Short: "Operate managed Kubernetes clusters",
-		Long:  "Operate managed Kubernetes clusters",
-	}
+		kubectlDefaults := clientcmd.NewDefaultPathOptions()
+		if kubeConfigFile != "" {
+			kubectlDefaults.GlobalFile = kubeConfigFile
+		}
 
-	// saveKubeconfigCmd represents the kubeconfig command
-	var saveKubeconfigCmd = &cobra.Command{
-		Use:   "save-kubeconfig",
-		Short: "Saves configuration of the given cluster into a kubeconfig",
-		Long:  "Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.",
-		Run:   produceK8SCmdRunFunc(client, k8sSaveConfigAction),
-	}
+		_, err := kubectlDefaults.GetStartingConfig()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
 
-	// execCredentialCmd represents the getCertificate command
-	var execCredentialCmd = &cobra.Command{
-		Use:   "exec-credential",
-		Short: "Provides client credentials to kubectl command",
-		Long:  "exec-credential provides client credentials to kubectl command.",
-		Run:   produceK8SCmdRunFunc(client, k8sExecCredAction),
-	}
+		execCredential, err := loadCachedKubeConfig(clusterID)
+		if err != nil {
+			log.Fatalf("Couldn't load cached kubeconfig: %s", err)
+		}
 
-	rootCmd.AddCommand(kubernetesCmd)
-	kubernetesCmd.AddCommand(clusterCmd)
-	clusterCmd.AddCommand(execCredentialCmd)
-	clusterCmd.AddCommand(saveKubeconfigCmd)
+		op := rt.KubernetesOperator()
+
+		if execCredential == nil {
+			newKubeConfig, expirationTime, err := fetchKubeConfigFromProvider(op, clusterID)
+			if err != nil {
+				log.Fatalf("Couldn't fetch kubeconfig: %s", err)
+			}
+
+			u := newKubeConfig.Users[0]
+			clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
+			if err != nil {
+				fmt.Println(err)
+			}
+			clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			if expirationTime.IsZero() {
+				expirationTime = time.Now().Add(time.Hour)
+			}
+
+			execCredential = &clientauth.ExecCredential{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "ExecCredential",
+					APIVersion: clientauth.SchemeGroupVersion.String(),
+				},
+				Status: &clientauth.ExecCredentialStatus{
+					ClientKeyData:         string(clientKeyData),
+					ClientCertificateData: string(clientCertificateData),
+					ExpirationTimestamp:   &metav1.Time{Time: expirationTime},
+				},
+			}
+
+			if err := cacheKubeConfig(clusterID, execCredential); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}
+		execCredentialJSON, err := json.MarshalIndent(execCredential, "", "    ")
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		// this output will be used by kubectl
+		fmt.Println(string(execCredentialJSON))
+	},
+}
+
+func init() {
 	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's uuid")
 	saveKubeconfigCmd.MarkFlagRequired("cluster")
 	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentication method (exec-credential)")
+	clusterCmd.AddCommand(saveKubeconfigCmd)
+
 	execCredentialCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	execCredentialCmd.Flags().String("cluster", "", "The cluster's uuid")
 	execCredentialCmd.MarkFlagRequired("cluster")
+	clusterCmd.AddCommand(execCredentialCmd)
+
+	kubernetesCmd.AddCommand(clusterCmd)
+	rootCmd.AddCommand(kubernetesCmd)
 }
 
-func fetchKubeConfigFromProvider(o k8sOperator, id string) *kubeConfig {
+func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (kubeConfig, time.Time, error) {
 	var kc kubeConfig
+	var expirationTime time.Time
 
-	if err := o.RenewK8sCredentials(context.Background(), id); err != nil {
-		os.Exit(1)
+	if err := op.RenewK8sCredentials(context.Background(), id); err != nil {
+		return kubeConfig{}, time.Time{}, err
 	}
 
-	paaSService, err := o.GetPaaSService(context.Background(), id)
+	platformService, err := op.GetPaaSService(context.Background(), id)
 	if err != nil {
-		os.Exit(1)
+		return kubeConfig{}, time.Time{}, err
 	}
 
-	if len(paaSService.Properties.Credentials) != 0 {
-		err := yaml.Unmarshal([]byte(paaSService.Properties.Credentials[0].KubeConfig), &kc)
+	if len(platformService.Properties.Credentials) != 0 {
+		err := yaml.Unmarshal([]byte(platformService.Properties.Credentials[0].KubeConfig), &kc)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			return kubeConfig{}, time.Time{}, err
 		}
+		expirationTime = platformService.Properties.Credentials[0].ExpirationTime.Time
 	}
 
-	return &kc
+	return kc, expirationTime, nil
 }
 
 func kubeConfigCachePath() string {
-	return filepath.Join(cliCachePath(), "exec-credential")
+	return filepath.Join(runtime.CachePath(), "exec-credential")
 }
 
 func cachedKubeConfigPath(id string) string {

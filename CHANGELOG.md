@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4.0 (UNRELEASED)
+
+FEATURES:
+
+* Add `manpage` command to generate man-pages for gscloud.
+* Add `gscloud template ls` to list available templates ([#59](https://github.com/gridscale/gscloud/issues/59)).
+* Add `--noheading` flag to print tables without header ([#53](https://github.com/gridscale/gscloud/issues/53)).
+* Add `gscloud server set` to allow changing server properties and hot-plugging (see [e48c149](https://github.com/gridscale/gscloud/commit/e48c149af4ff19fb846c7fb8288d0a6029880066)).
+
+FIXED:
+
+* Fixed working with multiple accounts ([#58](https://github.com/gridscale/gscloud/issues/58)).
+* Fixed printing CHANGETIME column ([#60](https://github.com/gridscale/gscloud/issues/60)).
+* `kubernetes` command's error handling has been improved ([#18](https://github.com/gridscale/gscloud/issues/18)).
+
 ## v0.3.0-beta (July 13, 2020)
 
 FEATURES:
