@@ -1,7 +1,5 @@
 # gscloud: CLI for the gridscale cloud
 
-[![Build Status](https://travis-ci.com/gridscale/gscloud.svg?branch=develop)](https://travis-ci.com/gridscale/gscloud)
-
 ## Overview
 
 gscloud lets you manage objects on [gridscale.io](https://my.gridscale.io) via shell.
