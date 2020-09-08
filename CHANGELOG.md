@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.4.0 (UNRELEASED)
+## v0.4.0 (September 8, 2020)
+
+Many bug fixes and additions in this release. We also dropped the "beta" from the version string. More to come.
 
 FEATURES:
 
