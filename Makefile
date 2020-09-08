@@ -1,7 +1,7 @@
 PLATFORMS=windows linux darwin
 ARCHES=amd64
 BUILDDIR=build
-VERSION=$$(cat VERSION)
+VERSION=$$(git describe --tags)
 GIT_COMMIT=$$(git rev-list -1 HEAD)
 EXECUTABLE_NAME=gscloud_$(VERSION)
 
