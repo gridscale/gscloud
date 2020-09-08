@@ -30,3 +30,29 @@ func ConfigPath() string {
 	}
 	return path
 }
+
+// CommandWithoutConfig return true if current command does not need a config file.
+// Called from within a cobra initializer function. Unfortunately there is no
+// way of getting the current command from an cobra initializer so we scan the
+// command line again.
+func CommandWithoutConfig(cmdLine []string) bool {
+	var noConfigNeeded = []string{
+		"make-config", "version", "manpage", "completion",
+	}
+	for _, cmd := range noConfigNeeded {
+		if contains(cmdLine, cmd) {
+			return true
+		}
+	}
+	return false
+}
+
+// contains tests whether string e is in slice s.
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}

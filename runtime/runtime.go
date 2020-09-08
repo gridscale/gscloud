@@ -216,7 +216,9 @@ func newClient(account string) (*gsclient.Client, error) {
 	}
 
 	if len(conf.Accounts) > 0 && !accountInConfig {
-		return nil, fmt.Errorf("account '%s' does not exist", account)
+		if !CommandWithoutConfig(os.Args) {
+			return nil, fmt.Errorf("account '%s' does not exist", account)
+		}
 	}
 
 	config := gsclient.NewConfiguration(
