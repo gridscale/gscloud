@@ -26,9 +26,11 @@ const (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:               "gscloud",
-	Short:             "the CLI for the gridscale cloud",
-	Long:              `gscloud lets you manage objects on gridscale.io via command line. It provides a Docker-CLI comparable command line that allows you to create, manipulate, and remove objects on gridscale.io.`,
+	Use:   "gscloud",
+	Short: "the CLI for the gridscale cloud",
+	Long: `gscloud lets you manage objects on gridscale.io via the command line. It
+provides a command line comparable to Docker-CLI that allows you to create,
+manipulate, and remove objects on gridscale.io.`,
 	DisableAutoGenTag: true,
 }
 
