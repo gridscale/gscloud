@@ -31,6 +31,16 @@ func ConfigPath() string {
 	return path
 }
 
+// ParseConfig parses viper config file.
+func ParseConfig() (*Config, error) {
+	conf := Config{}
+	err := viper.Unmarshal(&conf)
+	if err != nil {
+		return nil, err
+	}
+	return &conf, nil
+}
+
 // CommandWithoutConfig return true if current command does not need a config file.
 // Called from within a cobra initializer function. Unfortunately there is no
 // way of getting the current command from an cobra initializer so we scan the

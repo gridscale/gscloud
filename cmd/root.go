@@ -84,7 +84,11 @@ func initConfig() {
 
 // initRuntime initializes the client for a given account.
 func initRuntime() {
-	theRuntime, err := runtime.NewRuntime(account)
+	conf, err := runtime.ParseConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	theRuntime, err := runtime.NewRuntime(*conf, account)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -8,13 +8,12 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/kirsle/configdir"
-	"github.com/spf13/viper"
 )
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	account string
-	client  interface{}
+	accountName string
+	client      interface{}
 }
 
 // StorageOperator represents operations on storages.
@@ -63,7 +62,7 @@ type NetworkOperator interface {
 
 // Account is the current selected account.
 func (r *Runtime) Account() string {
-	return r.account
+	return r.accountName
 }
 
 // StorageOperator return an operation to remove a storage.
@@ -164,15 +163,31 @@ func (r *Runtime) SetNetworkOperator(op NetworkOperator) {
 
 // NewRuntime creates a new runtime for a given account. Usually there should be
 // only one runtime instance in the program.
-func NewRuntime(account string) (*Runtime, error) {
-	client, err := newClient(account)
+func NewRuntime(conf Config, accountName string) (*Runtime, error) {
+	var ac AccountEntry
+	var accountInConfig = false
+
+	for _, a := range conf.Accounts {
+		if accountName == a.Name {
+			ac = a
+			accountInConfig = true
+			break
+		}
+	}
+
+	if len(conf.Accounts) > 0 && !accountInConfig {
+		if !CommandWithoutConfig(os.Args) {
+			return nil, fmt.Errorf("account '%s' does not exist", accountName)
+		}
+	}
+	client, err := newClient(ac)
 	if err != nil {
 		return nil, err
 	}
 
 	rt := &Runtime{
-		account: account,
-		client:  client,
+		accountName: ac.Name,
+		client:      client,
 	}
 	return rt, nil
 }
@@ -181,8 +196,8 @@ func NewRuntime(account string) (*Runtime, error) {
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
 	rt := &Runtime{
-		account: "test",
-		client:  nil,
+		accountName: "test",
+		client:      nil,
 	}
 	return rt, nil
 }
@@ -197,34 +212,12 @@ func CachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
-func newClient(account string) (*gsclient.Client, error) {
-	var ac AccountEntry
-	var accountInConfig = false
-
-	conf := &Config{}
-	err := viper.Unmarshal(conf)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
-	for _, a := range conf.Accounts {
-		if account == a.Name {
-			ac = a
-			accountInConfig = true
-			break
-		}
-	}
-
-	if len(conf.Accounts) > 0 && !accountInConfig {
-		if !CommandWithoutConfig(os.Args) {
-			return nil, fmt.Errorf("account '%s' does not exist", account)
-		}
-	}
+func newClient(account AccountEntry) (*gsclient.Client, error) {
 
 	config := gsclient.NewConfiguration(
-		ac.URL,
-		ac.UserID,
-		ac.Token,
+		account.URL,
+		account.UserID,
+		account.Token,
 		false,
 		true,
 		500,
