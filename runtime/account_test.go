@@ -15,4 +15,3 @@ func Test_SelectAccount(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, rt.Account(), "test")
 }
-
