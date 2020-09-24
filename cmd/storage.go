@@ -54,9 +54,7 @@ var storageLsCmd = &cobra.Command{
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 		} else {
-			for _, storage := range storages {
-				render.AsJSON(out, storage)
-			}
+			render.AsJSON(out, storages)
 		}
 		fmt.Print(out)
 	},

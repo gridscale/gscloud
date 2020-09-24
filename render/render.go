@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/gridscale/gscloud/render/table"
@@ -35,10 +36,13 @@ func AsTable(buf io.Writer, columns []string, rows [][]string, opts Options) {
 	tbl.WithWriter(buf).Print(!opts.NoHeader)
 }
 
-// AsJSON prints elements s JSON to given io.Writer.
-func AsJSON(buf io.Writer, s ...interface{}) {
-	json, _ := json.Marshal(s)
-	buf.Write([]byte(fmt.Sprintf("%s\n", json)))
+// AsJSON prints objects as JSON to given io.Writer.
+func AsJSON(buf io.Writer, o interface{}) {
+	json, err := json.Marshal(o)
+	if err != nil {
+		log.Fatal(err)
+	}
+	buf.Write(append(json, '\n'))
 }
 
 func init() {

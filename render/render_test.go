@@ -35,7 +35,7 @@ func Test_AsJSON(t *testing.T) {
 		Test string `json:"test"`
 	}
 	val := someStruct{Test: "test_value"}
-	expectedOutput := "[{\"test\":\"test_value\"}]\n"
+	expectedOutput := "{\"test\":\"test_value\"}\n"
 	buffer := new(bytes.Buffer)
 	AsJSON(buffer, val)
 	assert.Equal(t, expectedOutput, buffer.String())
