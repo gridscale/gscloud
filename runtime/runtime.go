@@ -25,6 +25,7 @@ type StorageOperator interface {
 // TemplateOperator represents operations on templates.
 type TemplateOperator interface {
 	GetTemplateList(ctx context.Context) ([]gsclient.Template, error)
+	DeleteTemplate(ctx context.Context, id string) error
 }
 
 // KubernetesOperator amalgamates operations for Kubernetes PaaS.

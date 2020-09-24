@@ -60,7 +60,23 @@ var templateLsCmd = &cobra.Command{
 	},
 }
 
+var templateRmCmd = &cobra.Command{
+	Use:     "rm [flags] [ID]",
+	Aliases: []string{"remove"},
+	Short:   "Remove templates",
+	Long:    `Remove a template by ID.`,
+	Args:    cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		storageOp := rt.TemplateOperator()
+		ctx := context.Background()
+		err := storageOp.DeleteTemplate(ctx, args[0])
+		if err != nil {
+			log.Fatalf("Removing template failed: %s", err)
+		}
+	},
+}
+
 func init() {
-	templateCmd.AddCommand(templateLsCmd)
+	templateCmd.AddCommand(templateLsCmd, templateRmCmd)
 	rootCmd.AddCommand(templateCmd)
 }
