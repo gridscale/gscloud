@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.0 (UNRELEASED)
+
+FEATURES:
+
+* Add a `gscloud template rm` command ([#80](https://github.com/gridscale/gscloud/issues/80)).
+
+FIXED:
+
+* Weird nesting of JSON output ([#79](https://github.com/gridscale/gscloud/issues/79)).
+
 ## v0.4.0 (September 8, 2020)
 
 Many bug fixes and additions in this release. We also dropped the "beta" from the version string. More to come.
