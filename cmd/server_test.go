@@ -23,33 +23,57 @@ type mockServerOp struct{}
 func (o mockServerOp) GetServerList(ctx context.Context) ([]gsclient.Server, error) {
 	return nil, nil
 }
+
 func (o mockServerOp) StartServer(ctx context.Context, id string) error {
 	return nil
 }
+
 func (o mockServerOp) StopServer(ctx context.Context, id string) error {
 	return nil
 }
+
 func (o mockServerOp) ShutdownServer(ctx context.Context, id string) error {
 	return nil
 }
+
 func (o mockServerOp) DeleteServer(ctx context.Context, id string) error {
 	return nil
 }
+
 func (o mockServerOp) CreateServer(ctx context.Context, body gsclient.ServerCreateRequest) (gsclient.ServerCreateResponse, error) {
 	return gsclient.ServerCreateResponse{}, nil
 }
-func (o mockServerOp) GetTemplateByName(ctx context.Context, name string) (gsclient.Template, error) {
-	return gsclient.Template{}, nil
-}
+
 func (o mockServerOp) CreateStorage(ctx context.Context, body gsclient.StorageCreateRequest) (gsclient.CreateResponse, error) {
 	return gsclient.CreateResponse{}, nil
-}
-func (o mockServerOp) CreateServerStorage(ctx context.Context, id string, body gsclient.ServerStorageRelationCreateRequest) error {
-	return nil
 }
 
 func (o mockServerOp) UpdateServer(ctx context.Context, id string, body gsclient.ServerUpdateRequest) error {
 	return nil
+}
+
+func (o mockServerOp) GetDeletedServers(ctx context.Context) ([]gsclient.Server, error) {
+	return []gsclient.Server{}, nil
+}
+
+func (o mockServerOp) GetServer(ctx context.Context, id string) (gsclient.Server, error) {
+	return gsclient.Server{}, nil
+}
+
+func (o mockServerOp) GetServerEventList(ctx context.Context, id string) ([]gsclient.Event, error) {
+	return []gsclient.Event{}, nil
+}
+
+func (o mockServerOp) GetServerMetricList(ctx context.Context, id string) ([]gsclient.ServerMetric, error) {
+	return []gsclient.ServerMetric{}, nil
+}
+
+func (o mockServerOp) GetServersByLocation(ctx context.Context, id string) ([]gsclient.Server, error) {
+	return []gsclient.Server{}, nil
+}
+
+func (o mockServerOp) IsServerOn(ctx context.Context, id string) (bool, error) {
+	return false, nil
 }
 
 func Test_ServerCommmandDelete(t *testing.T) {

@@ -43,6 +43,34 @@ func (g mockClient) DeleteStorage(ctx context.Context, id string) error {
 	return nil
 }
 
+func (g mockClient) CloneStorage(ctx context.Context, id string) (gsclient.CreateResponse, error) {
+	return gsclient.CreateResponse{}, nil
+}
+
+func (g mockClient) CreateStorage(ctx context.Context, body gsclient.StorageCreateRequest) (gsclient.CreateResponse, error) {
+	return gsclient.CreateResponse{}, nil
+}
+
+func (g mockClient) GetDeletedStorages(ctx context.Context) ([]gsclient.Storage, error) {
+	return []gsclient.Storage{}, nil
+}
+
+func (g mockClient) GetStorage(ctx context.Context, id string) (gsclient.Storage, error) {
+	return gsclient.Storage{}, nil
+}
+
+func (g mockClient) GetStorageEventList(ctx context.Context, id string) ([]gsclient.Event, error) {
+	return []gsclient.Event{}, nil
+}
+
+func (g mockClient) GetStoragesByLocation(ctx context.Context, id string) ([]gsclient.Storage, error) {
+	return []gsclient.Storage{}, nil
+}
+
+func (g mockClient) UpdateStorage(ctx context.Context, id string, body gsclient.StorageUpdateRequest) error {
+	return nil
+}
+
 func Test_StorageListCmd(t *testing.T) {
 	marshalledMockStorage, _ := json.Marshal(mockStorageList)
 	type testCase struct {

@@ -147,8 +147,11 @@ var serverCreateCmd = &cobra.Command{
 		fmt.Println("Server created:", cServer.ObjectUUID)
 
 		if template != "" {
-			template, _ := serverOp.GetTemplateByName(ctx, template)
-			cStorage, err := serverOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
+			templateOp := rt.TemplateOperator()
+			template, _ := templateOp.GetTemplateByName(ctx, template)
+
+			storageOp := rt.StorageOperator()
+			cStorage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
 				Name:        string(serverName),
 				Capacity:    storage,
 				StorageType: gsclient.DefaultStorageType,
@@ -159,7 +162,9 @@ var serverCreateCmd = &cobra.Command{
 					Hostname:     hostName,
 				},
 			})
-			serverOp.CreateServerStorage(
+
+			serverStorageOp := rt.ServerStorageRelationOperator()
+			serverStorageOp.CreateServerStorage(
 				ctx,
 				cServer.ObjectUUID,
 				gsclient.ServerStorageRelationCreateRequest{
