@@ -1,33 +1,16 @@
 # Release Checklist
 
-This repo uses git flow, so better go and install those tools first.
+We use GoReleaser to create release builds and GH release drafts.
 
-On develop branch:
+On master branch:
 
-- [ ] `git flow release start 0.3.0-beta`
+- [ ] Test everything is working as expected
+- [ ] Make sure README is up to date
+- [ ] Changelog: add additions and fixes
+- [ ] Changelog: set release date
+- [ ] Create a new tag (e.g. `git tag v0.5.0`)
+- [ ] Push the tag (e.g. `git push origin --tags v0.5.0`)
 
-This will create and checkout a new release branch. On that release branch:
+That's it. Everything else should be done by the pipeline. Check [github.com/gridscale/gscloud/releases](https://github.com/gridscale/gscloud/releases).
 
-- [ ] test everything is working as expected
-- [ ] make sure README is up to date
-- [ ] update changelog: add additions and fixes
-- [ ] update changelog: set release date
-- [ ] `git flow release publish 0.3.0-beta`
-- [ ] `git flow release finish 0.3.0-beta`
-- [ ] create and push the tag `git push upstream --tags v0.3.0-beta` (Note: its upstream here but it needs to be your remote's name here)
-
-Make sure the new release branch is pushed to the right remote. Then go to GitHub and
-
-- [ ] create two (yes that's two) PRs on GitHub: one from release branch → develop
-- [ ] another from release branch → master (make sure you do not accidentally remove the release branch when merging those PRs)
-
-Finally, go to GitHub again and
-
-- [ ] make a new GitHub release from the tag, copy the changelog text into that release
-- [ ] do `make buildall` and drop the zip files into the new GitHub release
-- [ ] have a beer, you just survived the most complicated way to release software
-
-Back on develop branch:
-
-- [ ] create new CHANGELOG.md stub for next release
-- [ ] bump version in `VERSION` file
+- [ ] Finally, create new changelog stub for next release
