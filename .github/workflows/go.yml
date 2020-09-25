@@ -23,7 +23,9 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: go get -v -t $(go list ./... | grep -v /examples)
+        run: |
+          go get -v -t $(go list ./... | grep -v /examples)
+          go get -u golang.org/x/lint/golint
 
       - name: Build gscloud
         run: make
