@@ -91,16 +91,16 @@ users:
         - "9489f3a7-c8f8-4b38-bc9b-aa472a1c0d2a"
 ```
 
-## Add completion scripts to your shell
+## Shell Completions
 
-zsh
-
-```shell
-$ gscloud completion zsh >> ~/.zshrc
-```
-
-bash
+  * bash
 
 ```shell
 $ gscloud completion bash >> ~/.bash_profile
+```
+
+  * zsh
+
+```shell
+$ gscloud completion zsh >> ~/.zshrc
 ```
