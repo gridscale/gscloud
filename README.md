@@ -2,7 +2,7 @@
 
 `gscloud` is the command-line tool which let you manage your virtual infrastructure on the [gridscale](https://gridscale.io)'s cloud platform. It's also possible to make use of it to work with Kubernetes clusters running on top of the platform as well.
 
-It's entirely written in Go, so everything you need is just the `gscloud` binary! Compile it all by yourself or get the tool at the [release](https://github.com/gridscale/gscloud/releases) page. 
+It's entirely written in Go, so everything you need is just the `gscloud` binary! Compile it all by yourself or get the tool at the [release](https://github.com/gridscale/gscloud/releases) page.
 
 ```txt
 Usage:
@@ -90,13 +90,13 @@ users:
 
 ## Shell Completions
 
-  * bash
+* bash
 
 ```shell
 $ gscloud completion bash >> ~/.bash_profile
 ```
 
-  * zsh
+* zsh
 
 ```shell
 $ gscloud completion zsh >> ~/.zshrc
