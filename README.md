@@ -54,9 +54,9 @@ accounts:
   url: https://api.gridscale.io
 ```
 
-## Example configuration for ~/.kubeconfig/config
+## Kubernetes
 
-To use gscloud for user authentication in kubectl, here is an example kubeconfig:
+To use `gscloud` combined with `kubectl`, here is an example configuration (~/.kubeconfig/config):
 
 ```yml
 apiVersion: v1
