@@ -99,8 +99,6 @@ zsh
 $ gscloud completion zsh >> ~/.zshrc
 ```
 
-Note:  Make sure to uncomment `compdef` line (`#compdef _gscloud gscloud`), otherwise it won't work.
-
 bash
 
 ```shell
