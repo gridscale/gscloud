@@ -1,13 +1,10 @@
-# gscloud: CLI for the gridscale cloud
+# gscloud
 
-## Overview
+`gscloud` is the command-line tool which let you manage your virtual infrastructure on the [gridscale](https://gridscale.io)'s cloud platform. It's also possible to make use of it to work with Kubernetes clusters running on top of the platform as well.
 
-gscloud lets you manage objects on [gridscale.io](https://my.gridscale.io) via shell.
+It's entirely written in Go, so everything you need is just the `gscloud` binary! Compile it all by yourself or get the tool at the [release](https://github.com/gridscale/gscloud/releases) page. 
 
 ```txt
-$ gscloud --help
-gscloud lets you manage objects on gridscale.io via command line. It provides a Docker-CLI comparable command line that allows you to create, manipulate, and remove objects on gridscale.io.
-
 Usage:
   gscloud [command]
 
