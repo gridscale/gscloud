@@ -17,6 +17,6 @@ if [ ! -z $has_CHANGELOG ]; then
     echo $GIT_TAG_COMMIT | grep -v $GIT_COMMIT_SHORT ) >/dev/null && exit 0 || exit 123
   ( grep "${DATE}" $CHANGELOG ) || exit 123
 else
-  echo "Please tag this release, and rework CHANGELOG.md to add a date."
+  echo "No ${CHANGELOG} found."
   exit 234
 fi
