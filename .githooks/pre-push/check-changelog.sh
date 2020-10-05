@@ -18,5 +18,5 @@ if [ ! -z $has_CHANGELOG ]; then
   ( grep "${DATE}" $CHANGELOG ) || exit 123
 else
   echo "Please tag this release, and rework CHANGELOG.md to add a date."
-  exit 666
+  exit 234
 fi
