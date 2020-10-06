@@ -1,7 +1,5 @@
 #!/bin/sh
 ############################################################
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-############################################################
 DATE=$(date +%Y-%m-%d)
 GIT_CMD="git -P"
 GIT_COMMIT_SHORT=$($GIT_CMD rev-parse HEAD | cut -b 1-7)
