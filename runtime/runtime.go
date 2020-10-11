@@ -123,6 +123,22 @@ func (r *Runtime) SetNetworkOperator(op gsclient.NetworkOperator) {
 	r.client = op
 }
 
+// IPOperator return operations to manipulate IP addresses.
+func (r *Runtime) IPOperator() gsclient.IPOperator {
+	if UnderTest() {
+		return r.client.(gsclient.IPOperator)
+	}
+	return r.client.(*gsclient.Client)
+}
+
+// SetIPOperator set operations to manipulate IP addresses.
+func (r *Runtime) SetIPOperator(op gsclient.IPOperator) {
+	if !UnderTest() {
+		panic("unexpected use")
+	}
+	r.client = op
+}
+
 // ServerStorageRelationOperator return an operation to associate server objects with storages.
 func (r *Runtime) ServerStorageRelationOperator() gsclient.ServerStorageRelationOperator {
 	if UnderTest() {
