@@ -32,7 +32,7 @@ var networkLsCmd = &cobra.Command{
 		}
 		var rows [][]string
 		if !jsonFlag {
-			heading := []string{"id", "name", "location", "changetime", "status"}
+			heading := []string{"id", "name", "location", "changed", "status"}
 			for _, network := range networks {
 				fill := [][]string{
 					{

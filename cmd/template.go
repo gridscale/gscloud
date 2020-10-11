@@ -35,7 +35,7 @@ var templateLsCmd = &cobra.Command{
 		if jsonFlag {
 			render.AsJSON(out, templates)
 		} else {
-			heading := []string{"id", "name", "capacity", "changetime", "description"}
+			heading := []string{"id", "name", "capacity", "changed", "description"}
 			for _, template := range templates {
 				fill := [][]string{
 					{

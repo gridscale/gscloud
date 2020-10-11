@@ -45,7 +45,7 @@ var serverLsCmd = &cobra.Command{
 		}
 		var rows [][]string
 		if !jsonFlag {
-			heading := []string{"id", "name", "core", "mem", "changetime", "power"}
+			heading := []string{"id", "name", "core", "mem", "changed", "power"}
 			for _, server := range servers {
 				power := "off"
 				if server.Properties.Power {

@@ -79,7 +79,7 @@ func Test_StorageListCmd(t *testing.T) {
 		quietFlag      bool
 	}
 	buf := new(bytes.Buffer)
-	headers := []string{"id", "name", "capacity", "changetime", "status"}
+	headers := []string{"id", "name", "capacity", "changed", "status"}
 	rows := [][]string{
 		{
 			"xxx-xxx-xxx",
