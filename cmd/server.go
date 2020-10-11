@@ -78,7 +78,7 @@ var serverLsCmd = &cobra.Command{
 }
 
 var serverOnCmd = &cobra.Command{
-	Use:   "on [ID]",
+	Use:   "on ID",
 	Short: "Turn server on",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -92,7 +92,7 @@ var serverOnCmd = &cobra.Command{
 }
 
 var serverOffCmd = &cobra.Command{
-	Use:   "off [flags] [ID]",
+	Use:   "off [flags] ID",
 	Short: "Turn server off via ACPI",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -113,7 +113,7 @@ var serverOffCmd = &cobra.Command{
 }
 
 var serverRmCmd = &cobra.Command{
-	Use:     "rm [flags] [ID]",
+	Use:     "rm [flags] ID",
 	Aliases: []string{"remove"},
 	Short:   "Remove server",
 	Long:    `Remove an existing server.`,
@@ -130,7 +130,7 @@ var serverRmCmd = &cobra.Command{
 
 var serverCreateCmd = &cobra.Command{
 	Use:     "create [flags]",
-	Example: `./gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
+	Example: `gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
 	Short:   "Create server",
 	Long:    `Create a new server.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -180,8 +180,8 @@ var serverCreateCmd = &cobra.Command{
 }
 
 var serverSetCmd = &cobra.Command{
-	Use:     "set [ID] [flags]",
-	Example: `./gscloud server set ID --cores N`,
+	Use:     "set [flags] ID",
+	Example: `gscloud server set ID --cores 4`,
 	Short:   "Update server",
 	Long:    `Update properties of an existing server.`,
 	Args:    cobra.ExactArgs(1),
