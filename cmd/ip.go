@@ -13,8 +13,11 @@ import (
 )
 
 var (
-	v4Only bool
-	v6Only bool
+	v4         bool
+	v6         bool
+	failover   bool
+	name       string
+	reverseDNS string
 )
 
 var ipCmd = &cobra.Command{
@@ -29,7 +32,7 @@ var ipLsCmd = &cobra.Command{
 	Short:   "List IP addresses",
 	Long:    `List IP address objects.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if v4Only && v6Only {
+		if v4 && v6 {
 			log.Fatal("No family selected")
 		}
 	},
@@ -45,11 +48,11 @@ var ipLsCmd = &cobra.Command{
 		if !jsonFlag {
 			heading := []string{"IP", "assigned", "failover", "family", "reverse DNS", "ID"}
 			for _, addr := range ipAddresses {
-				if v4Only && addr.Properties.Family == 6 {
+				if v4 && addr.Properties.Family == 6 {
 					continue
 				}
 
-				if v6Only && addr.Properties.Family == 4 {
+				if v6 && addr.Properties.Family == 4 {
 					continue
 				}
 
@@ -127,11 +130,60 @@ gscloud ip rm 2a06:2380:2:1::24
 	},
 }
 
-func init() {
-	ipLsCmd.PersistentFlags().BoolVarP(&v4Only, "v4-only", "4", false, "IPv4 family only")
-	ipLsCmd.PersistentFlags().BoolVarP(&v6Only, "v6-only", "6", false, "IPv6 family only")
+var ipAddCmd = &cobra.Command{
+	Use:     "add -4|-6 [flags]",
+	Aliases: []string{"create"},
+	Example: `gscloud ip add -6`,
+	Short:   "Create a new IP address",
+	Long: `Create a new IP address object.
 
-	ipCmd.AddCommand(ipLsCmd, ipRmCmd)
+Examples:
+
+Create a new IPv6 address with a PTR entry and a name:
+
+gscloud ip add -6 --name test --reverse-dns=example.com
+
+Create a new IPv4 address:
+
+gscloud ip add -4
+
+`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if v4 && v6 {
+			log.Fatal("No family given. Use either -4 or -6")
+		}
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		family := gsclient.IPv4Type
+		if v6 {
+			family = gsclient.IPv6Type
+		}
+		ipOp := rt.IPOperator()
+		ctx := context.Background()
+		ipAddress, err := ipOp.CreateIP(ctx, gsclient.IPCreateRequest{
+			Family:     family,
+			Failover:   failover,
+			Name:       name,
+			ReverseDNS: reverseDNS,
+		})
+		if err != nil {
+			log.Fatalf("Adding IPv%d address failed: %s", family, err)
+		}
+		fmt.Println("IP added:", ipAddress.IP)
+	},
+}
+
+func init() {
+	ipLsCmd.PersistentFlags().BoolVarP(&v4, "v4", "4", false, "IPv4 only")
+	ipLsCmd.PersistentFlags().BoolVarP(&v6, "v6", "6", false, "IPv6 only")
+
+	ipAddCmd.PersistentFlags().BoolVarP(&v4, "v4", "4", false, "Add a new IPv4 address")
+	ipAddCmd.PersistentFlags().BoolVarP(&v6, "v6", "6", false, "Add a new IPv6 address")
+	ipAddCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "Optional name of the IP address being created. Can be omitted")
+	ipAddCmd.PersistentFlags().BoolVarP(&failover, "failover", "", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
+	ipAddCmd.PersistentFlags().StringVarP(&reverseDNS, "reverse-dns", "", "", "Optional reverse DNS entry for the IP address")
+
+	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipAddCmd)
 	rootCmd.AddCommand(ipCmd)
 }
 
