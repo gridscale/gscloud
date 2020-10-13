@@ -130,6 +130,53 @@ gscloud ip rm 2a06:2380:2:1::24
 	},
 }
 
+var ipSetCmd = &cobra.Command{
+	Use:     "set [flags] ID|ADDRESS",
+	Example: `gscloud ip set ID|ADDRESS --reverse-dns example.com`,
+	Short:   "Update IP address properties",
+	Long: `Update properties of an existing IP address.
+
+Example:
+
+Set PTR entry and name on an existing IP:
+
+gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
+`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		var id string
+		var err error
+		address := net.ParseIP(args[0])
+		ctx := context.Background()
+		ipOp := rt.IPOperator()
+		if address != nil {
+			id, err = idForAddress(ctx, address, ipOp)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			id = args[0]
+		}
+		updateReq := gsclient.IPUpdateRequest{}
+		if failover {
+			updateReq.Failover = true
+		}
+		if len(name) > 0 {
+			updateReq.Name = name
+		}
+		if len(reverseDNS) > 0 {
+			updateReq.ReverseDNS = reverseDNS
+		}
+		err = ipOp.UpdateIP(
+			ctx,
+			id,
+			updateReq)
+		if err != nil {
+			log.Fatalf("Failed: %s", err)
+		}
+	},
+}
+
 var ipAddCmd = &cobra.Command{
 	Use:     "add -4|-6 [flags]",
 	Aliases: []string{"create"},
@@ -183,7 +230,11 @@ func init() {
 	ipAddCmd.PersistentFlags().BoolVarP(&failover, "failover", "", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
 	ipAddCmd.PersistentFlags().StringVarP(&reverseDNS, "reverse-dns", "", "", "Optional reverse DNS entry for the IP address")
 
-	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipAddCmd)
+	ipSetCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "Change name of the IP address")
+	ipSetCmd.PersistentFlags().BoolVarP(&failover, "failover", "", false, "Enable failover")
+	ipSetCmd.PersistentFlags().StringVarP(&reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
+
+	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd)
 	rootCmd.AddCommand(ipCmd)
 }
 
