@@ -1,10 +1,12 @@
 # Changelog
 
-## v0.5.0 (UNRELEASED)
+## v0.5.0 (October 14, 2020)
 
 FEATURES:
 
 * Add a `gscloud template rm` command ([#80](https://github.com/gridscale/gscloud/issues/80)).
+* Add basic support for IP addresses ([#78](https://github.com/gridscale/gscloud/issues/78)).
+* Add support for storage resize ([#77](https://github.com/gridscale/gscloud/issues/77)).
 
 FIXED:
 
