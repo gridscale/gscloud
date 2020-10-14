@@ -11,6 +11,7 @@ Usage:
 Available Commands:
   completion  Generate shell completion scripts
   help        Help about any command
+  ip          Operations on IP addresses
   kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
   manpage     Create man-pages for gscloud
