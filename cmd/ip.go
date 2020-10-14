@@ -12,12 +12,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
+type ipCmdFlags struct {
 	v4         bool
 	v6         bool
 	failover   bool
 	name       string
 	reverseDNS string
+}
+
+var (
+	ipFlags ipCmdFlags
 )
 
 var ipCmd = &cobra.Command{
@@ -32,7 +36,7 @@ var ipLsCmd = &cobra.Command{
 	Short:   "List IP addresses",
 	Long:    `List IP address objects.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if v4 && v6 {
+		if ipFlags.v4 && ipFlags.v6 {
 			log.Fatal("No family selected")
 		}
 	},
@@ -45,14 +49,14 @@ var ipLsCmd = &cobra.Command{
 		}
 		var rows [][]string
 		out := new(bytes.Buffer)
-		if !jsonFlag {
+		if !rootFlags.json {
 			heading := []string{"IP", "assigned", "failover", "family", "reverse DNS", "ID"}
 			for _, addr := range ipAddresses {
-				if v4 && addr.Properties.Family == 6 {
+				if ipFlags.v4 && addr.Properties.Family == 6 {
 					continue
 				}
 
-				if v6 && addr.Properties.Family == 4 {
+				if ipFlags.v6 && addr.Properties.Family == 4 {
 					continue
 				}
 
@@ -77,7 +81,7 @@ var ipLsCmd = &cobra.Command{
 				}
 				rows = append(rows, properties...)
 			}
-			if quietFlag {
+			if rootFlags.quiet {
 				for _, row := range rows {
 					fmt.Println(row[5])
 				}
@@ -158,14 +162,14 @@ gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
 			id = args[0]
 		}
 		updateReq := gsclient.IPUpdateRequest{}
-		if failover {
+		if ipFlags.failover {
 			updateReq.Failover = true
 		}
-		if len(name) > 0 {
-			updateReq.Name = name
+		if len(ipFlags.name) > 0 {
+			updateReq.Name = ipFlags.name
 		}
-		if len(reverseDNS) > 0 {
-			updateReq.ReverseDNS = reverseDNS
+		if len(ipFlags.reverseDNS) > 0 {
+			updateReq.ReverseDNS = ipFlags.reverseDNS
 		}
 		err = ipOp.UpdateIP(
 			ctx,
@@ -196,22 +200,22 @@ gscloud ip add -4
 
 `,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if v4 && v6 {
+		if ipFlags.v4 && ipFlags.v6 {
 			log.Fatal("No family given. Use either -4 or -6")
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		family := gsclient.IPv4Type
-		if v6 {
+		if ipFlags.v6 {
 			family = gsclient.IPv6Type
 		}
 		ipOp := rt.IPOperator()
 		ctx := context.Background()
 		ipAddress, err := ipOp.CreateIP(ctx, gsclient.IPCreateRequest{
 			Family:     family,
-			Failover:   failover,
-			Name:       name,
-			ReverseDNS: reverseDNS,
+			Failover:   ipFlags.failover,
+			Name:       ipFlags.name,
+			ReverseDNS: ipFlags.reverseDNS,
 		})
 		if err != nil {
 			log.Fatalf("Adding IPv%d address failed: %s", family, err)
@@ -221,18 +225,18 @@ gscloud ip add -4
 }
 
 func init() {
-	ipLsCmd.PersistentFlags().BoolVarP(&v4, "v4", "4", false, "IPv4 only")
-	ipLsCmd.PersistentFlags().BoolVarP(&v6, "v6", "6", false, "IPv6 only")
+	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v4, "v4", "4", false, "IPv4 only")
+	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v6, "v6", "6", false, "IPv6 only")
 
-	ipAddCmd.PersistentFlags().BoolVarP(&v4, "v4", "4", false, "Add a new IPv4 address")
-	ipAddCmd.PersistentFlags().BoolVarP(&v6, "v6", "6", false, "Add a new IPv6 address")
-	ipAddCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "Optional name of the IP address being created. Can be omitted")
-	ipAddCmd.PersistentFlags().BoolVarP(&failover, "failover", "", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
-	ipAddCmd.PersistentFlags().StringVarP(&reverseDNS, "reverse-dns", "", "", "Optional reverse DNS entry for the IP address")
+	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.v4, "v4", "4", false, "Add a new IPv4 address")
+	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.v6, "v6", "6", false, "Add a new IPv6 address")
+	ipAddCmd.PersistentFlags().StringVarP(&ipFlags.name, "name", "n", "", "Optional name of the IP address being created. Can be omitted")
+	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
+	ipAddCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Optional reverse DNS entry for the IP address")
 
-	ipSetCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "Change name of the IP address")
-	ipSetCmd.PersistentFlags().BoolVarP(&failover, "failover", "", false, "Enable failover")
-	ipSetCmd.PersistentFlags().StringVarP(&reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
+	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.name, "name", "n", "", "Change name of the IP address")
+	ipSetCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover")
+	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
 
 	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd)
 	rootCmd.AddCommand(ipCmd)

@@ -32,7 +32,7 @@ var templateLsCmd = &cobra.Command{
 			log.Fatalf("Couldn't get template list: %s", err)
 		}
 		var rows [][]string
-		if jsonFlag {
+		if rootFlags.json {
 			render.AsJSON(out, templates)
 		} else {
 			heading := []string{"id", "name", "capacity", "changed", "description"}
@@ -48,7 +48,7 @@ var templateLsCmd = &cobra.Command{
 				}
 				rows = append(rows, fill...)
 			}
-			if quietFlag {
+			if rootFlags.quiet {
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}

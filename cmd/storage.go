@@ -7,9 +7,19 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+type storageCmdFlags struct {
+	name     string
+	capacity int
+}
+
+var (
+	storageFlags storageCmdFlags
 )
 
 var storageCmd = &cobra.Command{
@@ -32,7 +42,7 @@ var storageLsCmd = &cobra.Command{
 			log.Fatalf("Couldn't get storage list: %s", err)
 		}
 		var rows [][]string
-		if !jsonFlag {
+		if !rootFlags.json {
 			heading := []string{"id", "name", "capacity", "changed", "status"}
 			for _, storage := range storages {
 				fill := [][]string{
@@ -46,7 +56,7 @@ var storageLsCmd = &cobra.Command{
 				}
 				rows = append(rows, fill...)
 			}
-			if quietFlag {
+			if rootFlags.quiet {
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}

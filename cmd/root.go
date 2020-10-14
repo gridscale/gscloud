@@ -11,13 +11,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
+type rootCmdFlags struct {
 	configFile string
 	account    string
-	rt         *runtime.Runtime
-	jsonFlag   bool
-	quietFlag  bool
+	json       bool
+	quiet      bool
+}
+
+var (
+	rootFlags  rootCmdFlags
 	renderOpts render.Options
+	rt         *runtime.Runtime
 )
 
 const (
@@ -48,19 +52,19 @@ func init() {
 		cobra.OnInitialize(initConfig, initRuntime)
 	}
 
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", runtime.ConfigPath(), fmt.Sprintf("Specify a configuration file"))
-	rootCmd.PersistentFlags().StringVarP(&account, "account", "", "default", "Specify the account used")
-	rootCmd.PersistentFlags().BoolVarP(&jsonFlag, "json", "j", false, "Print JSON to stdout instead of a table")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPath(), fmt.Sprintf("Specify a configuration file"))
+	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", "default", "Specify the account used")
+	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
-	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Print only IDs of objects")
+	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only IDs of objects")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if configFile != "" {
+	if rootFlags.configFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(configFile)
+		viper.SetConfigFile(rootFlags.configFile)
 	} else {
 		// Use default paths.
 		viper.SetConfigName("config")
@@ -88,7 +92,7 @@ func initRuntime() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	theRuntime, err := runtime.NewRuntime(*conf, account)
+	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account)
 	if err != nil {
 		log.Fatal(err)
 	}

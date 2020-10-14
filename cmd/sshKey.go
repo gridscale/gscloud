@@ -12,8 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type sshKeyCmdFlags struct {
+	name       string
+	pubKeyFile string
+}
+
 var (
-	nameFlag, fileFlag string
+	sshKeyFlags sshKeyCmdFlags
 )
 
 var sshKeyCmd = &cobra.Command{
@@ -36,7 +41,7 @@ var sshKeyLsCmd = &cobra.Command{
 			log.Fatalf("Couldn't get SSH key list: %s", err)
 		}
 		var rows [][]string
-		if !jsonFlag {
+		if !rootFlags.json {
 			heading := []string{"id", "name", "key", "user", "created"}
 			for _, key := range sshkeys {
 				fill := [][]string{
@@ -51,7 +56,7 @@ var sshKeyLsCmd = &cobra.Command{
 				rows = append(rows, fill...)
 			}
 
-			if quietFlag {
+			if rootFlags.quiet {
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}
@@ -77,14 +82,14 @@ var sshKeyAddCmd = &cobra.Command{
 			log.Fatalf("Mandatory flag missing: file")
 		}
 
-		publicKey, err := ioutil.ReadFile(fileFlag)
+		publicKey, err := ioutil.ReadFile(sshKeyFlags.pubKeyFile)
 		if err != nil {
 			log.Fatalf("Error reading file: %s", err)
 		}
 		ctx := context.Background()
 		op := rt.SSHKeyOperator()
 		_, err = op.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
-			Name:   nameFlag,
+			Name:   sshKeyFlags.name,
 			Sshkey: string(publicKey),
 		})
 		if err != nil {
@@ -110,8 +115,8 @@ var sshKeyRmCmd = &cobra.Command{
 }
 
 func init() {
-	sshKeyAddCmd.PersistentFlags().StringVarP(&nameFlag, "name", "n", "", "Name of the new key")
-	sshKeyAddCmd.PersistentFlags().StringVarP(&fileFlag, "file", "f", "", "Path to public key file")
+	sshKeyAddCmd.PersistentFlags().StringVarP(&sshKeyFlags.name, "name", "n", "", "Name of the new key")
+	sshKeyAddCmd.PersistentFlags().StringVarP(&sshKeyFlags.pubKeyFile, "file", "f", "", "Path to public key file")
 
 	sshKeyCmd.AddCommand(sshKeyLsCmd, sshKeyAddCmd, sshKeyRmCmd)
 	rootCmd.AddCommand(sshKeyCmd)

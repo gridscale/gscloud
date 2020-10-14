@@ -107,8 +107,8 @@ func Test_StorageListCmd(t *testing.T) {
 		r, w, _ := os.Pipe()
 		os.Stdout = w
 
-		jsonFlag = test.jsonFlag
-		quietFlag = test.quietFlag
+		rootFlags.json = test.jsonFlag
+		rootFlags.quiet = test.quietFlag
 
 		mockClient := mockClient{}
 		rt, _ = runtime.NewTestRuntime()
