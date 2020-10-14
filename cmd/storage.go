@@ -11,11 +11,13 @@ import (
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 type storageCmdFlags struct {
 	name     string
 	capacity int
+	force    bool
 }
 
 var (
@@ -70,6 +72,59 @@ var storageLsCmd = &cobra.Command{
 	},
 }
 
+var storageSetCmd = &cobra.Command{
+	Use:     "set [flags] ID",
+	Example: `gscloud storage set ID `,
+	Short:   "Update IP address properties",
+	Long: `Update properties of an existing IP address.
+
+Example:
+
+Set PTR entry and name on an existing IP:
+
+gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
+`,
+	Args: cobra.ExactArgs(1),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		cmd.Flags().VisitAll(func(f *pflag.Flag) {
+			if f.Name == "capacity" && f.Changed {
+				if storageFlags.capacity < 1 {
+					log.Fatal("Expected storage capacity ≥ 1 GB")
+				}
+			}
+		})
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+		storageOp := rt.StorageOperator()
+		updateReq := gsclient.StorageUpdateRequest{}
+		if len(storageFlags.name) > 0 {
+			updateReq.Name = storageFlags.name
+		}
+		if storageFlags.capacity > 0 {
+			storage, err := storageOp.GetStorage(ctx, args[0])
+			if err != nil {
+				log.Fatalf("Could not set new capacity: %s", err)
+			}
+			currentSize := storage.Properties.Capacity
+			if storageFlags.capacity < currentSize {
+				if !storageFlags.force {
+					log.Printf("Downsizing can destroy your data. Re-run with --force to reduce storage size from %d GB to %d GB\n", currentSize, storageFlags.capacity)
+					return
+				}
+			}
+			updateReq.Capacity = storageFlags.capacity
+		}
+		err := storageOp.UpdateStorage(
+			ctx,
+			args[0],
+			updateReq)
+		if err != nil {
+			log.Fatalf("Failed: %s", err)
+		}
+	},
+}
+
 var storageRmCmd = &cobra.Command{
 	Use:     "rm [flags] [ID]",
 	Aliases: []string{"remove"},
@@ -87,6 +142,10 @@ var storageRmCmd = &cobra.Command{
 }
 
 func init() {
-	storageCmd.AddCommand(storageLsCmd, storageRmCmd)
+	storageSetCmd.PersistentFlags().StringVarP(&storageFlags.name, "name", "n", "", "Change name")
+	storageSetCmd.PersistentFlags().IntVarP(&storageFlags.capacity, "capacity", "", 0, "Change size (GB)")
+	storageSetCmd.PersistentFlags().BoolVarP(&storageFlags.force, "force", "", false, "Force a potential destructive operation")
+
+	storageCmd.AddCommand(storageLsCmd, storageSetCmd, storageRmCmd)
 	rootCmd.AddCommand(storageCmd)
 }
