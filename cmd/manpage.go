@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
@@ -27,11 +29,14 @@ This will overwrite any existing man-page created previously.
 			Section: "1",
 			Source:  " ",
 		}
-		err := doc.GenManTree(rootCmd, header, args[0])
+		targetPath := args[0]
+		_ = os.Mkdir(targetPath, 0755)
+		err := doc.GenManTree(rootCmd, header, targetPath)
 		if err != nil {
 			log.Fatalf("Couldn't create man-pages: %s", err)
 		}
-		fmt.Println("Written to:", args[0])
+		absPath, _ := filepath.Abs(targetPath)
+		fmt.Printf("Written to %s\n", absPath)
 	},
 }
 
