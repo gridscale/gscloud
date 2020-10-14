@@ -37,7 +37,7 @@ var sshKeyLsCmd = &cobra.Command{
 		}
 		var rows [][]string
 		if !jsonFlag {
-			heading := []string{"id", "name", "key", "user", "createtime"}
+			heading := []string{"id", "name", "key", "user", "created"}
 			for _, key := range sshkeys {
 				fill := [][]string{
 					{
