@@ -11,6 +11,7 @@ On master branch:
 - [ ] Create a new tag (e.g. `git tag v0.5.0`)
 - [ ] Push the tag (e.g. `git push origin --tags v0.5.0`)
 
-That's it. Everything else should be done by the pipeline. Check [github.com/gridscale/gscloud/releases](https://github.com/gridscale/gscloud/releases).
+That's it. Everything else should be done by the pipeline.
 
+- [ ] Check [github.com/gridscale/gscloud/releases](https://github.com/gridscale/gscloud/releases) for a new draft release. Copy changelog entries there and submit the release
 - [ ] Finally, create new changelog stub for next release
