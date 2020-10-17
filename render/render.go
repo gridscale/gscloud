@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gridscale/gscloud/render/table"
 )

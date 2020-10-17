@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,6 +16,7 @@ type rootCmdFlags struct {
 	account    string
 	json       bool
 	quiet      bool
+	debug      bool
 }
 
 var (
@@ -49,7 +50,7 @@ func Execute() {
 func init() {
 	// Register following initializers only when we are not running tests.
 	if !runtime.UnderTest() {
-		cobra.OnInitialize(initConfig, initRuntime)
+		cobra.OnInitialize(initConfig, initRuntime, initLogging)
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPath(), fmt.Sprintf("Specify a configuration file"))
@@ -57,6 +58,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only IDs of objects")
+	rootCmd.PersistentFlags().BoolVarP(&rootFlags.debug, "debug", "", false, "Debug mode")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 }
 
@@ -97,4 +99,17 @@ func initRuntime() {
 		log.Fatal(err)
 	}
 	rt = theRuntime
+}
+
+func initLogging() {
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors:    true,
+		DisableTimestamp: true,
+	})
+
+	if rootFlags.debug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.WarnLevel)
+	}
 }

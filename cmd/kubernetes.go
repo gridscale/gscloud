@@ -5,10 +5,11 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
