@@ -19,10 +19,25 @@ jobs:
         with:
           go-version: 1.15
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
-        with:
-          version: latest
-          args: release --rm-dist
+      - name: Prepare GPG key
+        run: |
+          touch ~/secret.gpg && echo "${{ secrets.RELEASE_SIGNING_KEY }}" > ~/secret.gpg
+          touch ~/.gnupg/gpg-agent.conf && echo -e "default-cache-ttl 7200\nmax-cache-ttl 31536000\nallow-preset-passphrase" ~/.gnupg/gpg-agent.conf
+          gpg --batch --import ~/secret.gpg
+
+      - name: Cache GPG passphrase
         env:
+          GPG_PASSPHRASE: "${{ secrets.RELEASE_SIGNING_KEY_PASSPHRASE }}"
+          GPG_FINGERPRINT: oss@gridscale.io
+        run: |
+          gpg --pinentry-mode=loopback --passphrase $GPG_PASSPHRASE --armor --detach-sign --local-user "${GPG_FINGERPRINT}" README.md
+          rm -f README.md.asc
+
+      - name: Build executable files
+        env:
+          GPG_FINGERPRINT: oss@gridscale.io
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+          export PATH="./bin:$PATH"
+          goreleaser release --rm-dist
