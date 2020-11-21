@@ -96,7 +96,7 @@ var ipLsCmd = &cobra.Command{
 }
 
 var ipRmCmd = &cobra.Command{
-	Use:     "rm [flags] ID|ADDRESS",
+	Use:     "rm [flags] ID|ADDR",
 	Aliases: []string{"remove"},
 	Short:   "Delete an IP address",
 	Long: `Remove an existing IP address object by ID or address.
@@ -135,8 +135,8 @@ Delete by address:
 }
 
 var ipSetCmd = &cobra.Command{
-	Use:     "set [flags] ID|ADDRESS",
-	Example: `gscloud ip set ID|ADDRESS --reverse-dns example.com`,
+	Use:     "set [flags] ID|ADDR",
+	Example: `gscloud ip set 2a06:2380:0:1::1c8 --reverse-dns example.com`,
 	Short:   "Update IP address properties",
 	Long: `Update properties of an existing IP address.
 
