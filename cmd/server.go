@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net"
 	"strconv"
 	"time"
 
@@ -206,6 +207,36 @@ var serverSetCmd = &cobra.Command{
 	},
 }
 
+var serverAssignCmd = &cobra.Command{
+	Use:     "assign ID ADDR",
+	Example: `gscloud server assign 37d53278-8e5f-47e1-a63f-54513e4b4d53 2a06:2380:0:1::1c8`,
+	Short:   "Assign an IP address",
+	Long:    `Assign an existing IP address to the server given by ID.`,
+	Args:    cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		var serverID string
+		var addrID string
+		var err error
+
+		serverID = args[0]
+		ctx := context.Background()
+		ipOp := rt.IPOperator()
+		addr := net.ParseIP(args[1])
+		if addr != nil {
+			addrID, err = idForAddress(ctx, addr, ipOp)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			addrID = args[1]
+		}
+		err = rt.Client().LinkIP(ctx, serverID, addrID)
+		if err != nil {
+			log.Fatalf("Failed: %s", err)
+		}
+	},
+}
+
 func init() {
 	serverOffCmd.PersistentFlags().BoolVarP(&serverFlags.forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
 
@@ -221,6 +252,6 @@ func init() {
 	serverSetCmd.PersistentFlags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
 	serverSetCmd.PersistentFlags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd)
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd)
 	rootCmd.AddCommand(serverCmd)
 }

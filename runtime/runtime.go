@@ -27,6 +27,11 @@ func (r *Runtime) Account() string {
 	return r.accountName
 }
 
+// Client provides access to the API client.
+func (r *Runtime) Client() *gsclient.Client {
+	return r.client.(*gsclient.Client)
+}
+
 // StorageOperator return an operation to remove a storage.
 func (r *Runtime) StorageOperator() gsclient.StorageOperator {
 	if UnderTest() {
