@@ -101,15 +101,15 @@ var ipRmCmd = &cobra.Command{
 	Short:   "Delete an IP address",
 	Long: `Remove an existing IP address object by ID or address.
 
-Examples:
+# EXAMPLES
 
 Delete by ID:
 
-gscloud ip rm 71d85c9d-6fdd-404b-a821-1d94c2050a6e
+    $ gscloud ip rm 71d85c9d-6fdd-404b-a821-1d94c2050a6e
 
 Delete by address:
 
-gscloud ip rm 2a06:2380:2:1::24
+    $ gscloud ip rm 2a06:2380:2:1::24
 
 `,
 	Args: cobra.ExactArgs(1),
@@ -140,11 +140,11 @@ var ipSetCmd = &cobra.Command{
 	Short:   "Update IP address properties",
 	Long: `Update properties of an existing IP address.
 
-Example:
+# EXAMPLES
 
 Set PTR entry and name on an existing IP:
 
-gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
+    $ gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
 `,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -188,15 +188,15 @@ var ipAddCmd = &cobra.Command{
 	Short:   "Create a new IP address",
 	Long: `Create a new IP address object.
 
-Examples:
+# EXAMPLES
 
 Create a new IPv6 address with a PTR entry and a name:
 
-gscloud ip add -6 --name test --reverse-dns=example.com
+    $ gscloud ip add -6 --name test --reverse-dns=example.com
 
 Create a new IPv4 address:
 
-gscloud ip add -4
+    $ gscloud ip add -4
 
 `,
 	PreRun: func(cmd *cobra.Command, args []string) {
