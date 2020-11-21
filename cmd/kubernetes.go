@@ -41,7 +41,7 @@ var clusterCmd = &cobra.Command{
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
 	Short: "Operate managed Kubernetes clusters",
-	Long:  "Operate managed Kubernetes clusters",
+	Long:  "Operate managed Kubernetes clusters.",
 }
 
 // saveKubeconfigCmd represents the kubeconfig command

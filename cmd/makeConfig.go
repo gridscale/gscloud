@@ -15,22 +15,19 @@ import (
 var makeConfigCmd = &cobra.Command{
 	Use:   "make-config",
 	Short: "Create a new configuration file",
-	Long: fmt.Sprintf(`Create a new and possibly almost empty configuration file overwriting an
-existing one if it exists. Prints the path to the newly created file to
-stdout.
+	Long: fmt.Sprintf(`Create a new and possibly almost empty configuration file overwriting an existing one if it exists. Prints the path to the newly created file to stdout.
 
-Examples:
+# EXAMPLES
 
-Create a new configuration file at the default configuration path
-(%s):
+Create a new configuration file at the default configuration path (%s):
 
-gscloud make-config
+    $ gscloud make-config
 
 Create a new configuration file at a specified path:
 
-gscloud --config ~/myconfig.yaml make-config
+    $ gscloud --config /tmp/myconfig.yaml make-config
 
-`, runtime.ConfigPath()),
+`, runtime.ConfigPathWithoutUser()),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		filePath := runtime.ConfigPath()
 

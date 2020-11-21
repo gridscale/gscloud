@@ -91,6 +91,8 @@ users:
 
 ## Shell Completions
 
+Generate shell completion scripts for zsh and bash.
+
 * bash
 
 ```shell
@@ -101,4 +103,12 @@ $ gscloud completion bash >> ~/.bash_profile
 
 ```shell
 $ gscloud completion zsh >> ~/.zshrc
+```
+
+## Install man-pages
+
+Generate man-pages and install them. Example:
+
+```shell
+$ sudo gscloud manpage /usr/local/share/man/man1/
 ```
