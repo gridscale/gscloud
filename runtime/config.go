@@ -31,6 +31,11 @@ func ConfigPath() string {
 	return path
 }
 
+// ConfigPathWithoutUser same as ConfigPath but with environment variables not expanded.
+func ConfigPathWithoutUser() string {
+	return LOCAL_CONFIG + "/gscloud/config.yaml"
+}
+
 // ParseConfig parses viper config file.
 func ParseConfig() (*Config, error) {
 	conf := Config{}

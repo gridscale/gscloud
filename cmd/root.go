@@ -53,7 +53,7 @@ func init() {
 		cobra.OnInitialize(initConfig, initRuntime, initLogging)
 	}
 
-	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPath(), fmt.Sprintf("Specify a configuration file"))
+	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), fmt.Sprintf("Path to configuration file"))
 	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", "default", "Specify the account used")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
@@ -66,7 +66,7 @@ func init() {
 func initConfig() {
 	if rootFlags.configFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(rootFlags.configFile)
+		viper.SetConfigFile(runtime.ConfigPath())
 	} else {
 		// Use default paths.
 		viper.SetConfigName("config")
