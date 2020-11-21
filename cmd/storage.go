@@ -74,15 +74,19 @@ var storageLsCmd = &cobra.Command{
 
 var storageSetCmd = &cobra.Command{
 	Use:     "set [flags] ID",
-	Example: `gscloud storage set ID `,
-	Short:   "Update IP address properties",
-	Long: `Update properties of an existing IP address.
+	Example: `gscloud storage set --capacity 20 b3ec341c-1732-45b3-bc45-9a7fcebb363e`,
+	Short:   "Update storage properties",
+	Long: `Update properties of a storage object.
 
-Example:
+# EXAMPLES
 
-Set PTR entry and name on an existing IP:
+Rename a storage object:
 
-gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
+    $ gscloud storage set --name test-1 b3ec341c-1732-45b3-bc45-9a7fcebb363e
+
+Shrink a storage:
+
+    $ gscloud storage set --capacity 9 --force b3ec341c-1732-45b3-bc45-9a7fcebb363e
 `,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
