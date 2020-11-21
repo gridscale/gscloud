@@ -186,7 +186,7 @@ var serverCreateCmd = &cobra.Command{
 
 var serverSetCmd = &cobra.Command{
 	Use:     "set [flags] ID",
-	Example: `gscloud server set ID --cores 4`,
+	Example: `gscloud server set 37d53278-8e5f-47e1-a63f-54513e4b4d53 --cores 4`,
 	Short:   "Update server",
 	Long:    `Update properties of an existing server.`,
 	Args:    cobra.ExactArgs(1),
