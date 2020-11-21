@@ -170,11 +170,16 @@ func initRuntime() {
 	rt = theRuntime
 }
 
+type plainFormatter struct {
+}
+
+func (f *plainFormatter) Format(entry *log.Entry) ([]byte, error) {
+	return []byte(fmt.Sprintf("%s\n", entry.Message)), nil
+}
+
 func initLogging() {
-	log.SetFormatter(&log.TextFormatter{
-		DisableColors:    true,
-		DisableTimestamp: true,
-	})
+
+	log.SetFormatter(&plainFormatter{})
 
 	if rootFlags.debug {
 		log.SetLevel(log.DebugLevel)
