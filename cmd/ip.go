@@ -18,6 +18,7 @@ type ipCmdFlags struct {
 	failover   bool
 	name       string
 	reverseDNS string
+	targetID   string
 }
 
 var (
@@ -290,6 +291,40 @@ Releasing an unassigned IP address will exit with status code 0:
 	},
 }
 
+var ipAssignCmd = &cobra.Command{
+	Use:   "assign ID|ADDR",
+	Short: "Assign an IP address",
+	Long: `Assign a previously allocated IP address to a server or load balancer.
+
+# EXAMPLES
+
+Assign an IPv4 address to a server or load balancer:
+
+    $ gscloud ip assign 203.0.113.42 --to=b0dd8d71-8f8d-46c1-8985-ce4b6dc37ecc
+`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		var addrID string
+		var err error
+
+		ctx := context.Background()
+		ipOp := rt.IPOperator()
+		addr := net.ParseIP(args[0])
+		if addr != nil {
+			addrID, err = idForAddress(ctx, addr, ipOp)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			addrID = args[0]
+		}
+		err = rt.Client().LinkIP(ctx, ipFlags.targetID, addrID)
+		if err != nil {
+			log.Fatalf("Failed: %s", err)
+		}
+	},
+}
+
 func init() {
 	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v4, "v4", "4", false, "IPv4 only")
 	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v6, "v6", "6", false, "IPv6 only")
@@ -304,7 +339,10 @@ func init() {
 	ipSetCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover")
 	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
 
-	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd, ipReleaseCmd)
+	ipAssignCmd.PersistentFlags().StringVarP(&ipFlags.targetID, "to", "t", "", "ID of target server or load balancer")
+	ipAssignCmd.MarkPersistentFlagRequired("to")
+
+	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd, ipReleaseCmd, ipAssignCmd)
 	rootCmd.AddCommand(ipCmd)
 }
 
