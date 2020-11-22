@@ -1,10 +1,16 @@
 # Changelog
 
-## v0.6.0 (UNRELEASED)
+## v0.6.0 (November 23, 2020)
 
 FEATURES:
 
+* gscloud learned `gscloud server assign SERVER-ID IP-ADDR`
+* gscloud learned `gscloud ip assign ID|ADDR` and  `gscloud ip release ID|ADDR` ([#85](https://github.com/gridscale/gscloud/issues/85)).
+* Releases are now signed with our `gridscale GmbH <oss@gridscale.io>` GPG key (key ID: `4841EC2F6BC7BD4515F60C10047EC899C2DC3656`, [#72](https://github.com/gridscale/gscloud/issues/72)). Thanks @nvthongswansea!
+
 FIXED:
+
+* Lots of fixes in help texts. Better man pages.
 
 ## v0.5.0 (October 14, 2020)
 
