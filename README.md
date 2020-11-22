@@ -112,3 +112,11 @@ Generate man-pages and install them. Example:
 ```shell
 $ sudo gscloud manpage /usr/local/share/man/man1/
 ```
+
+## Development
+
+Please create an [issue](https://github.com/gridscale/gscloud/issues) if you have questions, want to start a discussion, or want to start work on something.
+
+[Pull requests](https://github.com/gridscale/gscloud/pulls) are always welcome. Make sure to create an issue first to signal others that you are working on something. Also make sure to take a look at the [Development Notes](development.md).
+
+Have fun!
