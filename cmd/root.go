@@ -184,6 +184,6 @@ func initLogging() {
 	if rootFlags.debug {
 		log.SetLevel(log.DebugLevel)
 	} else {
-		log.SetLevel(log.WarnLevel)
+		log.SetLevel(log.InfoLevel)
 	}
 }
