@@ -188,6 +188,8 @@ var ipAddCmd = &cobra.Command{
 	Short:   "Create a new IP address",
 	Long: `Create a new IP address object.
 
+Pull an IPv4 or IPv6 address from a pool. You can use these addresses to assign them to a server or load balancer object or use them as failover IPs. Assigning IP addresses to a server makes the server directly reachable from the public net.
+
 # EXAMPLES
 
 Create a new IPv6 address with a PTR entry and a name:
@@ -224,6 +226,70 @@ Create a new IPv4 address:
 	},
 }
 
+var ipReleaseCmd = &cobra.Command{
+	Use:   "release ID|ADDR",
+	Short: "Release an IP address",
+	Long: `Free an assigned IP address from a server or load balancer. The freed IP address can be immediatly re-assigned again. Note that the IP object does not get deleted.
+
+# EXAMPLES
+
+Release an IP from any server or load balancer object:
+
+    $ gscloud ip release 203.0.113.42
+
+
+Releasing an unassigned IP address will exit with status code 0:
+
+    $ gscloud ip release 203.0.113.42
+	Not assigned
+
+    $ echo $?
+    0
+
+`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		var ownerID string
+		var ipID string
+		var err error
+		ctx := context.Background()
+		ipOp := rt.IPOperator()
+		address := net.ParseIP(args[0])
+		if address != nil {
+			ipID, err = idForAddress(ctx, address, ipOp)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			ipID = args[0]
+		}
+
+		ipObj, err := ipOp.GetIP(ctx, ipID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, rel := range ipObj.Properties.Relations.Servers {
+			ownerID = rel.ServerUUID
+			break
+		}
+		if ownerID == "" {
+			for _, rel := range ipObj.Properties.Relations.Loadbalancers {
+				ownerID = rel.LoadbalancerUUID
+				break
+			}
+		}
+		if ownerID == "" {
+			log.Println("Not assigned")
+			return
+		}
+		err = rt.Client().UnlinkIP(ctx, ownerID, ipID)
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
 func init() {
 	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v4, "v4", "4", false, "IPv4 only")
 	ipLsCmd.PersistentFlags().BoolVarP(&ipFlags.v6, "v6", "6", false, "IPv6 only")
@@ -238,7 +304,7 @@ func init() {
 	ipSetCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover")
 	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
 
-	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd)
+	ipCmd.AddCommand(ipLsCmd, ipRmCmd, ipSetCmd, ipAddCmd, ipReleaseCmd)
 	rootCmd.AddCommand(ipCmd)
 }
 
