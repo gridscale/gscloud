@@ -209,9 +209,9 @@ var serverSetCmd = &cobra.Command{
 
 var serverAssignCmd = &cobra.Command{
 	Use:     "assign ID ADDR",
-	Example: `gscloud server assign 37d53278-8e5f-47e1-a63f-54513e4b4d53 2a06:2380:0:1::1c8`,
+	Example: `gscloud server assign 37d53278-8e5f-47e1-a63f-54513e4b4d53 2001:db8:0:1::1c8`,
 	Short:   "Assign an IP address",
-	Long:    `Assign an existing IP address to the server given by ID.`,
+	Long:    `Assign an existing IP address to a server.`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		var serverID string

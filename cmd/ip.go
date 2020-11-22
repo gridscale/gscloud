@@ -136,7 +136,7 @@ Delete by address:
 
 var ipSetCmd = &cobra.Command{
 	Use:     "set [flags] ID|ADDR",
-	Example: `gscloud ip set 2a06:2380:0:1::1c8 --reverse-dns example.com`,
+	Example: `gscloud ip set 2001:db8:0:1::1c8 --reverse-dns example.com`,
 	Short:   "Update IP address properties",
 	Long: `Update properties of an existing IP address.
 
@@ -144,7 +144,7 @@ var ipSetCmd = &cobra.Command{
 
 Set PTR entry and name on an existing IP:
 
-    $ gscloud ip set 2a06:2380:2:1::85 --name test --reverse-dns example.com
+    $ gscloud ip set 2001:db8:0:1::1c8 --name test --reverse-dns example.com
 `,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
