@@ -102,7 +102,6 @@ func Test_ServerCommmandDelete(t *testing.T) {
 			expectedOutput: "",
 		},
 	}
-	r, w, _ := os.Pipe()
 	rt, _ = runtime.NewTestRuntime()
 	for _, tc := range testCases {
 		var fatal bool
@@ -114,6 +113,7 @@ func Test_ServerCommmandDelete(t *testing.T) {
 			log.StandardLogger().ExitFunc = func(int) { fatal = true }
 		}
 		rt.SetServerOperator(op)
+		r, w, _ := os.Pipe()
 		os.Stdout = w
 		cmd := serverRmCmd.Run
 		cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
@@ -144,7 +144,6 @@ func Test_ServerCommmandLs(t *testing.T) {
 			expectedPartOfOutput: "",
 		},
 	}
-	r, w, _ := os.Pipe()
 	rt, _ = runtime.NewTestRuntime()
 	for _, tc := range testCases {
 		var fatal bool
@@ -156,6 +155,7 @@ func Test_ServerCommmandLs(t *testing.T) {
 			log.StandardLogger().ExitFunc = func(int) { fatal = true }
 		}
 		rt.SetServerOperator(op)
+		r, w, _ := os.Pipe()
 		os.Stdout = w
 		cmd := serverLsCmd.Run
 		cmd(new(cobra.Command), []string{"ls"})
