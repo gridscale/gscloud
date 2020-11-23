@@ -31,11 +31,13 @@ func (o mockServerOp) GetServerList(ctx context.Context) ([]gsclient.Server, err
 }
 
 func (o mockServerOp) StartServer(ctx context.Context, id string) error {
-	return nil
+	args := o.Called(id)
+	return args.Error(0)
 }
 
 func (o mockServerOp) StopServer(ctx context.Context, id string) error {
-	return nil
+	args := o.Called(id)
+	return args.Error(0)
 }
 
 func (o mockServerOp) ShutdownServer(ctx context.Context, id string) error {
@@ -179,5 +181,110 @@ func Test_ServerCommmandLs(t *testing.T) {
 				assert.Equal(t, "}]", string(out[len(out)-3:len(out)-1]))
 			}
 		}
+	}
+}
+
+func Test_ServerCommmandOn(t *testing.T) {
+	type testCase struct {
+		isSuccessful   bool
+		expectedFatal  bool
+		expectedOutput string
+	}
+	testCases := []testCase{
+		{
+			isSuccessful:   true,
+			expectedFatal:  false,
+			expectedOutput: "",
+		},
+		{
+			isSuccessful:   false,
+			expectedFatal:  true,
+			expectedOutput: "",
+		},
+	}
+	rt, _ = runtime.NewTestRuntime()
+	for _, tc := range testCases {
+		var fatal bool
+		op := mockServerOp{}
+		if tc.isSuccessful {
+			op.On("StartServer", mock.Anything).Return(nil)
+		} else {
+			op.On("StartServer", mock.Anything).Return(errors.New("test"))
+			log.StandardLogger().ExitFunc = func(int) { fatal = true }
+		}
+		rt.SetServerOperator(op)
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+		cmd := serverOnCmd.Run
+		cmd(new(cobra.Command), []string{"on", mockServer.Properties.ObjectUUID})
+		w.Close()
+		out, _ := ioutil.ReadAll(r)
+		assert.Equal(t, tc.expectedFatal, fatal)
+		if tc.isSuccessful {
+			assert.Equal(t, tc.expectedOutput, string(out))
+		}
+	}
+}
+
+func Test_ServerCommmandOff(t *testing.T) {
+	type testCase struct {
+		isSuccessful    bool
+		isForceShutdown bool
+		expectedFatal   bool
+		expectedOutput  string
+	}
+	testCases := []testCase{
+		{
+			isSuccessful:    true,
+			isForceShutdown: false,
+			expectedFatal:   false,
+			expectedOutput:  "",
+		},
+		{
+			isSuccessful:    true,
+			isForceShutdown: true,
+			expectedFatal:   false,
+			expectedOutput:  "",
+		},
+		{
+			isSuccessful:   false,
+			expectedFatal:  true,
+			expectedOutput: "",
+		},
+	}
+	rt, _ = runtime.NewTestRuntime()
+	for _, tc := range testCases {
+		var fatal bool
+		serverFlags.forceShutdown = tc.isForceShutdown
+
+		op := mockServerOp{}
+		if tc.isForceShutdown {
+			if tc.isSuccessful {
+				op.On("StopServer", mock.Anything).Return(nil)
+			} else {
+				op.On("StopServer", mock.Anything).Return(errors.New("test"))
+				log.StandardLogger().ExitFunc = func(int) { fatal = true }
+			}
+		} else {
+			if tc.isSuccessful {
+				op.On("ShutdownServer", mock.Anything).Return(nil)
+			} else {
+				op.On("ShutdownServer", mock.Anything).Return(errors.New("test"))
+				log.StandardLogger().ExitFunc = func(int) { fatal = true }
+			}
+		}
+
+		rt.SetServerOperator(op)
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+		cmd := serverOffCmd.Run
+		cmd(new(cobra.Command), []string{"off", mockServer.Properties.ObjectUUID})
+		w.Close()
+		out, _ := ioutil.ReadAll(r)
+		assert.Equal(t, tc.expectedFatal, fatal)
+		if tc.isSuccessful {
+			assert.Equal(t, tc.expectedOutput, string(out))
+		}
+		op.AssertExpectations(t)
 	}
 }
