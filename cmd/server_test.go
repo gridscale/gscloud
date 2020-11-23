@@ -10,6 +10,7 @@ import (
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 var mockServer = gsclient.Server{
@@ -18,7 +19,9 @@ var mockServer = gsclient.Server{
 	},
 }
 
-type mockServerOp struct{}
+type mockServerOp struct {
+	mock.Mock
+}
 
 func (o mockServerOp) GetServerList(ctx context.Context) ([]gsclient.Server, error) {
 	return nil, nil
@@ -33,11 +36,13 @@ func (o mockServerOp) StopServer(ctx context.Context, id string) error {
 }
 
 func (o mockServerOp) ShutdownServer(ctx context.Context, id string) error {
-	return nil
+	args := o.Called(id)
+	return args.Error(0)
 }
 
 func (o mockServerOp) DeleteServer(ctx context.Context, id string) error {
-	return nil
+	args := o.Called(id)
+	return args.Error(0)
 }
 
 func (o mockServerOp) CreateServer(ctx context.Context, body gsclient.ServerCreateRequest) (gsclient.ServerCreateResponse, error) {
@@ -80,6 +85,7 @@ func Test_ServerCommmandDelete(t *testing.T) {
 	r, w, _ := os.Pipe()
 	rt, _ = runtime.NewTestRuntime()
 	op := mockServerOp{}
+	op.On("DeleteServer", mock.Anything).Return(nil)
 	rt.SetServerOperator(op)
 	os.Stdout = w
 	cmd := serverRmCmd.Run
