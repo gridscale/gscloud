@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/runtime"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -82,15 +84,45 @@ func (o mockServerOp) IsServerOn(ctx context.Context, id string) (bool, error) {
 }
 
 func Test_ServerCommmandDelete(t *testing.T) {
+	type testCase struct {
+		isSuccessful   bool
+		expectedFatal  bool
+		expectedOutput string
+	}
+	testCases := []testCase{
+		{
+			isSuccessful:   true,
+			expectedFatal:  false,
+			expectedOutput: "",
+		},
+		{
+			isSuccessful:   false,
+			expectedFatal:  true,
+			expectedOutput: "",
+		},
+	}
 	r, w, _ := os.Pipe()
 	rt, _ = runtime.NewTestRuntime()
-	op := mockServerOp{}
-	op.On("DeleteServer", mock.Anything).Return(nil)
-	rt.SetServerOperator(op)
-	os.Stdout = w
-	cmd := serverRmCmd.Run
-	cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
-	w.Close()
-	out, _ := ioutil.ReadAll(r)
-	assert.Equal(t, "", string(out))
+	for _, tc := range testCases {
+		var fatal bool
+		op := mockServerOp{}
+		if tc.isSuccessful {
+			op.On("DeleteServer", mock.Anything).Return(nil)
+		} else {
+			op.On("DeleteServer", mock.Anything).Return(errors.New("test"))
+			log.StandardLogger().ExitFunc = func(int) { fatal = true }
+		}
+		rt.SetServerOperator(op)
+		os.Stdout = w
+		cmd := serverRmCmd.Run
+		cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
+		w.Close()
+		out, _ := ioutil.ReadAll(r)
+		if tc.isSuccessful {
+			assert.Equal(t, tc.expectedFatal, fatal)
+			assert.Equal(t, tc.expectedOutput, string(out))
+		} else {
+			assert.Equal(t, tc.expectedFatal, fatal)
+		}
+	}
 }
