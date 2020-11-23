@@ -35,86 +35,101 @@ var serverCmd = &cobra.Command{
 	Long:  `List, create, or remove servers.`,
 }
 
+func serverLsCmdRun(cmd *cobra.Command, args []string) {
+	serverOp := rt.ServerOperator()
+	ctx := context.Background()
+	out := new(bytes.Buffer)
+	servers, err := serverOp.GetServerList(ctx)
+	if err != nil {
+		log.Fatalf("Couldn't get server list: %s", err)
+	}
+	var rows [][]string
+	if !rootFlags.json {
+		heading := []string{"id", "name", "core", "mem", "changed", "power"}
+		for _, server := range servers {
+			power := "off"
+			if server.Properties.Power {
+				power = "on"
+			}
+			fill := [][]string{
+				{
+					server.Properties.ObjectUUID,
+					server.Properties.Name,
+					strconv.FormatInt(int64(server.Properties.Cores), 10),
+					strconv.FormatInt(int64(server.Properties.Memory), 10),
+					server.Properties.ChangeTime.Local().Format(time.RFC3339),
+					power,
+				},
+			}
+			rows = append(rows, fill...)
+		}
+		if rootFlags.quiet {
+			for _, info := range rows {
+				fmt.Println(info[0])
+			}
+			return
+		}
+		render.AsTable(out, heading, rows, renderOpts)
+	} else {
+		render.AsJSON(out, servers)
+	}
+	fmt.Print(out)
+}
+
 var serverLsCmd = &cobra.Command{
 	Use:     "ls [flags]",
 	Aliases: []string{"list"},
 	Short:   "List servers",
 	Long:    `List server objects.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		serverOp := rt.ServerOperator()
-		ctx := context.Background()
-		out := new(bytes.Buffer)
-		servers, err := serverOp.GetServerList(ctx)
-		if err != nil {
-			log.Fatalf("Couldn't get server list: %s", err)
-		}
-		var rows [][]string
-		if !rootFlags.json {
-			heading := []string{"id", "name", "core", "mem", "changed", "power"}
-			for _, server := range servers {
-				power := "off"
-				if server.Properties.Power {
-					power = "on"
-				}
-				fill := [][]string{
-					{
-						server.Properties.ObjectUUID,
-						server.Properties.Name,
-						strconv.FormatInt(int64(server.Properties.Cores), 10),
-						strconv.FormatInt(int64(server.Properties.Memory), 10),
-						server.Properties.ChangeTime.Local().Format(time.RFC3339),
-						power,
-					},
-				}
-				rows = append(rows, fill...)
-			}
-			if rootFlags.quiet {
-				for _, info := range rows {
-					fmt.Println(info[0])
-				}
-				return
-			}
-			render.AsTable(out, heading, rows, renderOpts)
-		} else {
-			render.AsJSON(out, servers)
-		}
-		fmt.Print(out)
-	},
+	Run:     serverLsCmdRun,
+}
+
+func serverOnCmdRun(cmd *cobra.Command, args []string) {
+	ctx := context.Background()
+	serverOp := rt.ServerOperator()
+	err := serverOp.StartServer(ctx, args[0])
+	if err != nil {
+		log.Fatalf("Failed starting server: %s", err)
+	}
 }
 
 var serverOnCmd = &cobra.Command{
 	Use:   "on ID",
 	Short: "Turn server on",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-		serverOp := rt.ServerOperator()
-		err := serverOp.StartServer(ctx, args[0])
+	Run:   serverOnCmdRun,
+}
+
+func serverOffCmdRun(cmd *cobra.Command, args []string) {
+	ctx := context.Background()
+	serverOp := rt.ServerOperator()
+	if serverFlags.forceShutdown {
+		err := serverOp.StopServer(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Failed starting server: %s", err)
+			log.Fatalf("Failed stopping server: %s", err)
 		}
-	},
+	} else {
+		err := serverOp.ShutdownServer(ctx, args[0])
+		if err != nil {
+			log.Fatalf("Failed shutting down server: %s", err)
+		}
+	}
 }
 
 var serverOffCmd = &cobra.Command{
 	Use:   "off [flags] ID",
 	Short: "Turn server off via ACPI",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-		serverOp := rt.ServerOperator()
-		if serverFlags.forceShutdown {
-			err := serverOp.StopServer(ctx, args[0])
-			if err != nil {
-				log.Fatalf("Failed stopping server: %s", err)
-			}
-		} else {
-			err := serverOp.ShutdownServer(ctx, args[0])
-			if err != nil {
-				log.Fatalf("Failed shutting down server: %s", err)
-			}
-		}
-	},
+	Run:   serverOffCmdRun,
+}
+
+func serverRmCmdRun(cmd *cobra.Command, args []string) {
+	serverOp := rt.ServerOperator()
+	ctx := context.Background()
+	err := serverOp.DeleteServer(ctx, args[0])
+	if err != nil {
+		log.Fatalf("Removing server failed: %s", err)
+	}
 }
 
 var serverRmCmd = &cobra.Command{
@@ -123,14 +138,7 @@ var serverRmCmd = &cobra.Command{
 	Short:   "Remove server",
 	Long:    `Remove an existing server.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		serverOp := rt.ServerOperator()
-		ctx := context.Background()
-		err := serverOp.DeleteServer(ctx, args[0])
-		if err != nil {
-			log.Fatalf("Removing server failed: %s", err)
-		}
-	},
+	Run:     serverRmCmdRun,
 }
 
 var serverCreateCmd = &cobra.Command{
