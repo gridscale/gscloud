@@ -129,12 +129,20 @@ func Test_ServerCommmandDelete(t *testing.T) {
 func Test_ServerCommmandLs(t *testing.T) {
 	type testCase struct {
 		isSuccessful         bool
+		isJSONFormat         bool
 		expectedFatal        bool
 		expectedPartOfOutput string
 	}
 	testCases := []testCase{
 		{
 			isSuccessful:         true,
+			isJSONFormat:         false,
+			expectedFatal:        false,
+			expectedPartOfOutput: mockServer.Properties.ObjectUUID,
+		},
+		{
+			isSuccessful:         true,
+			isJSONFormat:         true,
 			expectedFatal:        false,
 			expectedPartOfOutput: mockServer.Properties.ObjectUUID,
 		},
@@ -147,6 +155,8 @@ func Test_ServerCommmandLs(t *testing.T) {
 	rt, _ = runtime.NewTestRuntime()
 	for _, tc := range testCases {
 		var fatal bool
+		rootFlags.json = tc.isJSONFormat
+
 		op := mockServerOp{}
 		if tc.isSuccessful {
 			op.On("GetServerList", mock.Anything).Return([]gsclient.Server{mockServer}, nil)
@@ -164,6 +174,10 @@ func Test_ServerCommmandLs(t *testing.T) {
 		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
 			assert.Contains(t, string(out), tc.expectedPartOfOutput)
+			if tc.isJSONFormat {
+				assert.Equal(t, "[{", string(out[:2]))
+				assert.Equal(t, "}]", string(out[len(out)-3:len(out)-1]))
+			}
 		}
 	}
 }
