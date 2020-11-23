@@ -119,11 +119,9 @@ func Test_ServerCommmandDelete(t *testing.T) {
 		cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)
+		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
-			assert.Equal(t, tc.expectedFatal, fatal)
 			assert.Equal(t, tc.expectedOutput, string(out))
-		} else {
-			assert.Equal(t, tc.expectedFatal, fatal)
 		}
 	}
 }
@@ -163,11 +161,9 @@ func Test_ServerCommmandLs(t *testing.T) {
 		cmd(new(cobra.Command), []string{"ls"})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)
+		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
-			assert.Equal(t, tc.expectedFatal, fatal)
 			assert.Contains(t, string(out), tc.expectedPartOfOutput)
-		} else {
-			assert.Equal(t, tc.expectedFatal, fatal)
 		}
 	}
 }
