@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.0 (UNRELEASED)
+
+FEATURES:
+
+FIXED:
+
 ## v0.6.0 (November 23, 2020)
 
 FEATURES:
