@@ -26,7 +26,8 @@ type mockServerOp struct {
 }
 
 func (o mockServerOp) GetServerList(ctx context.Context) ([]gsclient.Server, error) {
-	return nil, nil
+	args := o.Called()
+	return args.Get(0).([]gsclient.Server), args.Error(1)
 }
 
 func (o mockServerOp) StartServer(ctx context.Context, id string) error {
@@ -121,6 +122,50 @@ func Test_ServerCommmandDelete(t *testing.T) {
 		if tc.isSuccessful {
 			assert.Equal(t, tc.expectedFatal, fatal)
 			assert.Equal(t, tc.expectedOutput, string(out))
+		} else {
+			assert.Equal(t, tc.expectedFatal, fatal)
+		}
+	}
+}
+
+func Test_ServerCommmandLs(t *testing.T) {
+	type testCase struct {
+		isSuccessful         bool
+		expectedFatal        bool
+		expectedPartOfOutput string
+	}
+	testCases := []testCase{
+		{
+			isSuccessful:         true,
+			expectedFatal:        false,
+			expectedPartOfOutput: mockServer.Properties.ObjectUUID,
+		},
+		{
+			isSuccessful:         false,
+			expectedFatal:        true,
+			expectedPartOfOutput: "",
+		},
+	}
+	r, w, _ := os.Pipe()
+	rt, _ = runtime.NewTestRuntime()
+	for _, tc := range testCases {
+		var fatal bool
+		op := mockServerOp{}
+		if tc.isSuccessful {
+			op.On("GetServerList", mock.Anything).Return([]gsclient.Server{mockServer}, nil)
+		} else {
+			op.On("GetServerList", mock.Anything).Return([]gsclient.Server{}, errors.New("test"))
+			log.StandardLogger().ExitFunc = func(int) { fatal = true }
+		}
+		rt.SetServerOperator(op)
+		os.Stdout = w
+		cmd := serverLsCmd.Run
+		cmd(new(cobra.Command), []string{"ls"})
+		w.Close()
+		out, _ := ioutil.ReadAll(r)
+		if tc.isSuccessful {
+			assert.Equal(t, tc.expectedFatal, fatal)
+			assert.Contains(t, string(out), tc.expectedPartOfOutput)
 		} else {
 			assert.Equal(t, tc.expectedFatal, fatal)
 		}
