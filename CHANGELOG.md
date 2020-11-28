@@ -4,7 +4,11 @@
 
 FEATURES:
 
+* gscloud server create learned `--profile` flag to specify a HW profile.
+
 FIXED:
+
+* If no HW profile is specified when creating a server, `"q35"` is used now ([#89](https://github.com/gridscale/gscloud/issues/89)).
 
 ## v0.6.0 (November 23, 2020)
 

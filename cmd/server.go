@@ -23,6 +23,7 @@ type serverCmdFlags struct {
 	template      string
 	hostName      string
 	plainPassword string
+	profile       string
 }
 
 var (
@@ -149,10 +150,12 @@ var serverCreateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
+		profile := toHardwareProfile(serverFlags.profile)
 		cServer, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
-			Name:   serverFlags.serverName,
-			Cores:  serverFlags.cores,
-			Memory: serverFlags.memory,
+			Name:            serverFlags.serverName,
+			Cores:           serverFlags.cores,
+			Memory:          serverFlags.memory,
+			HardwareProfile: profile,
 		})
 		if err != nil {
 			log.Fatalf("Creating server failed: %s", err)
@@ -255,6 +258,7 @@ func init() {
 	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.template, "with-template", "", "Name of template to use")
 	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
 	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
+	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 
 	serverSetCmd.PersistentFlags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
 	serverSetCmd.PersistentFlags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
@@ -262,4 +266,37 @@ func init() {
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd)
 	rootCmd.AddCommand(serverCmd)
+}
+
+func toHardwareProfile(val string) gsclient.ServerHardwareProfile {
+	var prof gsclient.ServerHardwareProfile
+	switch val {
+	case "default":
+		prof = gsclient.DefaultServerHardware
+
+	case "nested":
+		prof = gsclient.NestedServerHardware
+
+	case "legacy":
+		prof = gsclient.LegacyServerHardware
+
+	case "cisco_csr":
+		prof = gsclient.CiscoCSRServerHardware
+
+	case "sophos_utm":
+		prof = gsclient.SophosUTMServerHardware
+
+	case "f5_bigip":
+		prof = gsclient.F5BigipServerHardware
+
+	case "q35":
+		prof = gsclient.Q35ServerHardware
+
+	case "q35_nested":
+		prof = gsclient.Q35NestedServerHardware
+
+	default:
+		log.Fatal("Not a valid profile")
+	}
+	return prof
 }
