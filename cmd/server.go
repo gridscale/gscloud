@@ -249,20 +249,20 @@ var serverAssignCmd = &cobra.Command{
 }
 
 func init() {
-	serverOffCmd.PersistentFlags().BoolVarP(&serverFlags.forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
+	serverOffCmd.Flags().BoolVarP(&serverFlags.forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
 
-	serverCreateCmd.PersistentFlags().IntVar(&serverFlags.memory, "mem", 1, "Memory (GB)")
-	serverCreateCmd.PersistentFlags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
-	serverCreateCmd.PersistentFlags().IntVar(&serverFlags.storage, "storage-size", 10, "Storage capacity (GB)")
-	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
-	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.template, "with-template", "", "Name of template to use")
-	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
-	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
-	serverCreateCmd.PersistentFlags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
+	serverCreateCmd.Flags().IntVar(&serverFlags.memory, "mem", 1, "Memory (GB)")
+	serverCreateCmd.Flags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
+	serverCreateCmd.Flags().IntVar(&serverFlags.storage, "storage-size", 10, "Storage capacity (GB)")
+	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
+	serverCreateCmd.Flags().StringVar(&serverFlags.template, "with-template", "", "Name of template to use")
+	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
+	serverCreateCmd.Flags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
+	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 
-	serverSetCmd.PersistentFlags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
-	serverSetCmd.PersistentFlags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
-	serverSetCmd.PersistentFlags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
+	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
+	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
+	serverSetCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd)
 	rootCmd.AddCommand(serverCmd)
