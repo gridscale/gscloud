@@ -18,7 +18,7 @@ type serverCmdFlags struct {
 	forceShutdown bool
 	memory        int
 	cores         int
-	storage       int
+	storageSize   int
 	serverName    string
 	template      string
 	hostName      string
@@ -146,7 +146,25 @@ var serverCreateCmd = &cobra.Command{
 	Use:     "create [flags]",
 	Example: `gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
 	Short:   "Create server",
-	Long:    `Create a new server.`,
+	Long: `Create a new server.
+
+# EXAMPLES
+
+Create a server with 25 GB storage from the CentOS 8 template:
+
+	$ gscloud server create \
+		--name worker-1 \
+		--cores=2 \
+		--mem=4 \
+		--with-template="CentOS 8 (x86_64)" \
+		--storage-size=25 \
+		--password mysecret \
+		--hostname worker-1
+
+To create a server without any storage just omit --with-template flag:
+
+	$ gscloud server create --name worker-2 --cores=1 --mem=1
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
@@ -169,7 +187,7 @@ var serverCreateCmd = &cobra.Command{
 			storageOp := rt.StorageOperator()
 			cStorage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
 				Name:        string(serverFlags.serverName),
-				Capacity:    serverFlags.storage,
+				Capacity:    serverFlags.storageSize,
 				StorageType: gsclient.DefaultStorageType,
 				Template: &gsclient.StorageTemplate{
 					TemplateUUID: template.Properties.ObjectUUID,
@@ -253,7 +271,7 @@ func init() {
 
 	serverCreateCmd.Flags().IntVar(&serverFlags.memory, "mem", 1, "Memory (GB)")
 	serverCreateCmd.Flags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
-	serverCreateCmd.Flags().IntVar(&serverFlags.storage, "storage-size", 10, "Storage capacity (GB)")
+	serverCreateCmd.Flags().IntVar(&serverFlags.storageSize, "storage-size", 10, "Storage capacity (GB)")
 	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 	serverCreateCmd.Flags().StringVar(&serverFlags.template, "with-template", "", "Name of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
