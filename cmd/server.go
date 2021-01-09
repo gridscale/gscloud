@@ -270,8 +270,19 @@ var serverEventsCmd = &cobra.Command{
 	Use:     "events ID",
 	Example: `gscloud server events 37d53278-8e5f-47e1-a63f-54513e4b4d53`,
 	Short:   "List events",
-	Long:    `Retrieve event log for given server.`,
-	Args:    cobra.ExactArgs(1),
+	Long: `Retrieve event log for given server.
+# EXAMPLES
+
+List all events of a server:
+
+	$ gscloud server events 37d53278-8e5f-47e1-a63f-54513e4b4d53
+
+Only list request IDs of a server (in case you need to tell suport what happened):
+
+	$ gscloud server events --quiet 37d53278-8e5f-47e1-a63f-54513e4b4d53
+
+`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		serverID := args[0]
 		ctx := context.Background()
