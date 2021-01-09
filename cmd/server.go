@@ -68,9 +68,9 @@ func serverLsCmdRun(cmd *cobra.Command, args []string) {
 			for _, info := range rows {
 				fmt.Println(info[0])
 			}
-			return
+		} else {
+			render.AsTable(out, heading, rows, renderOpts)
 		}
-		render.AsTable(out, heading, rows, renderOpts)
 	} else {
 		render.AsJSON(out, servers)
 	}
@@ -266,6 +266,56 @@ var serverAssignCmd = &cobra.Command{
 	},
 }
 
+var serverEventsCmd = &cobra.Command{
+	Use:     "events ID",
+	Example: `gscloud server events 37d53278-8e5f-47e1-a63f-54513e4b4d53`,
+	Short:   "List events",
+	Long:    `Retrieve event log for given server.`,
+	Args:    cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		serverID := args[0]
+		ctx := context.Background()
+		serverOp := rt.ServerOperator()
+		events, err := serverOp.GetServerEventList(ctx, serverID)
+		if err != nil {
+			log.Fatalf("Could not get server events: %s", err)
+		}
+
+		out := new(bytes.Buffer)
+		if rootFlags.json {
+			render.AsJSON(out, events)
+
+		} else {
+			if rootFlags.quiet {
+				for _, event := range events {
+					fmt.Println(event.Properties.RequestUUID)
+				}
+			} else {
+				var rows [][]string
+				heading := []string{
+					"time", "request id", "request type", "activity", "status", "details", "user id",
+				}
+				for _, event := range events {
+					fill := [][]string{
+						{
+							event.Properties.Timestamp.Local().Format(time.RFC3339),
+							event.Properties.RequestUUID,
+							event.Properties.RequestType,
+							event.Properties.Activity,
+							event.Properties.RequestStatus,
+							event.Properties.Change,
+							event.Properties.UserUUID,
+						},
+					}
+					rows = append(rows, fill...)
+				}
+				render.AsTable(out, heading, rows, renderOpts)
+			}
+		}
+		fmt.Print(out)
+	},
+}
+
 func init() {
 	serverOffCmd.Flags().BoolVarP(&serverFlags.forceShutdown, "force", "f", false, "Force shutdown (no ACPI)")
 
@@ -282,7 +332,7 @@ func init() {
 	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
 	serverSetCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 
-	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd)
+	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd, serverEventsCmd)
 	rootCmd.AddCommand(serverCmd)
 }
 
