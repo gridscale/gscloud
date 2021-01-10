@@ -15,15 +15,16 @@ import (
 )
 
 type serverCmdFlags struct {
-	forceShutdown bool
-	memory        int
-	cores         int
-	storageSize   int
-	serverName    string
-	template      string
-	hostName      string
-	plainPassword string
-	profile       string
+	forceShutdown    bool
+	memory           int
+	cores            int
+	storageSize      int
+	serverName       string
+	template         string
+	hostName         string
+	plainPassword    string
+	profile          string
+	availabilityZone string
 }
 
 var (
@@ -174,6 +175,7 @@ To create a server without any storage just omit --with-template flag:
 			Cores:           serverFlags.cores,
 			Memory:          serverFlags.memory,
 			HardwareProfile: profile,
+			AvailablityZone: serverFlags.availabilityZone,
 		})
 		if err != nil {
 			log.Fatalf("Creating server failed: %s", err)
@@ -338,6 +340,7 @@ func init() {
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
 	serverCreateCmd.Flags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
+	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\". Default \"\"")
 
 	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
 	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
