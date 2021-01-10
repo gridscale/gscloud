@@ -4,7 +4,8 @@
 
 FEATURES:
 
-* gscloud server create learned `--profile` flag to specify a HW profile.
+* gscloud-server-create learned `--profile` flag to specify a HW profile.
+* gscloud-server-events subcommand has been added. You can now fetch event logs for a server ([#102](https://github.com/gridscale/gscloud/issues/102)).
 
 FIXED:
 
