@@ -12,6 +12,7 @@ Available Commands:
   completion  Generate shell completion scripts
   help        Help about any command
   ip          Operations on IP addresses
+  iso-image   Operations on ISO images
   kubernetes  Operate managed Kubernetes clusters
   make-config Create a new configuration file
   manpage     Create man-pages for gscloud
@@ -24,11 +25,12 @@ Available Commands:
 
 Flags:
       --account string   Specify the account used (default "default")
-      --config string    Specify a configuration file (default "~/.config/gscloud/config.yaml")
+      --config string    Path to configuration file (default "$XDG_CONFIG_HOME/gscloud/config.yaml")
+      --debug            Debug mode
   -h, --help             Print usage
   -j, --json             Print JSON to stdout instead of a table
       --noheading        Do not print column headings
-  -q, --quiet            Print only IDs of objects
+  -q, --quiet            Print only object IDs
 
 Use "gscloud [command] --help" for more information about a command.
 ```
