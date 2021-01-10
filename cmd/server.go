@@ -172,7 +172,7 @@ To create a server without any storage just omit --with-template flag:
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
 		profile := toHardwareProfile(serverFlags.profile)
-		cServer, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
+		server, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
 			Name:            serverFlags.serverName,
 			Cores:           serverFlags.cores,
 			Memory:          serverFlags.memory,
@@ -183,7 +183,7 @@ To create a server without any storage just omit --with-template flag:
 		if err != nil {
 			log.Fatalf("Creating server failed: %s", err)
 		}
-		fmt.Println("Server created:", cServer.ObjectUUID)
+		fmt.Println("Server created:", server.ObjectUUID)
 
 		if serverFlags.template != "" {
 			var password string
@@ -198,7 +198,7 @@ To create a server without any storage just omit --with-template flag:
 			}
 
 			storageOp := rt.StorageOperator()
-			cStorage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
+			storage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
 				Name:        string(serverFlags.serverName),
 				Capacity:    serverFlags.storageSize,
 				StorageType: gsclient.DefaultStorageType,
@@ -213,15 +213,15 @@ To create a server without any storage just omit --with-template flag:
 			serverStorageOp := rt.ServerStorageRelationOperator()
 			serverStorageOp.CreateServerStorage(
 				ctx,
-				cServer.ObjectUUID,
+				server.ObjectUUID,
 				gsclient.ServerStorageRelationCreateRequest{
-					ObjectUUID: cStorage.ObjectUUID,
+					ObjectUUID: storage.ObjectUUID,
 					BootDevice: true,
 				})
 			if err != nil {
 				log.Fatalf("Create storage failed: %s", err)
 			}
-			fmt.Println("Storage created:", cStorage.ObjectUUID)
+			fmt.Println("Storage created:", storage.ObjectUUID)
 			fmt.Println("Password:", password)
 		}
 	},
