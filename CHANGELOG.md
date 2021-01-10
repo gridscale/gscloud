@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.7.0 (UNRELEASED)
+## v0.7.0 (2021-01-10)
 
 FEATURES:
 
@@ -9,6 +9,7 @@ FEATURES:
 * gscloud-server-create learned `--availability-zone` flag to influence a server's physical distance ([#91](https://github.com/gridscale/gscloud/issues/91)).
 * gscloud-server-create also learned `--auto-recovery` flag to specify auto-recovery behavior ([#92](https://github.com/gridscale/gscloud/issues/92)).
 * gscloud-server-events subcommand has been added. You can now fetch event logs for a server ([#102](https://github.com/gridscale/gscloud/issues/102)).
+* Added new `gscloud iso-image` subcommand to list, create, and eventually delete ISO image objects ([#101](https://github.com/gridscale/gscloud/issues/101)).
 
 FIXED:
 
