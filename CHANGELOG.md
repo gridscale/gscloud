@@ -6,6 +6,7 @@ FEATURES:
 
 * gscloud-server-create learned `--profile` flag to specify a HW profile.
 * gscloud-server-create learned `--availability-zone` flag to influence a server's physical distance ([#91](https://github.com/gridscale/gscloud/issues/91)).
+* gscloud-server-create also learned `--auto-recovery` flag to specify auto-recovery behavior ([#92](https://github.com/gridscale/gscloud/issues/92)).
 * gscloud-server-events subcommand has been added. You can now fetch event logs for a server ([#102](https://github.com/gridscale/gscloud/issues/102)).
 
 FIXED:
