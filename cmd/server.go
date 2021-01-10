@@ -10,6 +10,7 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
+	"github.com/sethvargo/go-password/password"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -185,8 +186,16 @@ To create a server without any storage just omit --with-template flag:
 		fmt.Println("Server created:", cServer.ObjectUUID)
 
 		if serverFlags.template != "" {
+			var password string
+
 			templateOp := rt.TemplateOperator()
 			template, _ := templateOp.GetTemplateByName(ctx, serverFlags.template)
+
+			if serverFlags.plainPassword == "" {
+				password = generatePassword()
+			} else {
+				password = serverFlags.plainPassword
+			}
 
 			storageOp := rt.StorageOperator()
 			cStorage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
@@ -195,7 +204,7 @@ To create a server without any storage just omit --with-template flag:
 				StorageType: gsclient.DefaultStorageType,
 				Template: &gsclient.StorageTemplate{
 					TemplateUUID: template.Properties.ObjectUUID,
-					Password:     serverFlags.plainPassword,
+					Password:     password,
 					PasswordType: gsclient.PlainPasswordType,
 					Hostname:     serverFlags.hostName,
 				},
@@ -213,6 +222,7 @@ To create a server without any storage just omit --with-template flag:
 				log.Fatalf("Create storage failed: %s", err)
 			}
 			fmt.Println("Storage created:", cStorage.ObjectUUID)
+			fmt.Println("Password:", password)
 		}
 	},
 }
@@ -353,6 +363,14 @@ func init() {
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd, serverEventsCmd)
 	rootCmd.AddCommand(serverCmd)
+}
+
+func generatePassword() string {
+	res, err := password.Generate(12, 10, 10, false, false)
+	if err != nil {
+		log.Fatalf("Failed generating password: %s\n", err)
+	}
+	return res
 }
 
 func toHardwareProfile(val string) gsclient.ServerHardwareProfile {
