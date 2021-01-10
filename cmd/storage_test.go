@@ -71,6 +71,10 @@ func (g mockClient) UpdateStorage(ctx context.Context, id string, body gsclient.
 	return nil
 }
 
+func (g mockClient) CreateStorageFromBackup(ctx context.Context, backupID, storageName string) (gsclient.CreateResponse, error) {
+	return gsclient.CreateResponse{}, nil
+}
+
 func Test_StorageListCmd(t *testing.T) {
 	marshalledMockStorage, _ := json.Marshal(mockStorageList)
 	type testCase struct {
