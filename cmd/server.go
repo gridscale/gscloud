@@ -147,7 +147,7 @@ var serverRmCmd = &cobra.Command{
 
 var serverCreateCmd = &cobra.Command{
 	Use:     "create [flags]",
-	Example: `gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --password mysecret --hostname myhost`,
+	Example: `gscloud server create --name "My machine" --cores 2 --mem 4 --with-template "My template" --hostname myhost`,
 	Short:   "Create server",
 	Long: `Create a new server.
 
@@ -161,7 +161,6 @@ Create a server with 25 GB storage from the CentOS 8 template:
 		--mem=4 \
 		--with-template="CentOS 8 (x86_64)" \
 		--storage-size=25 \
-		--password mysecret \
 		--hostname worker-1
 
 To create a server without any storage just omit --with-template flag:
