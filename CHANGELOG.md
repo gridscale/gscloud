@@ -4,6 +4,7 @@
 
 FEATURES:
 
+* gscloud-server-create will now auto generate passwords when `--with-template=` is given and `--password` is not explicitly given on the command line. `--password` flag itself has been marked as deprecated and will be removed in a future release. Passwords are generated on the client and should be sufficiently secure (we use [github.com/sethvargo/go-password](https://pkg.go.dev/github.com/sethvargo/go-password)). The password is printed after the storage is created (See [#90](https://github.com/gridscale/gscloud/issues/90) for more).
 * gscloud-server-create learned `--profile` flag to specify a HW profile.
 * gscloud-server-create learned `--availability-zone` flag to influence a server's physical distance ([#91](https://github.com/gridscale/gscloud/issues/91)).
 * gscloud-server-create also learned `--auto-recovery` flag to specify auto-recovery behavior ([#92](https://github.com/gridscale/gscloud/issues/92)).
