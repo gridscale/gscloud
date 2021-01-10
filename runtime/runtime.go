@@ -112,6 +112,22 @@ func (r *Runtime) SetServerOperator(op gsclient.ServerOperator) {
 	r.client = op
 }
 
+// ISOImageOperator return operation for server objects.
+func (r *Runtime) ISOImageOperator() gsclient.ISOImageOperator {
+	if UnderTest() {
+		return r.client.(gsclient.ISOImageOperator)
+	}
+	return r.client.(*gsclient.Client)
+}
+
+// SetISOImageOperator set operation for ISO image objects.
+func (r *Runtime) SetISOImageOperator(op gsclient.ISOImageOperator) {
+	if !UnderTest() {
+		panic("unexpected use")
+	}
+	r.client = op
+}
+
 // NetworkOperator return operations for network objects.
 func (r *Runtime) NetworkOperator() gsclient.NetworkOperator {
 	if UnderTest() {
