@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0 (UNRELEASED)
+
+FEATURES:
+
+FIXED:
+
 ## v0.7.0 (2021-01-10)
 
 FEATURES:
