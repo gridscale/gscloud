@@ -365,7 +365,7 @@ func init() {
 }
 
 func generatePassword() string {
-	res, err := password.Generate(12, 10, 10, false, false)
+	res, err := password.Generate(12, 6, 2, false, false)
 	if err != nil {
 		log.Fatalf("Failed generating password: %s\n", err)
 	}
