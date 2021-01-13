@@ -1,10 +1,10 @@
 # Changelog
 
-## v0.8.0 (UNRELEASED)
-
-FEATURES:
+## v0.7.1 (2021-01-13)
 
 FIXED:
+
+* Fix a bug in gscloud-server-create when --password was not given ([#104](https://github.com/gridscale/gscloud/issues/104)).
 
 ## v0.7.0 (2021-01-10)
 
