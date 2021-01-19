@@ -6,9 +6,18 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+type networkCmdFlags struct {
+	networkName string
+}
+
+var (
+	networkFlags networkCmdFlags
 )
 
 var networkCmd = &cobra.Command{
@@ -61,6 +70,33 @@ var networkLsCmd = &cobra.Command{
 	},
 }
 
+var networkCreateCmd = &cobra.Command{
+	Use:     "create [flags]",
+	Example: `gscloud network create --name myNetwork`,
+	Short:   "Create network",
+	Long: `Create a new network.
+
+# EXAMPLES
+
+Create a network:
+
+	$ gscloud network create 
+
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		networkOp := rt.NetworkOperator()
+		ctx := context.Background()
+		network, err := networkOp.CreateNetwork(ctx, gsclient.NetworkCreateRequest{
+			Name: networkFlags.networkName,
+		})
+
+		if err != nil {
+			log.Fatalf("Creating network failed: %s", err)
+		}
+		fmt.Println("Network created:", network.ObjectUUID)
+	},
+}
+
 var networkRmCmd = &cobra.Command{
 	Use:     "rm [flags] [ID]",
 	Aliases: []string{"remove"},
@@ -78,6 +114,8 @@ var networkRmCmd = &cobra.Command{
 }
 
 func init() {
-	networkCmd.AddCommand(networkLsCmd, networkRmCmd)
+	networkCreateCmd.Flags().StringVar(&networkFlags.networkName, "name", "", "Name of the network")
+
+	networkCmd.AddCommand(networkLsCmd, networkRmCmd, networkCreateCmd)
 	rootCmd.AddCommand(networkCmd)
 }
