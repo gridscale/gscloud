@@ -24,7 +24,6 @@ type serverCmdFlags struct {
 	serverName       string
 	templateName     string
 	hostName         string
-	plainPassword    string
 	profile          string
 	availabilityZone string
 	autoRecovery     bool
@@ -316,13 +315,7 @@ To create a server without any storage just omit --with-template flag:
 		}()
 
 		if serverFlags.templateName != "" {
-			var password string
-
-			if serverFlags.plainPassword == "" {
-				password = generatePassword()
-			} else {
-				password = serverFlags.plainPassword
-			}
+			password := generatePassword()
 
 			storageOp := rt.StorageOperator()
 			storage, err := storageOp.CreateStorage(ctx, gsclient.StorageCreateRequest{
@@ -487,8 +480,6 @@ func init() {
 	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 	serverCreateCmd.Flags().StringVar(&serverFlags.templateName, "with-template", "", "Name of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
-	serverCreateCmd.Flags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
-	serverCreateCmd.Flags().MarkDeprecated("password", "a password will be created automatically")
 	serverCreateCmd.Flags().Lookup("password").Hidden = true
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\" (default \"\")")
