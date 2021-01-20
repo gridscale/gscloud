@@ -3,7 +3,7 @@ module github.com/gridscale/gscloud
 go 1.15
 
 require (
-	github.com/gridscale/gsclient-go/v3 v3.3.1
+	github.com/gridscale/gsclient-go/v3 v3.3.2
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
