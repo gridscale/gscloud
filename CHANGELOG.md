@@ -4,6 +4,8 @@
 
 FEATURES:
 
+* You can now create networks with gscloud-network-create ([PR #107](https://github.com/gridscale/gscloud/pull/107)).
+
 FIXED:
 
 ## v0.7.1 (2021-01-13)
