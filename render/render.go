@@ -1,3 +1,7 @@
+// Package render provides helper functions to produce the actual output on the
+// text terminal. Output is typically JSON or a plain-text table. Functions
+// write to a buffer that implements a io.Writer interface, not directly to
+// stdout.
 package render
 
 import (
