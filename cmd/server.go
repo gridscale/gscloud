@@ -188,7 +188,10 @@ To create a server without any storage just omit --with-template flag:
 			var password string
 
 			templateOp := rt.TemplateOperator()
-			template, _ := templateOp.GetTemplateByName(ctx, serverFlags.template)
+			template, err := templateOp.GetTemplateByName(ctx, serverFlags.template)
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			if serverFlags.plainPassword == "" {
 				password = generatePassword()
@@ -208,9 +211,12 @@ To create a server without any storage just omit --with-template flag:
 					Hostname:     serverFlags.hostName,
 				},
 			})
+			if err != nil {
+				log.Fatalf("Creating storage failed: %s", err)
+			}
 
 			serverStorageOp := rt.ServerStorageRelationOperator()
-			serverStorageOp.CreateServerStorage(
+			err = serverStorageOp.CreateServerStorage(
 				ctx,
 				server.ObjectUUID,
 				gsclient.ServerStorageRelationCreateRequest{
@@ -218,7 +224,7 @@ To create a server without any storage just omit --with-template flag:
 					BootDevice: true,
 				})
 			if err != nil {
-				log.Fatalf("Create storage failed: %s", err)
+				log.Fatalf("Linking storage to server failed: %s", err)
 			}
 			fmt.Println("Storage created:", storage.ObjectUUID)
 			fmt.Println("Password:", password)
