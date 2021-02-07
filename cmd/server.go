@@ -11,7 +11,6 @@ import (
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	"github.com/sethvargo/go-password/password"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ type serverCmdFlags struct {
 	cores            int
 	storageSize      int
 	serverName       string
-	template         string
+	templateName     string
 	hostName         string
 	plainPassword    string
 	profile          string
@@ -39,13 +38,13 @@ var serverCmd = &cobra.Command{
 	Long:  `List, create, or remove servers.`,
 }
 
-func serverLsCmdRun(cmd *cobra.Command, args []string) {
+func serverLsCmdRun(cmd *cobra.Command, args []string) error {
 	serverOp := rt.ServerOperator()
 	ctx := context.Background()
 	out := new(bytes.Buffer)
 	servers, err := serverOp.GetServerList(ctx)
 	if err != nil {
-		log.Fatalf("Couldn't get server list: %s", err)
+		return NewError(cmd, "Could not get list of servers", err)
 	}
 	var rows [][]string
 	if !rootFlags.json {
@@ -78,6 +77,7 @@ func serverLsCmdRun(cmd *cobra.Command, args []string) {
 		render.AsJSON(out, servers)
 	}
 	fmt.Print(out)
+	return nil
 }
 
 var serverLsCmd = &cobra.Command{
@@ -85,55 +85,58 @@ var serverLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List servers",
 	Long:    `List server objects.`,
-	Run:     serverLsCmdRun,
+	RunE:    serverLsCmdRun,
 }
 
-func serverOnCmdRun(cmd *cobra.Command, args []string) {
+func serverOnCmdRun(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	serverOp := rt.ServerOperator()
 	err := serverOp.StartServer(ctx, args[0])
 	if err != nil {
-		log.Fatalf("Failed starting server: %s", err)
+		return NewError(cmd, "Failed starting server", err)
 	}
+	return nil
 }
 
 var serverOnCmd = &cobra.Command{
 	Use:   "on ID",
 	Short: "Turn server on",
 	Args:  cobra.ExactArgs(1),
-	Run:   serverOnCmdRun,
+	RunE:  serverOnCmdRun,
 }
 
-func serverOffCmdRun(cmd *cobra.Command, args []string) {
+func serverOffCmdRun(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	serverOp := rt.ServerOperator()
 	if serverFlags.forceShutdown {
 		err := serverOp.StopServer(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Failed stopping server: %s", err)
+			return NewError(cmd, "Failed stopping server", err)
 		}
 	} else {
 		err := serverOp.ShutdownServer(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Failed shutting down server: %s", err)
+			return NewError(cmd, "Failed shutting down server", err)
 		}
 	}
+	return nil
 }
 
 var serverOffCmd = &cobra.Command{
 	Use:   "off [flags] ID",
 	Short: "Turn server off via ACPI",
 	Args:  cobra.ExactArgs(1),
-	Run:   serverOffCmdRun,
+	RunE:  serverOffCmdRun,
 }
 
-func serverRmCmdRun(cmd *cobra.Command, args []string) {
+func serverRmCmdRun(cmd *cobra.Command, args []string) error {
 	serverOp := rt.ServerOperator()
 	ctx := context.Background()
 	err := serverOp.DeleteServer(ctx, args[0])
 	if err != nil {
-		log.Fatalf("Removing server failed: %s", err)
+		return NewError(cmd, "Deleting server failed", err)
 	}
+	return nil
 }
 
 var serverRmCmd = &cobra.Command{
@@ -142,7 +145,7 @@ var serverRmCmd = &cobra.Command{
 	Short:   "Remove server",
 	Long:    `Remove an existing server.`,
 	Args:    cobra.ExactArgs(1),
-	Run:     serverRmCmdRun,
+	RunE:    serverRmCmdRun,
 }
 
 var serverCreateCmd = &cobra.Command{
@@ -167,10 +170,13 @@ To create a server without any storage just omit --with-template flag:
 
 	$ gscloud server create --name worker-2 --cores=1 --mem=1
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
-		profile := toHardwareProfile(serverFlags.profile)
+		profile, err := toHardwareProfile(serverFlags.profile)
+		if err != nil {
+			return NewError(cmd, "Cannot create server", err)
+		}
 		server, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
 			Name:            serverFlags.serverName,
 			Cores:           serverFlags.cores,
@@ -180,17 +186,17 @@ To create a server without any storage just omit --with-template flag:
 			AutoRecovery:    &serverFlags.autoRecovery,
 		})
 		if err != nil {
-			log.Fatalf("Creating server failed: %s", err)
+			return NewError(cmd, "Creating server failed", err)
 		}
 		fmt.Println("Server created:", server.ObjectUUID)
 
-		if serverFlags.template != "" {
+		if serverFlags.templateName != "" {
 			var password string
 
 			templateOp := rt.TemplateOperator()
-			template, err := templateOp.GetTemplateByName(ctx, serverFlags.template)
+			template, err := templateOp.GetTemplateByName(ctx, serverFlags.templateName)
 			if err != nil {
-				log.Fatal(err)
+				return NewError(cmd, fmt.Sprintf("No such template '%s'", serverFlags.templateName), err)
 			}
 
 			if serverFlags.plainPassword == "" {
@@ -212,7 +218,7 @@ To create a server without any storage just omit --with-template flag:
 				},
 			})
 			if err != nil {
-				log.Fatalf("Creating storage failed: %s", err)
+				return NewError(cmd, "Creating storage failed", err)
 			}
 
 			serverStorageOp := rt.ServerStorageRelationOperator()
@@ -224,11 +230,12 @@ To create a server without any storage just omit --with-template flag:
 					BootDevice: true,
 				})
 			if err != nil {
-				log.Fatalf("Linking storage to server failed: %s", err)
+				return NewError(cmd, "Linking storage to server failed", err)
 			}
 			fmt.Println("Storage created:", storage.ObjectUUID)
 			fmt.Println("Password:", password)
 		}
+		return nil
 	},
 }
 
@@ -238,7 +245,7 @@ var serverSetCmd = &cobra.Command{
 	Short:   "Update server",
 	Long:    `Update properties of an existing server.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
 		err := serverOp.UpdateServer(
@@ -250,8 +257,9 @@ var serverSetCmd = &cobra.Command{
 				Name:   serverFlags.serverName,
 			})
 		if err != nil {
-			log.Fatalf("Failed: %s", err)
+			return NewError(cmd, "Failed setting property", err)
 		}
+		return nil
 	},
 }
 
@@ -261,7 +269,7 @@ var serverAssignCmd = &cobra.Command{
 	Short:   "Assign an IP address",
 	Long:    `Assign an existing IP address to a server.`,
 	Args:    cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var serverID string
 		var addrID string
 		var err error
@@ -273,15 +281,16 @@ var serverAssignCmd = &cobra.Command{
 		if addr != nil {
 			addrID, err = idForAddress(ctx, addr, ipOp)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		} else {
 			addrID = args[1]
 		}
 		err = rt.Client().LinkIP(ctx, serverID, addrID)
 		if err != nil {
-			log.Fatalf("Failed: %s", err)
+			return NewError(cmd, "Could not assign IP address", err)
 		}
+		return nil
 	},
 }
 
@@ -302,13 +311,13 @@ Only list request IDs of a server (in case you need to tell suport what happened
 
 `,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		serverID := args[0]
 		ctx := context.Background()
 		serverOp := rt.ServerOperator()
 		events, err := serverOp.GetServerEventList(ctx, serverID)
 		if err != nil {
-			log.Fatalf("Could not get server events: %s", err)
+			return NewError(cmd, "Could not get list of events", err)
 		}
 
 		out := new(bytes.Buffer)
@@ -343,6 +352,8 @@ Only list request IDs of a server (in case you need to tell suport what happened
 			}
 		}
 		fmt.Print(out)
+
+		return nil
 	},
 }
 
@@ -353,7 +364,7 @@ func init() {
 	serverCreateCmd.Flags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
 	serverCreateCmd.Flags().IntVar(&serverFlags.storageSize, "storage-size", 10, "Storage capacity (GB)")
 	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
-	serverCreateCmd.Flags().StringVar(&serverFlags.template, "with-template", "", "Name of template to use")
+	serverCreateCmd.Flags().StringVar(&serverFlags.templateName, "with-template", "", "Name of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
 	serverCreateCmd.Flags().StringVar(&serverFlags.plainPassword, "password", "", "Plain-text password")
 	serverCreateCmd.Flags().MarkDeprecated("password", "a password will be created automatically")
@@ -373,12 +384,12 @@ func init() {
 func generatePassword() string {
 	res, err := password.Generate(12, 6, 2, false, false)
 	if err != nil {
-		log.Fatalf("Failed generating password: %s\n", err)
+		panic(err)
 	}
 	return res
 }
 
-func toHardwareProfile(val string) gsclient.ServerHardwareProfile {
+func toHardwareProfile(val string) (gsclient.ServerHardwareProfile, error) {
 	var prof gsclient.ServerHardwareProfile
 	switch val {
 	case "default":
@@ -406,7 +417,7 @@ func toHardwareProfile(val string) gsclient.ServerHardwareProfile {
 		prof = gsclient.Q35NestedServerHardware
 
 	default:
-		log.Fatal("Not a valid profile")
+		return "", fmt.Errorf("Not a valid profile: %s", val)
 	}
-	return prof
+	return prof, nil
 }

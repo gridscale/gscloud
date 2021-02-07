@@ -8,7 +8,6 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -32,14 +31,13 @@ var isoImageLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List images",
 	Long:    `List ISO image objects.`,
-	Run: func(cmd *cobra.Command, args []string) {
-
+	RunE: func(cmd *cobra.Command, args []string) error {
 		imageOp := rt.ISOImageOperator()
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		images, err := imageOp.GetISOImageList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get list of ISO images: %s", err)
+			return NewError(cmd, "Could not get list of images", err)
 		}
 		var rows [][]string
 		if !rootFlags.json {
@@ -72,6 +70,7 @@ var isoImageLsCmd = &cobra.Command{
 			render.AsJSON(out, images)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -81,13 +80,14 @@ var isoImageRmCmd = &cobra.Command{
 	Short:   "Remove ISO image",
 	Long:    `Remove an existing ISO image.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		imageOp := rt.ISOImageOperator()
 		ctx := context.Background()
 		err := imageOp.DeleteISOImage(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Removing ISO image failed: %s", err)
+			return NewError(cmd, "Deleting image failed", err)
 		}
+		return nil
 	},
 }
 
@@ -104,7 +104,7 @@ Create a Fedora CoreOS image:
 	   --name="Fedora CoreOS" \
 	   --source-url="https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/33.20201214.3.1/x86_64/fedora-coreos-33.20201214.3.1-live.x86_64.iso"
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		imageOp := rt.ISOImageOperator()
 		ctx := context.Background()
 		image, err := imageOp.CreateISOImage(ctx, gsclient.ISOImageCreateRequest{
@@ -112,9 +112,10 @@ Create a Fedora CoreOS image:
 			SourceURL: isoImageFlags.sourceURL,
 		})
 		if err != nil {
-			log.Fatalf("Creating ISO image failed: %s", err)
+			return NewError(cmd, "Creating image failed", err)
 		}
 		fmt.Println("Image created:", image.ObjectUUID)
+		return nil
 	},
 }
 

@@ -11,6 +11,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Error is returned when something goes wrong in a command or sub-command.
+type Error struct {
+	Command *cobra.Command
+	What    string
+	Err     error
+}
+
+func (e *Error) Error() string { return e.What + ": " + e.Err.Error() }
+
+// NewError constructs a new error.
+func NewError(cmd *cobra.Command, what string, err error) *Error {
+	return &Error{Command: cmd, What: what, Err: err}
+}
+
 type rootCmdFlags struct {
 	configFile string
 	account    string
@@ -120,6 +134,11 @@ func init() {
 	if !runtime.UnderTest() {
 		cobra.OnInitialize(initConfig, initRuntime, initLogging)
 	}
+
+	// Do not print usage or error strings in case of errors. Commands use RunE
+	// and return errors. We print errors in Execute.
+	rootCmd.SilenceUsage = true
+	rootCmd.SilenceErrors = true
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), fmt.Sprintf("Path to configuration file"))
 	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", "default", "Specify the account used")

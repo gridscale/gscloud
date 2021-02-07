@@ -100,7 +100,7 @@ func Test_ServerCommmandDelete(t *testing.T) {
 		},
 		{
 			isSuccessful:   false,
-			expectedFatal:  true,
+			expectedFatal:  false,
 			expectedOutput: "",
 		},
 	}
@@ -117,7 +117,7 @@ func Test_ServerCommmandDelete(t *testing.T) {
 		rt.SetServerOperator(op)
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		cmd := serverRmCmd.Run
+		cmd := serverRmCmd.RunE
 		cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)
@@ -150,7 +150,7 @@ func Test_ServerCommmandLs(t *testing.T) {
 		},
 		{
 			isSuccessful:         false,
-			expectedFatal:        true,
+			expectedFatal:        false,
 			expectedPartOfOutput: "",
 		},
 	}
@@ -169,7 +169,7 @@ func Test_ServerCommmandLs(t *testing.T) {
 		rt.SetServerOperator(op)
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		cmd := serverLsCmd.Run
+		cmd := serverLsCmd.RunE
 		cmd(new(cobra.Command), []string{"ls"})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)
@@ -198,7 +198,7 @@ func Test_ServerCommmandOn(t *testing.T) {
 		},
 		{
 			isSuccessful:   false,
-			expectedFatal:  true,
+			expectedFatal:  false,
 			expectedOutput: "",
 		},
 	}
@@ -215,7 +215,7 @@ func Test_ServerCommmandOn(t *testing.T) {
 		rt.SetServerOperator(op)
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		cmd := serverOnCmd.Run
+		cmd := serverOnCmd.RunE
 		cmd(new(cobra.Command), []string{"on", mockServer.Properties.ObjectUUID})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)
@@ -248,7 +248,7 @@ func Test_ServerCommmandOff(t *testing.T) {
 		},
 		{
 			isSuccessful:   false,
-			expectedFatal:  true,
+			expectedFatal:  false,
 			expectedOutput: "",
 		},
 	}
@@ -277,7 +277,7 @@ func Test_ServerCommmandOff(t *testing.T) {
 		rt.SetServerOperator(op)
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		cmd := serverOffCmd.Run
+		cmd := serverOffCmd.RunE
 		cmd(new(cobra.Command), []string{"off", mockServer.Properties.ObjectUUID})
 		w.Close()
 		out, _ := ioutil.ReadAll(r)

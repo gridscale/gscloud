@@ -10,8 +10,6 @@ import (
 	"io"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gridscale/gscloud/render/table"
 )
 
@@ -45,7 +43,7 @@ func AsTable(buf io.Writer, columns []string, rows [][]string, opts Options) {
 func AsJSON(buf io.Writer, o interface{}) {
 	json, err := json.Marshal(o)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	buf.Write(append(json, '\n'))
 }

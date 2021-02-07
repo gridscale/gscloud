@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gridscale/gscloud/render"
 	"github.com/spf13/cobra"
 )
@@ -24,13 +22,13 @@ var templateLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List templates",
 	Long:    `List template objects.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		templateOp := rt.TemplateOperator()
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		templates, err := templateOp.GetTemplateList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get template list: %s", err)
+			return NewError(cmd, "Could not get templates", err)
 		}
 		var rows [][]string
 		if rootFlags.json {
@@ -53,11 +51,12 @@ var templateLsCmd = &cobra.Command{
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}
-				return
+				return nil
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -67,13 +66,14 @@ var templateRmCmd = &cobra.Command{
 	Short:   "Remove templates",
 	Long:    `Remove a template by ID.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		storageOp := rt.TemplateOperator()
 		ctx := context.Background()
 		err := storageOp.DeleteTemplate(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Removing template failed: %s", err)
+			return NewError(cmd, "Deleting template failed", err)
 		}
+		return nil
 	},
 }
 

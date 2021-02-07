@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
 	"github.com/kardianos/osext"
@@ -49,7 +47,7 @@ var saveKubeconfigCmd = &cobra.Command{
 	Use:   "save-kubeconfig",
 	Short: "Saves configuration of the given cluster into a kubeconfig",
 	Long:  "Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
 		credentialPlugin, _ := cmd.Flags().GetBool("credential-plugin")
@@ -64,26 +62,26 @@ var saveKubeconfigCmd = &cobra.Command{
 		if kubeConfigEnv != "" && !utils.FileExists(kubeConfigEnv) {
 			_, err := os.Create(kubeConfigEnv)
 			if err != nil {
-				log.Fatalln(err)
+				return NewError(cmd, "Could not create file", err)
 			}
 		}
 
 		currentKubeConfig, err := pathOptions.GetStartingConfig()
 		if err != nil {
-			log.Fatalf("Couldn't get starting config: %s", err)
+			return NewError(cmd, "Could not create starting config: %s", err)
 		}
 
 		op := rt.KubernetesOperator()
 		newKubeConfig, _, err := fetchKubeConfigFromProvider(op, clusterID)
 		if err != nil {
-			log.Fatalf("Invalid kubeconfig: %s", err)
+			return NewError(cmd, "Invalid kubeconfig", err)
 		}
 		c := newKubeConfig.Clusters[0]
 		u := newKubeConfig.Users[0]
 
 		certificateAuthorityData, err := b64.StdEncoding.DecodeString(c.Cluster.CertificateAuthorityData)
 		if err != nil {
-			log.Fatalln(err)
+			return NewError(cmd, "Could not decode certificate authority data", err)
 		}
 
 		currentKubeConfig.Clusters[c.Name] = &clientcmdapi.Cluster{
@@ -116,12 +114,12 @@ var saveKubeconfigCmd = &cobra.Command{
 		} else {
 			clientCertificateData, err := b64.StdEncoding.DecodeString(u.User.ClientCertificateData)
 			if err != nil {
-				log.Fatalln(err)
+				return NewError(cmd, "Could not decode client certificate data", err)
 			}
 
 			clientKeyData, err := b64.StdEncoding.DecodeString(u.User.ClientKeyData)
 			if err != nil {
-				log.Fatalln(err)
+				return NewError(cmd, "Could not decode client key data", err)
 			}
 
 			currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
@@ -138,8 +136,10 @@ var saveKubeconfigCmd = &cobra.Command{
 
 		err = clientcmd.ModifyConfig(pathOptions, *currentKubeConfig, true)
 		if err != nil {
-			log.Fatalln(err)
+			return NewError(cmd, "Could not modify config", err)
 		}
+
+		return nil
 	},
 }
 
@@ -148,7 +148,7 @@ var execCredentialCmd = &cobra.Command{
 	Use:   "exec-credential",
 	Short: "Provides client credentials to kubectl command",
 	Long:  "exec-credential provides client credentials to kubectl command.",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
 
@@ -164,7 +164,7 @@ var execCredentialCmd = &cobra.Command{
 
 		execCredential, err := loadCachedKubeConfig(clusterID)
 		if err != nil {
-			log.Fatalf("Couldn't load cached kubeconfig: %s", err)
+			return NewError(cmd, "Could not load cached kubeconfig", err)
 		}
 
 		op := rt.KubernetesOperator()
@@ -172,7 +172,7 @@ var execCredentialCmd = &cobra.Command{
 		if execCredential == nil {
 			newKubeConfig, expirationTime, err := fetchKubeConfigFromProvider(op, clusterID)
 			if err != nil {
-				log.Fatalf("Couldn't fetch kubeconfig: %s", err)
+				return NewError(cmd, "Could not fetch kubeconfig", err)
 			}
 
 			u := newKubeConfig.Users[0]
@@ -211,6 +211,7 @@ var execCredentialCmd = &cobra.Command{
 		}
 		// this output will be used by kubectl
 		fmt.Println(string(execCredentialJSON))
+		return nil
 	},
 }
 

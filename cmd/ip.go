@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net"
 
@@ -36,17 +37,18 @@ var ipLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List IP addresses",
 	Long:    `List IP address objects.`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if ipFlags.v4 && ipFlags.v6 {
-			log.Fatal("No family selected")
+			return errors.New("No family selected")
 		}
+		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ipOp := rt.IPOperator()
 		ctx := context.Background()
 		ipAddresses, err := ipOp.GetIPList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get list of IPs: %s", err)
+			return NewError(cmd, "Could not get list of IP addresses", err)
 		}
 		var rows [][]string
 		out := new(bytes.Buffer)
@@ -86,13 +88,14 @@ var ipLsCmd = &cobra.Command{
 				for _, row := range rows {
 					fmt.Println(row[5])
 				}
-				return
+				return nil
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, ipAddresses)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -114,7 +117,7 @@ Delete by address:
 
 `,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var id string
 		var err error
 		ctx := context.Background()
@@ -123,15 +126,16 @@ Delete by address:
 		if address != nil {
 			id, err = idForAddress(ctx, address, ipOp)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		} else {
 			id = args[0]
 		}
 		err = ipOp.DeleteIP(ctx, id)
 		if err != nil {
-			log.Fatalf("Removing IP failed: %s", err)
+			return NewError(cmd, "Releasing IP address failed", err)
 		}
+		return nil
 	},
 }
 
@@ -148,7 +152,7 @@ Set PTR entry and name on an existing IP:
     $ gscloud ip set 2001:db8:0:1::1c8 --name test --reverse-dns example.com
 `,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var id string
 		var err error
 		address := net.ParseIP(args[0])
@@ -157,7 +161,7 @@ Set PTR entry and name on an existing IP:
 		if address != nil {
 			id, err = idForAddress(ctx, address, ipOp)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		} else {
 			id = args[0]
@@ -177,8 +181,9 @@ Set PTR entry and name on an existing IP:
 			id,
 			updateReq)
 		if err != nil {
-			log.Fatalf("Failed: %s", err)
+			return NewError(cmd, "Could not update IP address", err)
 		}
+		return nil
 	},
 }
 
@@ -202,12 +207,13 @@ Create a new IPv4 address:
     $ gscloud ip add -4
 
 `,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if ipFlags.v4 && ipFlags.v6 {
-			log.Fatal("No family given. Use either -4 or -6")
+			return errors.New("No family given. Use either -4 or -6")
 		}
+		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		family := gsclient.IPv4Type
 		if ipFlags.v6 {
 			family = gsclient.IPv6Type
@@ -221,9 +227,10 @@ Create a new IPv4 address:
 			ReverseDNS: ipFlags.reverseDNS,
 		})
 		if err != nil {
-			log.Fatalf("Adding IPv%d address failed: %s", family, err)
+			return NewError(cmd, fmt.Sprintf("Adding IPv%d address failed", family), err)
 		}
 		fmt.Println("IP added:", ipAddress.IP)
+		return nil
 	},
 }
 
@@ -249,7 +256,7 @@ Releasing an unassigned IP address will exit with status code 0:
 
 `,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var ownerID string
 		var ipID string
 		var err error
@@ -259,7 +266,7 @@ Releasing an unassigned IP address will exit with status code 0:
 		if address != nil {
 			ipID, err = idForAddress(ctx, address, ipOp)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		} else {
 			ipID = args[0]
@@ -267,7 +274,7 @@ Releasing an unassigned IP address will exit with status code 0:
 
 		ipObj, err := ipOp.GetIP(ctx, ipID)
 		if err != nil {
-			log.Fatal(err)
+			return NewError(cmd, "Could not get object", err)
 		}
 
 		for _, rel := range ipObj.Properties.Relations.Servers {
@@ -282,12 +289,13 @@ Releasing an unassigned IP address will exit with status code 0:
 		}
 		if ownerID == "" {
 			log.Println("Not assigned")
-			return
+			return nil
 		}
 		err = rt.Client().UnlinkIP(ctx, ownerID, ipID)
 		if err != nil {
-			log.Fatal(err)
+			return NewError(cmd, "Could not remove address from server", err)
 		}
+		return nil
 	},
 }
 
@@ -303,7 +311,7 @@ Assign an IPv4 address to a server or load balancer:
     $ gscloud ip assign 203.0.113.42 --to=b0dd8d71-8f8d-46c1-8985-ce4b6dc37ecc
 `,
 	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var addrID string
 		var err error
 
@@ -313,15 +321,16 @@ Assign an IPv4 address to a server or load balancer:
 		if addr != nil {
 			addrID, err = idForAddress(ctx, addr, ipOp)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		} else {
 			addrID = args[0]
 		}
 		err = rt.Client().LinkIP(ctx, ipFlags.targetID, addrID)
 		if err != nil {
-			log.Fatalf("Failed: %s", err)
+			return NewError(cmd, "Could not assign IP address", err)
 		}
+		return nil
 	},
 }
 

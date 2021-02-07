@@ -8,7 +8,6 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -32,13 +31,13 @@ var sshKeyLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List SSH keys",
 	Long:    `List SSH key objects.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		op := rt.SSHKeyOperator()
 		sshkeys, err := op.GetSshkeyList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get SSH key list: %s", err)
+			return NewError(cmd, "Could not get SSH key list", err)
 		}
 		var rows [][]string
 		if !rootFlags.json {
@@ -60,13 +59,14 @@ var sshKeyLsCmd = &cobra.Command{
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}
-				return
+				return nil
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, sshkeys)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -74,17 +74,10 @@ var sshKeyAddCmd = &cobra.Command{
 	Use:   "add [flags]",
 	Short: "Add a new SSH key",
 	Long:  `Create a new SSH key.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if !cmd.Flag("name").Changed {
-			log.Fatalf("Mandatory flag missing: name")
-		}
-		if !cmd.Flag("file").Changed {
-			log.Fatalf("Mandatory flag missing: file")
-		}
-
+	RunE: func(cmd *cobra.Command, args []string) error {
 		publicKey, err := ioutil.ReadFile(sshKeyFlags.pubKeyFile)
 		if err != nil {
-			log.Fatalf("Error reading file: %s", err)
+			return NewError(cmd, "Error reading file", err)
 		}
 		ctx := context.Background()
 		op := rt.SSHKeyOperator()
@@ -93,8 +86,9 @@ var sshKeyAddCmd = &cobra.Command{
 			Sshkey: string(publicKey),
 		})
 		if err != nil {
-			log.Fatalf("Creating SSH key failed: %s", err)
+			return NewError(cmd, "Creating SSH key failed", err)
 		}
+		return nil
 	},
 }
 
@@ -104,19 +98,22 @@ var sshKeyRmCmd = &cobra.Command{
 	Short:   "Remove SSH key",
 	Long:    `Remove an existing SSH key.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		op := rt.SSHKeyOperator()
 		err := op.DeleteSshkey(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Removing SSH key failed: %s", err)
+			return NewError(cmd, "Removing SSH key failed", err)
 		}
+		return nil
 	},
 }
 
 func init() {
 	sshKeyAddCmd.PersistentFlags().StringVarP(&sshKeyFlags.name, "name", "n", "", "Name of the new key")
+	sshKeyAddCmd.MarkFlagRequired("name")
 	sshKeyAddCmd.PersistentFlags().StringVarP(&sshKeyFlags.pubKeyFile, "file", "f", "", "Path to public key file")
+	sshKeyAddCmd.MarkFlagRequired("file")
 
 	sshKeyCmd.AddCommand(sshKeyLsCmd, sshKeyAddCmd, sshKeyRmCmd)
 	rootCmd.AddCommand(sshKeyCmd)

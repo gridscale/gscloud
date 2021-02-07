@@ -8,7 +8,6 @@ import (
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -31,13 +30,13 @@ var networkLsCmd = &cobra.Command{
 	Aliases: []string{"list"},
 	Short:   "List networks",
 	Long:    `List networks.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		networkOps := rt.NetworkOperator()
 		networks, err := networkOps.GetNetworkList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get network list: %s", err)
+			return NewError(cmd, "Could not get list of networks", err)
 		}
 		var rows [][]string
 		if !rootFlags.json {
@@ -60,13 +59,14 @@ var networkLsCmd = &cobra.Command{
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}
-				return
+				return nil
 			}
 
 		} else {
 			render.AsJSON(out, networks)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -80,10 +80,10 @@ var networkCreateCmd = &cobra.Command{
 
 Create a network:
 
-	$ gscloud network create 
+	$ gscloud network create
 
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		networkOp := rt.NetworkOperator()
 		ctx := context.Background()
 		network, err := networkOp.CreateNetwork(ctx, gsclient.NetworkCreateRequest{
@@ -91,9 +91,10 @@ Create a network:
 		})
 
 		if err != nil {
-			log.Fatalf("Creating network failed: %s", err)
+			return NewError(cmd, "Could not create network", err)
 		}
 		fmt.Println("Network created:", network.ObjectUUID)
+		return nil
 	},
 }
 
@@ -103,13 +104,14 @@ var networkRmCmd = &cobra.Command{
 	Short:   "Remove network",
 	Long:    `Remove an existing network.`,
 	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		networkOps := rt.NetworkOperator()
 		err := networkOps.DeleteNetwork(ctx, args[0])
 		if err != nil {
-			log.Fatalf("Removing network failed: %s", err)
+			return NewError(cmd, "Deleting network failed", err)
 		}
+		return nil
 	},
 }
 

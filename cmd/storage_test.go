@@ -118,7 +118,7 @@ func Test_StorageListCmd(t *testing.T) {
 		rt, _ = runtime.NewTestRuntime()
 		rt.SetStorageOperator(mockClient)
 
-		cmd := storageLsCmd.Run
+		cmd := storageLsCmd.RunE
 		cmd(new(cobra.Command), []string{})
 
 		resetFlags()
@@ -140,7 +140,7 @@ func Test_StorageCmdDelete(t *testing.T) {
 	rt, _ = runtime.NewTestRuntime()
 	rt.SetStorageOperator(mockClient)
 
-	cmd := storageRmCmd.Run
+	cmd := storageRmCmd.RunE
 	cmd(new(cobra.Command), []string{"rm", mockStorage.Properties.ObjectUUID})
 
 	w.Close()

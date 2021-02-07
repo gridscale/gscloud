@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -25,7 +23,7 @@ Create a new set of section 1 man-pages in /usr/local:
 This will overwrite any existing man-page created previously.
 `,
 	Example: `gscloud manpage /path/to/man-pages`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		header := &doc.GenManHeader{
 			Title:   "GSCLOUD",
 			Section: "1",
@@ -35,10 +33,11 @@ This will overwrite any existing man-page created previously.
 		_ = os.Mkdir(targetPath, 0755)
 		err := doc.GenManTree(rootCmd, header, targetPath)
 		if err != nil {
-			log.Fatalf("Couldn't create man-pages: %s", err)
+			return NewError(cmd, "Could not create man-pages", err)
 		}
 		absPath, _ := filepath.Abs(targetPath)
 		fmt.Printf("Written to %s\n", absPath)
+		return nil
 	},
 }
 
