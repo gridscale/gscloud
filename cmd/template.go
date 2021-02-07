@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -73,6 +74,7 @@ var templateRmCmd = &cobra.Command{
 		if err != nil {
 			return NewError(cmd, "Deleting template failed", err)
 		}
+		fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
 		return nil
 	},
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
@@ -135,6 +136,7 @@ Delete by address:
 		if err != nil {
 			return NewError(cmd, "Releasing IP address failed", err)
 		}
+		fmt.Fprintf(os.Stderr, "Removed %s\n", id)
 		return nil
 	},
 }

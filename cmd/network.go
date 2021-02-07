@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/gridscale/gsclient-go/v3"
@@ -111,6 +112,7 @@ var networkRmCmd = &cobra.Command{
 		if err != nil {
 			return NewError(cmd, "Deleting network failed", err)
 		}
+		fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
 		return nil
 	},
 }

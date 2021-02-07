@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"time"
 
@@ -136,6 +137,7 @@ func serverRmCmdRun(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return NewError(cmd, "Deleting server failed", err)
 	}
+	fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
 	return nil
 }
 

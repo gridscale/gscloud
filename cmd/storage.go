@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -148,6 +149,7 @@ var storageRmCmd = &cobra.Command{
 		if err != nil {
 			return NewError(cmd, "Deleting storage failed", err)
 		}
+		fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
 		return nil
 	},
 }

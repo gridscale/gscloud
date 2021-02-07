@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
@@ -105,6 +106,7 @@ var sshKeyRmCmd = &cobra.Command{
 		if err != nil {
 			return NewError(cmd, "Removing SSH key failed", err)
 		}
+		fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
 		return nil
 	},
 }

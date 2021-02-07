@@ -8,6 +8,8 @@ FEATURES:
 
 FIXED:
 
+* Removing an object will print a message now to let you know what happens.
+
 ## v0.7.1 (2021-01-13)
 
 FIXED:
