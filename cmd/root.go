@@ -55,6 +55,19 @@ Output, if any, is usually in the form of a table. You can pass --json to print 
 
 To configure access to your projects via the API a YAML configuration file is used. See gscloud-make-config(1) and --config for more.
 
+# FILES
+
+%s user API access configuration
+
+# EXIT CODES
+
+gscloud returns zero exit code on success, non-zero on failure. Following exit codes map to these failure modes:
+
+    1. The requested command failed.
+    2. Reading the configuration file failed.
+    3. The configuration could not be parsed.
+    4. The account specified does not exist in the configuration file.
+
 # EXAMPLES
 
 List all servers available:
@@ -113,10 +126,6 @@ Get the list of storages as JSON:
         }
       }
     ]
-
-# FILES
-
-%s user API access configuration
 `, runtime.ConfigPathWithoutUser()),
 	DisableAutoGenTag: true,
 }
