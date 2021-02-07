@@ -121,7 +121,9 @@ Get the list of storages as JSON:
 	DisableAutoGenTag: true,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
+// Execute runs the subcommand. Execute adds all child commands to the root
+// command and sets flags appropriately. In case of errors Execute prints the
+// returned error to stderr and ends the process with a non-zero exit code.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -170,7 +172,7 @@ func initConfig() {
 			// --config given along with make-config → we're about to create that file. Disregard
 		} else {
 			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			os.Exit(2)
 		}
 	}
 }
@@ -179,11 +181,13 @@ func initConfig() {
 func initRuntime() {
 	conf, err := runtime.ParseConfig()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(3)
 	}
 	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(4)
 	}
 	rt = theRuntime
 }
