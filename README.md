@@ -91,6 +91,15 @@ users:
         - "9489f3a7-c8f8-4b38-bc9b-aa472a1c0d2a"
 ```
 
+## Exit Codes
+
+`gscloud` returns zero exit code on success, non-zero on failure. Following exit codes map to these failure modes:
+
+1. The requested command failed.
+2. Reading the configuration file failed.
+3. The configuration could not be parsed.
+4. The account specified does not exist in the configuration file.
+
 ## Shell Completions
 
 Generate shell completion scripts for zsh and bash.
