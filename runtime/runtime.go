@@ -195,11 +195,8 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
 	}
-	client, err := newClient(ac)
-	if err != nil {
-		return nil, err
-	}
 
+	client := newClient(ac)
 	rt := &Runtime{
 		accountName: ac.Name,
 		client:      client,
@@ -227,8 +224,7 @@ func CachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
-func newClient(account AccountEntry) (*gsclient.Client, error) {
-
+func newClient(account AccountEntry) *gsclient.Client {
 	config := gsclient.NewConfiguration(
 		account.URL,
 		account.UserID,
@@ -238,5 +234,5 @@ func newClient(account AccountEntry) (*gsclient.Client, error) {
 		500,
 		0, // no retries
 	)
-	return gsclient.NewClient(config), nil
+	return gsclient.NewClient(config)
 }
