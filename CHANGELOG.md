@@ -9,6 +9,7 @@ FEATURES:
 FIXED:
 
 * Removing an object will print a message now to let you know what happens.
+* gscloud-server-create does now leave a clean state if server creation fails ([#97](https://github.com/gridscale/gscloud/issues/97)).
 
 ## v0.7.1 (2021-01-13)
 
