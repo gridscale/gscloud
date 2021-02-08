@@ -6,11 +6,19 @@ gscloud is written in Go, so everything you need is just the gscloud binary. Com
 
 ![Create and destroy servers](docs/terminal-1x.png "Create new servers from the command-line")
 
+## Examples
+
+*TODO*
+
 ## Installation
 
-### Official releases for Windows, macOS, Linux
+### Official releases for Windows, macOS, Linux, FreeBSD
 
 Download packaged binaries from the [releases page](https://github.com/gridscale/gscloud/releases).
+
+### OpenBSD
+
+*TODO*
 
 ### Build from source
 

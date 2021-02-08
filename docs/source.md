@@ -28,7 +28,13 @@ $ go install
 
 ### Windows
 
-TODO
+*TODO*
+
+```cmd.exe
+# Build the `gscloud.exe` binary
+> go build
+> go install
+```
 
 ## Test
 
