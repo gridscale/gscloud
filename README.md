@@ -1,39 +1,20 @@
 # gscloud
 
-`gscloud` is the command-line tool which let you manage your virtual infrastructure on the [gridscale](https://gridscale.io)'s cloud platform. It's also possible to make use of it to work with Kubernetes clusters running on top of the platform as well.
+gscloud is a command-line tool that lets you manage your virtual infrastructure on [gridscale.io](https://gridscale.io).
 
-It's entirely written in Go, so everything you need is just the `gscloud` binary! Compile it all by yourself or get the tool at the [release](https://github.com/gridscale/gscloud/releases) page.
+gscloud is written in Go, so everything you need is just the gscloud binary. Compile it all by yourself or get the official release from the [release page](https://github.com/gridscale/gscloud/releases).
 
-```txt
-Usage:
-  gscloud [command]
+![Create and destroy servers](docs/terminal-1x.png "Create new servers from the command-line")
 
-Available Commands:
-  completion  Generate shell completion scripts
-  help        Help about any command
-  ip          Operations on IP addresses
-  iso-image   Operations on ISO images
-  kubernetes  Operate managed Kubernetes clusters
-  make-config Create a new configuration file
-  manpage     Create man-pages for gscloud
-  network     Operations on networks
-  server      Operations on servers
-  ssh-key     Operations on SSH keys
-  storage     Operations on storages
-  template    Operations on templates
-  version     Print the version
+## Installation
 
-Flags:
-      --account string   Specify the account used (default "default")
-      --config string    Path to configuration file (default "$XDG_CONFIG_HOME/gscloud/config.yaml")
-      --debug            Debug mode
-  -h, --help             Print usage
-  -j, --json             Print JSON to stdout instead of a table
-      --noheading        Do not print column headings
-  -q, --quiet            Print only object IDs
+### Official releases for Windows, macOS, Linux
 
-Use "gscloud [command] --help" for more information about a command.
-```
+Download packaged binaries from the [releases page](https://github.com/gridscale/gscloud/releases).
+
+### Build from source
+
+See [here](docs/source.md) on how to build gscloud from source.
 
 ## Configuration
 
@@ -56,7 +37,7 @@ accounts:
 
 ## Kubernetes
 
-To use `gscloud` combined with `kubectl`, here is an example configuration (~/.kubeconfig/config):
+You can use gscloud to retrieve the kubeconfig of your managed Kubernetes cluster. Here is an example configuration (`~/.kubeconfig/config`):
 
 ```yml
 apiVersion: v1
@@ -91,16 +72,16 @@ users:
         - "9489f3a7-c8f8-4b38-bc9b-aa472a1c0d2a"
 ```
 
-## Exit Codes
+## Exit codes
 
-`gscloud` returns zero exit code on success, non-zero on failure. Following exit codes map to these failure modes:
+gscloud returns zero exit code on success, non-zero on failure. Following exit codes map to these failure modes:
 
 1. The requested command failed.
 2. Reading the configuration file failed.
 3. The configuration could not be parsed.
 4. The account specified does not exist in the configuration file.
 
-## Shell Completions
+## Shell completions
 
 Generate shell completion scripts for zsh and bash.
 
@@ -124,10 +105,10 @@ Generate man-pages and install them. Example:
 $ sudo gscloud manpage /usr/local/share/man/man1/
 ```
 
-## Development
+## Contributing
 
 Please create an [issue](https://github.com/gridscale/gscloud/issues) if you have questions, want to start a discussion, or want to start work on something.
 
-[Pull requests](https://github.com/gridscale/gscloud/pulls) are always welcome. Make sure to create an issue first to signal others that you are working on something. Also make sure to take a look at the [Development Notes](development.md).
+[Pull requests](https://github.com/gridscale/gscloud/pulls) are always welcome. Make sure to create an issue first to signal others that you are working on something. Also make sure to take a look at the [Development Notes](docs/development.md).
 
 Have fun!

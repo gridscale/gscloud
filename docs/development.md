@@ -18,6 +18,6 @@ Most notably:
 - Run `make` to build and `make test` to run tests for your platform.
 - Run `goreleaser build --snapshot --rm-dist` to test build for all supported platforms. Make sure to install [GoReleaser](https://goreleaser.com/) before.
 
-## Don't hesitate to communicate
+## Don't hesitate to get in touch
 
-There are no stupid questions. Use GitHub issues to ask if you have a problem or question. If you want to work on something, make sure to create an issue first to let others know.
+There are no stupid questions. Feel free to use GitHub issues if you have a problem or question. If you want to work on something, make sure to create an issue first to let others know.
