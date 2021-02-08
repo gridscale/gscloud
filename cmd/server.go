@@ -173,12 +173,24 @@ To create a server without any storage just omit --with-template flag:
 	$ gscloud server create --name worker-2 --cores=1 --mem=1
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var template gsclient.Template
+
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
 		profile, err := toHardwareProfile(serverFlags.profile)
 		if err != nil {
 			return NewError(cmd, "Cannot create server", err)
 		}
+
+		if serverFlags.templateName != "" {
+			templateOp := rt.TemplateOperator()
+			template, err = templateOp.GetTemplateByName(ctx, serverFlags.templateName)
+			if err != nil {
+				return NewError(cmd, "Cannot create server", err)
+			}
+		}
+
+		cleanupServer := false
 		server, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
 			Name:            serverFlags.serverName,
 			Cores:           serverFlags.cores,
@@ -190,16 +202,18 @@ To create a server without any storage just omit --with-template flag:
 		if err != nil {
 			return NewError(cmd, "Creating server failed", err)
 		}
-		fmt.Println("Server created:", server.ObjectUUID)
+		cleanupServer = true
+		defer func() {
+			if cleanupServer {
+				err = serverOp.DeleteServer(ctx, server.ObjectUUID)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}()
 
 		if serverFlags.templateName != "" {
 			var password string
-
-			templateOp := rt.TemplateOperator()
-			template, err := templateOp.GetTemplateByName(ctx, serverFlags.templateName)
-			if err != nil {
-				return NewError(cmd, fmt.Sprintf("No such template '%s'", serverFlags.templateName), err)
-			}
 
 			if serverFlags.plainPassword == "" {
 				password = generatePassword()
@@ -234,9 +248,13 @@ To create a server without any storage just omit --with-template flag:
 			if err != nil {
 				return NewError(cmd, "Linking storage to server failed", err)
 			}
+			cleanupServer = false
+			fmt.Println("Server created:", server.ObjectUUID)
 			fmt.Println("Storage created:", storage.ObjectUUID)
 			fmt.Println("Password:", password)
 		}
+
+		cleanupServer = false
 		return nil
 	},
 }
