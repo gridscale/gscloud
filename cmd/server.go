@@ -352,7 +352,7 @@ Only list request IDs of a server (in case you need to tell suport what happened
 			} else {
 				var rows [][]string
 				heading := []string{
-					"time", "request id", "request type", "activity", "status", "details", "user id",
+					"time", "request id", "request type", "details", "initiator",
 				}
 				for _, event := range events {
 					fill := [][]string{
@@ -360,10 +360,8 @@ Only list request IDs of a server (in case you need to tell suport what happened
 							event.Properties.Timestamp.Local().Format(time.RFC3339),
 							event.Properties.RequestUUID,
 							event.Properties.RequestType,
-							event.Properties.Activity,
-							event.Properties.RequestStatus,
 							event.Properties.Change,
-							event.Properties.UserUUID,
+							event.Properties.Initiator,
 						},
 					}
 					rows = append(rows, fill...)
