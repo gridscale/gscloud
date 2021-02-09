@@ -5,6 +5,7 @@
 FEATURES:
 
 * You can now create networks with gscloud-network-create ([PR #107](https://github.com/gridscale/gscloud/pull/107)).
+* Make gscloud-server-events a bit more useful by adding initiator column and removing other less useful ones ([#110](https://github.com/gridscale/gscloud/issues/110)).
 
 FIXED:
 
