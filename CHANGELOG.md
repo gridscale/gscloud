@@ -1,11 +1,13 @@
 # Changelog
 
-## v0.8.0 (UNRELEASED)
+## v0.8.0 (2021-02-19)
 
 FEATURES:
 
 * You can now create networks with gscloud-network-create ([PR #107](https://github.com/gridscale/gscloud/pull/107)).
 * Make gscloud-server-events a bit more useful by adding initiator column and removing other less useful ones ([#110](https://github.com/gridscale/gscloud/issues/110)).
+* gscloud server rm learned a `--include-related` flag that includes storages and assigned IP addresses when removing servers ([#98](https://github.com/gridscale/gscloud/issues/98)).
+* Added examples to the README to get started more quickly ([#93](https://github.com/gridscale/gscloud/issues/93)).
 
 FIXED:
 
