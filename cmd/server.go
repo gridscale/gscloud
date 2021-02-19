@@ -491,7 +491,7 @@ func init() {
 	serverCreateCmd.Flags().MarkDeprecated("password", "a password will be created automatically")
 	serverCreateCmd.Flags().Lookup("password").Hidden = true
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
-	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\". Default \"\"")
+	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\" (default \"\")")
 	serverCreateCmd.Flags().BoolVar(&serverFlags.autoRecovery, "auto-recovery", true, "Whether to restart in case of errors")
 
 	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")

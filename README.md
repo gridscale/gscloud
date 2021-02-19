@@ -8,7 +8,7 @@ gscloud is written in Go, so everything you need is just the gscloud binary. Com
 
 ## Examples
 
-*TODO*
+See [examples](docs/examples.md) for some examples on how to use gscloud.
 
 ## Installation
 
