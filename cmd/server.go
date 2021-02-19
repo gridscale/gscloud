@@ -12,6 +12,7 @@ import (
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	"github.com/sethvargo/go-password/password"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +28,8 @@ type serverCmdFlags struct {
 	profile          string
 	availabilityZone string
 	autoRecovery     bool
+	includeRelated   bool
+	force            bool
 }
 
 var (
@@ -133,11 +136,102 @@ var serverOffCmd = &cobra.Command{
 func serverRmCmdRun(cmd *cobra.Command, args []string) error {
 	serverOp := rt.ServerOperator()
 	ctx := context.Background()
-	err := serverOp.DeleteServer(ctx, args[0])
+	id := args[0]
+	s, err := serverOp.GetServer(ctx, id)
+	if err != nil {
+		return NewError(cmd, "Look up server failed", err)
+	}
+	if serverFlags.force {
+		if s.Properties.Power {
+			err := serverOp.StopServer(ctx, args[0])
+			if err != nil {
+				return NewError(cmd, "Failed stopping server", err)
+			}
+		}
+	}
+
+	var storages []gsclient.ServerStorageRelationProperties
+	var ipAddrs []gsclient.ServerIPRelationProperties
+	if serverFlags.includeRelated {
+		out := new(bytes.Buffer)
+		storages, err = rt.ServerStorageRelationOperator().GetServerStorageList(ctx, id)
+		if err != nil {
+			return NewError(cmd, "Could not get related storages", err)
+		}
+		ipAddrs, err = rt.ServerIPRelationOperator().GetServerIPList(ctx, id)
+		if err != nil {
+			return NewError(cmd, "Could not get assigned IP addresses", err)
+		}
+
+		if !rootFlags.quiet {
+			var rows [][]string
+			heading := []string{"id", "type", "name"}
+			rows = append(rows, []string{
+				id,
+				"Server",
+				s.Properties.Name,
+			})
+			for _, storage := range storages {
+				fill := [][]string{
+					{
+						storage.ObjectUUID,
+						"Storage",
+						storage.ObjectName,
+					},
+				}
+				rows = append(rows, fill...)
+			}
+			for _, addr := range ipAddrs {
+				fill := [][]string{
+					{
+						addr.ObjectUUID,
+						fmt.Sprintf("IPv%d address", addr.Family),
+						addr.IP,
+					},
+				}
+				rows = append(rows, fill...)
+			}
+
+			render.AsTable(out, heading, rows, renderOpts)
+			fmt.Print(out)
+		}
+
+		if !serverFlags.force {
+			msg := "This can destroy your data. "
+			if rootFlags.quiet {
+				msg += "Re-run with --force to remove"
+			} else {
+				msg += "Re-run with --force to remove above objects"
+			}
+			log.Println(msg)
+			return nil
+		}
+	}
+	err = serverOp.DeleteServer(ctx, id)
 	if err != nil {
 		return NewError(cmd, "Deleting server failed", err)
 	}
-	fmt.Fprintf(os.Stderr, "Removed %s\n", args[0])
+	fmt.Fprintf(os.Stderr, "Removed %s\n", id)
+
+	if serverFlags.includeRelated {
+		storageOp := rt.StorageOperator()
+		for _, storage := range storages {
+			err = storageOp.DeleteStorage(ctx, storage.ObjectUUID)
+			if err != nil {
+				return NewError(cmd, "Failed removing storage", err)
+			}
+			fmt.Fprintf(os.Stderr, "Removed %s\n", storage.ObjectUUID)
+		}
+
+		ipOp := rt.IPOperator()
+		for _, addr := range ipAddrs {
+			err = ipOp.DeleteIP(ctx, addr.ObjectUUID)
+			if err != nil {
+				return NewError(cmd, "Failed removing IP address", err)
+			}
+			fmt.Fprintf(os.Stderr, "Removed %s\n", addr.ObjectUUID)
+		}
+	}
 	return nil
 }
 
@@ -145,9 +239,18 @@ var serverRmCmd = &cobra.Command{
 	Use:     "rm [flags] ID",
 	Aliases: []string{"remove"},
 	Short:   "Remove server",
-	Long:    `Remove an existing server.`,
-	Args:    cobra.ExactArgs(1),
-	RunE:    serverRmCmdRun,
+	Long: `**gscloud server rm** removes an existing server from a project.
+
+With the **--all** option, you can delete all referenced storages and assigned IP addresses, if any. By default, storages and IP addresses are not removed to prevent important data from being deleted.
+
+# EXAMPLES
+
+Remove a server including storages and IP addresses:
+
+	$ gscloud server rm --include-related --force 37d53278-8e5f-47e1-a63f-54513e4b4d53
+`,
+	Args: cobra.ExactArgs(1),
+	RunE: serverRmCmdRun,
 }
 
 var serverCreateCmd = &cobra.Command{
@@ -394,6 +497,9 @@ func init() {
 	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
 	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
 	serverSetCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
+
+	serverRmCmd.Flags().BoolVarP(&serverFlags.includeRelated, "include-related", "i", false, "Remove all objects currently related to this server, not just the server")
+	serverRmCmd.Flags().BoolVarP(&serverFlags.force, "force", "f", false, "Force a destructive operation")
 
 	serverCmd.AddCommand(serverLsCmd, serverOnCmd, serverOffCmd, serverRmCmd, serverCreateCmd, serverSetCmd, serverAssignCmd, serverEventsCmd)
 	rootCmd.AddCommand(serverCmd)

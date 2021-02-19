@@ -32,6 +32,22 @@ func (r *Runtime) Client() *gsclient.Client {
 	return r.client.(*gsclient.Client)
 }
 
+// ServerIPRelationOperator return an operation to remove a storage.
+func (r *Runtime) ServerIPRelationOperator() gsclient.ServerIPRelationOperator {
+	if UnderTest() {
+		return r.client.(gsclient.ServerIPRelationOperator)
+	}
+	return r.client.(*gsclient.Client)
+}
+
+// SetServerIPRelationOperator set operation to delete storages.
+func (r *Runtime) SetServerIPRelationOperator(op gsclient.ServerIPRelationOperator) {
+	if !UnderTest() {
+		panic("unexpected use")
+	}
+	r.client = op
+}
+
 // StorageOperator return an operation to remove a storage.
 func (r *Runtime) StorageOperator() gsclient.StorageOperator {
 	if UnderTest() {
