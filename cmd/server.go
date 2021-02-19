@@ -241,7 +241,7 @@ var serverRmCmd = &cobra.Command{
 	Short:   "Remove server",
 	Long: `**gscloud server rm** removes an existing server from a project.
 
-With the **--all** option, you can delete all referenced storages and assigned IP addresses, if any. By default, storages and IP addresses are not removed to prevent important data from being deleted.
+With the **--include-related** option, you can delete all referenced storages and assigned IP addresses, if any. By default, storages and IP addresses are not removed to prevent important data from being deleted.
 
 # EXAMPLES
 
