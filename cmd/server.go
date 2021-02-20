@@ -480,7 +480,6 @@ func init() {
 	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
 	serverCreateCmd.Flags().StringVar(&serverFlags.templateName, "with-template", "", "Name of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
-	serverCreateCmd.Flags().Lookup("password").Hidden = true
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\" (default \"\")")
 	serverCreateCmd.Flags().BoolVar(&serverFlags.autoRecovery, "auto-recovery", true, "Whether to restart in case of errors")
