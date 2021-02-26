@@ -1,6 +1,6 @@
 module github.com/gridscale/gscloud
 
-go 1.15
+go 1.16
 
 require (
 	github.com/gridscale/gsclient-go/v3 v3.4.0
