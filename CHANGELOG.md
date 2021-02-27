@@ -1,10 +1,11 @@
 # Changelog
 
-## v0.9.0 (UNRELEASED)
+## v0.9.0 (2021-02-27)
 
 FEATURES:
 
-FIXED:
+* We removed the `--password` flag when. Passwords are now auto-generated when creating servers ([#103](https://github.com/gridscale/gscloud/issues/103)).
+* We added builds for Apple M1 to our releases ([#112](https://github.com/gridscale/gscloud/issues/112)).
 
 ## v0.8.0 (2021-02-19)
 
