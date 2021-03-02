@@ -22,6 +22,22 @@ type KubernetesOperator interface {
 	GetPaaSService(ctx context.Context, id string) (gsclient.PaaSService, error)
 }
 
+// PaaSOperator return an operation to Get a PaaS.
+func (r *Runtime) PaaSOperator() gsclient.PaaSOperator {
+	if UnderTest() {
+		return r.client.(gsclient.PaaSOperator)
+	}
+	return r.client.(*gsclient.Client)
+}
+
+// SetPaaSOperator set operation to Create PaaS.
+func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
+	if !UnderTest() {
+		panic("unexpected use")
+	}
+	r.client = op
+}
+
 // Account is the current selected account.
 func (r *Runtime) Account() string {
 	return r.accountName

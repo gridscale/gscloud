@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	b64 "encoding/base64"
 	"encoding/json"
@@ -9,6 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
 	"github.com/kardianos/osext"
@@ -35,11 +39,57 @@ var clusterCmd = &cobra.Command{
 	Long:  "Actions on a Kubernetes cluster",
 }
 
+// versionsCmd represents the version command
+var versionsCmd = &cobra.Command{
+	Use:   "versions",
+	Short: "Available Kubernetes versions",
+	Long:  "Available Kubernetes versions",
+}
+
 // kubernetesCmd represents the Kubernetes command
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
 	Short: "Operate managed Kubernetes clusters",
 	Long:  "Operate managed Kubernetes clusters.",
+}
+
+// getKubernetesVersionsCmd represents the versions command
+var getKubernetesVersionsCmd = &cobra.Command{
+	Use:   "versions",
+	Short: "Returns the available Kubernetes versions",
+	Long:  "Returns the availabe Kubernetes versions, the latest 3 versions are supported",
+	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.Background()
+		out := new(bytes.Buffer)
+		op := rt.PaaSOperator()
+		versions, err := op.GetPaaSTemplateList(ctx)
+		if err != nil {
+			log.Fatalf("Couldn't get Kubernetes versions list: %s", err)
+		}
+		var rows [][]string
+		if !rootFlags.json {
+			heading := []string{"version"}
+			for _, version := range versions {
+				fill := [][]string{
+					{
+						version.Properties.Version,
+					},
+				}
+				rows = append(rows, fill...)
+			}
+			render.AsTable(out, heading, rows, renderOpts)
+			if rootFlags.quiet {
+				for _, info := range rows {
+					fmt.Println(info[0])
+				}
+				return
+			}
+
+		} else {
+			render.AsJSON(out, versions)
+		}
+		fmt.Print(out)
+	},
 }
 
 // saveKubeconfigCmd represents the kubeconfig command
@@ -227,7 +277,7 @@ func init() {
 	execCredentialCmd.MarkFlagRequired("cluster")
 	clusterCmd.AddCommand(execCredentialCmd)
 
-	kubernetesCmd.AddCommand(clusterCmd)
+	kubernetesCmd.AddCommand(clusterCmd, getKubernetesVersionsCmd)
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
