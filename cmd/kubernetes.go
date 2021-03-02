@@ -39,11 +39,11 @@ var clusterCmd = &cobra.Command{
 	Long:  "Actions on a Kubernetes cluster",
 }
 
-// versionsCmd represents the version command
+// releasesCmd represents the releases command
 var versionsCmd = &cobra.Command{
-	Use:   "versions",
-	Short: "Available Kubernetes versions",
-	Long:  "Available Kubernetes versions",
+	Use:   "releases",
+	Short: "Available Kubernetes releases",
+	Long:  "Available Kubernetes releases",
 }
 
 // kubernetesCmd represents the Kubernetes command
@@ -53,29 +53,31 @@ var kubernetesCmd = &cobra.Command{
 	Long:  "Operate managed Kubernetes clusters.",
 }
 
-// getKubernetesVersionsCmd represents the versions command
-var getKubernetesVersionsCmd = &cobra.Command{
-	Use:   "versions",
-	Short: "Returns the available Kubernetes versions",
-	Long:  "Returns the availabe Kubernetes versions, the latest 3 versions are supported",
+// getKubernetesReleasesCmd represents the releases command
+var getKubernetesReleasesCmd = &cobra.Command{
+	Use:   "releases",
+	Short: "Returns the available Kubernetes releases",
+	Long:  "Returns the availabe Kubernetes releases, the latest 3 releases are supported",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
-		versions, err := op.GetPaaSTemplateList(ctx)
+		releases, err := op.GetPaaSTemplateList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get Kubernetes versions list: %s", err)
+			log.Fatalf("Couldn't get Kubernetes releases list: %s", err)
 		}
 		var rows [][]string
 		if !rootFlags.json {
-			heading := []string{"version"}
-			for _, version := range versions {
-				fill := [][]string{
-					{
-						version.Properties.Version,
-					},
+			heading := []string{"releases"}
+			for _, releases := range releases {
+				if releases.Properties.Flavour == "kubernetes" {
+					fill := [][]string{
+						{
+							releases.Properties.Release,
+						},
+					}
+					rows = append(rows, fill...)
 				}
-				rows = append(rows, fill...)
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 			if rootFlags.quiet {
@@ -86,7 +88,7 @@ var getKubernetesVersionsCmd = &cobra.Command{
 			}
 
 		} else {
-			render.AsJSON(out, versions)
+			render.AsJSON(out, releases)
 		}
 		fmt.Print(out)
 	},
@@ -277,7 +279,7 @@ func init() {
 	execCredentialCmd.MarkFlagRequired("cluster")
 	clusterCmd.AddCommand(execCredentialCmd)
 
-	kubernetesCmd.AddCommand(clusterCmd, getKubernetesVersionsCmd)
+	kubernetesCmd.AddCommand(clusterCmd, getKubernetesReleasesCmd)
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
