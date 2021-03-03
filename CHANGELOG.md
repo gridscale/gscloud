@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.10.0 (UNRELEASED)
+
+FEATURES:
+
+* gscloud gained a `kubernetes releases` subcommand that gives you a list of all currently available Managed Kubernetes releases ([#113](https://github.com/gridscale/gscloud/issues/113)).
+
 ## v0.9.0 (2021-02-27)
 
 FEATURES:
