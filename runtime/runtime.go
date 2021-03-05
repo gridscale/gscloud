@@ -256,7 +256,12 @@ func CachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
+// newClient creates new gsclient from a given instance of AccountEntry
 func newClient(account AccountEntry) *gsclient.Client {
+	if account.URL == "" {
+		config := gsclient.DefaultConfiguration(account.UserID, account.Token)
+		return gsclient.NewClient(config)
+	}
 	config := gsclient.NewConfiguration(
 		account.URL,
 		account.UserID,
