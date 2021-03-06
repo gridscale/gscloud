@@ -46,10 +46,10 @@ var infoCmd = &cobra.Command{
 					os.Exit(3)
 				}
 				fmt.Printf(
-					"Name: %s\nUserID: %s\nToken: %s\nURL: %s\n",
+					"Account: %s\nUserID: %s\nToken: %s\nURL: %s\n",
 					account.Name, account.UserID, account.Token, account.URL)
 				fmt.Printf(
-					"No. of servers: %d\nNo. of storages: %d\nNo. of ip addresses: %d\nNo. of ip PaaS services: %d\n",
+					"No. of servers: %d\nNo. of storages: %d\nNo. of ip addresses: %d\nNo. of platform services: %d\n",
 					len(servers), len(storages), len(ipAddrs), len(paasServices))
 			}
 
