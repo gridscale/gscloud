@@ -7,10 +7,10 @@ import (
 
 // AccountEntry represents a single account in the config file.
 type AccountEntry struct {
-	Name   string `yaml:"name"`
-	UserID string `yaml:"userId"`
-	Token  string `yaml:"token"`
-	URL    string `yaml:"url"`
+	Name   string `yaml:"name" json:"name"`
+	UserID string `yaml:"userId" json:"userId"`
+	Token  string `yaml:"token" json:"token"`
+	URL    string `yaml:"url" json:"url"`
 }
 
 // Config are all configuration settings parsed from a configuration file.
