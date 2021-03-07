@@ -35,7 +35,7 @@ var infoCmd = &cobra.Command{
 				// Print auth info
 				if !rootFlags.json {
 					out := new(bytes.Buffer)
-					heading := []string{"Name", "UserID", "Token", "URL"}
+					heading := []string{"Account", "UserID", "Token", "URL"}
 					fill := [][]string{
 						{
 							account.Name,
@@ -71,7 +71,7 @@ var infoCmd = &cobra.Command{
 				}
 				out := new(bytes.Buffer)
 				if !rootFlags.json {
-					heading := []string{"No. of servers", "No. of storages", "No. of ip addresses", "No. of PaaS services"}
+					heading := []string{"No. of servers", "No. of storages", "No. of ip addresses", "No. of platform services"}
 					fill := [][]string{
 						{
 							strconv.Itoa(len(servers)),
