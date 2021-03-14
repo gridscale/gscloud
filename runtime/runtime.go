@@ -14,6 +14,7 @@ import (
 type Runtime struct {
 	accountName string
 	client      interface{}
+	config      Config
 }
 
 // KubernetesOperator amalgamates operations for Kubernetes PaaS.
@@ -46,6 +47,11 @@ func (r *Runtime) Account() string {
 // Client provides access to the API client.
 func (r *Runtime) Client() *gsclient.Client {
 	return r.client.(*gsclient.Client)
+}
+
+// Config allows access to configuration.
+func (r *Runtime) Config() *Config {
+	return &r.config
 }
 
 // ServerIPRelationOperator return an operation to remove a storage.
@@ -232,6 +238,7 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 	rt := &Runtime{
 		accountName: ac.Name,
 		client:      client,
+		config:      conf,
 	}
 	return rt, nil
 }
