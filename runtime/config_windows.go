@@ -2,4 +2,4 @@
 
 package runtime
 
-const LOCAL_CONFIG = "%APPDATA%"
+const localConfig = "%APPDATA%"

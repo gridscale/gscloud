@@ -2,4 +2,4 @@
 
 package runtime
 
-const LOCAL_CONFIG = "$HOME/Library/Application Support"
+const localConfig = "$HOME/Library/Application Support"

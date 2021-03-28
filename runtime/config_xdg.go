@@ -2,4 +2,4 @@
 
 package runtime
 
-const LOCAL_CONFIG = "$XDG_CONFIG_HOME"
+const localConfig = "$XDG_CONFIG_HOME"
