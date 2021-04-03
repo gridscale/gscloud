@@ -10,8 +10,6 @@ import (
 	"path/filepath"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
@@ -39,13 +37,6 @@ var clusterCmd = &cobra.Command{
 	Long:  "Actions on a Kubernetes cluster",
 }
 
-// releasesCmd represents the releases command
-var versionsCmd = &cobra.Command{
-	Use:   "releases",
-	Short: "Available Kubernetes releases",
-	Long:  "Available Kubernetes releases",
-}
-
 // kubernetesCmd represents the Kubernetes command
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes",
@@ -56,15 +47,15 @@ var kubernetesCmd = &cobra.Command{
 // getKubernetesReleasesCmd represents the releases command
 var getKubernetesReleasesCmd = &cobra.Command{
 	Use:   "releases",
-	Short: "Returns the available Kubernetes releases",
-	Long:  "Returns the availabe Kubernetes releases, the latest 3 releases are supported",
-	Run: func(cmd *cobra.Command, args []string) {
+	Short: "Get available Kubernetes releases",
+	Long:  "Prints all available Kubernetes releases. The latest three releases are supported.",
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
 		releases, err := op.GetPaaSTemplateList(ctx)
 		if err != nil {
-			log.Fatalf("Couldn't get Kubernetes releases list: %s", err)
+			return NewError(cmd, "Could not get get list of Kubernetes releases", err)
 		}
 		var rows [][]string
 		if !rootFlags.json {
@@ -84,13 +75,14 @@ var getKubernetesReleasesCmd = &cobra.Command{
 				for _, info := range rows {
 					fmt.Println(info[0])
 				}
-				return
+				return nil
 			}
 
 		} else {
 			render.AsJSON(out, releases)
 		}
 		fmt.Print(out)
+		return nil
 	},
 }
 
@@ -269,13 +261,13 @@ var execCredentialCmd = &cobra.Command{
 
 func init() {
 	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
-	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's uuid")
+	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's UUID")
 	saveKubeconfigCmd.MarkFlagRequired("cluster")
 	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentication method (exec-credential)")
 	clusterCmd.AddCommand(saveKubeconfigCmd)
 
 	execCredentialCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
-	execCredentialCmd.Flags().String("cluster", "", "The cluster's uuid")
+	execCredentialCmd.Flags().String("cluster", "", "The cluster's UUID")
 	execCredentialCmd.MarkFlagRequired("cluster")
 	clusterCmd.AddCommand(execCredentialCmd)
 
