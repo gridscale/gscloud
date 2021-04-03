@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/gridscale/gscloud/render"
@@ -21,6 +22,13 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
+
+// AlphaNum implements sort.Interface for []string.
+type AlphaNum []string
+
+func (a AlphaNum) Len() int           { return len(a) }
+func (a AlphaNum) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a AlphaNum) Less(i, j int) bool { return a[i] < a[j] }
 
 func executablePath() string {
 	filePath, err := osext.Executable()
@@ -53,27 +61,28 @@ var getKubernetesReleasesCmd = &cobra.Command{
 		ctx := context.Background()
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
-		releases, err := op.GetPaaSTemplateList(ctx)
+		paasTemplates, err := op.GetPaaSTemplateList(ctx)
 		if err != nil {
 			return NewError(cmd, "Could not get get list of Kubernetes releases", err)
 		}
-		var rows [][]string
+
+		var releases []string
+		for _, template := range paasTemplates {
+			if template.Properties.Flavour == "kubernetes" {
+				releases = append(releases, template.Properties.Release)
+			}
+		}
+		sort.Sort(sort.Reverse(AlphaNum(releases)))
 		if !rootFlags.json {
 			heading := []string{"releases"}
-			for _, releases := range releases {
-				if releases.Properties.Flavour == "kubernetes" {
-					fill := [][]string{
-						{
-							releases.Properties.Release,
-						},
-					}
-					rows = append(rows, fill...)
-				}
+			var rows [][]string
+			for _, rel := range releases {
+				rows = append(rows, []string{rel})
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 			if rootFlags.quiet {
-				for _, info := range rows {
-					fmt.Println(info[0])
+				for _, rel := range releases {
+					fmt.Println(rel)
 				}
 				return nil
 			}
