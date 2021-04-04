@@ -4,7 +4,23 @@
 
 FEATURES:
 
-* gscloud gained a `kubernetes releases` subcommand that gives you a list of all currently available Managed Kubernetes releases ([#113](https://github.com/gridscale/gscloud/issues/113)).
+* We added `gscloud kubernetes releases` and `gscloud postgresql releases` subcommands that gives you a list of all currently available Managed Kubernetes releases ([#113](https://github.com/gridscale/gscloud/issues/113)) and PostgreSQL releases ([#122](https://github.com/gridscale/gscloud/issues/122)).
+* gscloud gained a `gscloud info` command that shows you a quick account summary as well as the API tokens and user account in use. Example:
+
+```raw
+$ gscloud --account=dev@example.com info
+SETTING    VALUE
+Account    dev@example.com
+User ID    7ff8003b-55c5-45c5-bf0c-3746735a4f99
+API token  <redacted>
+URL        https://api.gridscale.io
+Getting information about used resources…
+OBJECT             COUNT
+Platform services  0
+Servers            18
+Storages           24
+IP addresses       2
+```
 
 FIXED:
 
