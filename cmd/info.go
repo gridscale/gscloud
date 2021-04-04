@@ -17,7 +17,25 @@ import (
 var infoCmd = &cobra.Command{
 	Use:   "info",
 	Short: "Print account summary",
-	Long:  `Print information about the current accounts.`,
+	Long: `Print information about the current account.
+
+# EXAMPLES
+
+Show summary for a given account:
+
+	$ gscloud --account=dev@example.com info
+	SETTING    VALUE
+	Account    dev@example.com
+	User ID    7ff8003b-55c5-45c5-bf0c-3746735a4f99
+	API token  <redacted>
+	URL        https://api.gridscale.io
+	Getting information about used resources…
+	OBJECT             COUNT
+	Platform services  0
+	Servers            18
+	Storages           24
+	IP addresses       2
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		type output struct {
