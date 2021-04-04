@@ -4,92 +4,126 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strconv"
+	"sync"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/spf13/cobra"
 )
 
-type infoJSONOutput struct {
-	runtime.AccountEntry
-	ServerCount  int `json:"server_count"`
-	StorageCount int `json:"storage_count"`
-	IPAddrCount  int `json:"ip_address_count"`
-	PaaSCount    int `json:"paas_service_count"`
-}
-
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "Print the info",
-	Long:  `Print information belongs to gscloud accounts.`,
+	Short: "Print account summary",
+	Long:  `Print information about the current accounts.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		conf, err := runtime.ParseConfig()
-		if err != nil {
-			return NewError(cmd, "Could parse configuration", err)
+
+		type output struct {
+			runtime.AccountEntry
+			ServerCount  int `json:"server_count"`
+			StorageCount int `json:"storage_count"`
+			IPAddrCount  int `json:"ip_address_count"`
+			PaaSCount    int `json:"platform_service_count"`
 		}
+
+		type objectCount struct {
+			Obj   string
+			Count int
+			Err   error
+		}
+
+		conf := rt.Config()
 		for _, account := range conf.Accounts {
 			accountName := rt.Account()
-			// get info of the current account
 			if account.Name == accountName {
-				// Print auth info
 				if !rootFlags.json {
 					out := new(bytes.Buffer)
-					heading := []string{"Account", "UserID", "Token", "URL"}
+					heading := []string{"setting", "value"}
 					fill := [][]string{
-						{
-							account.Name,
-							account.UserID,
-							account.Token,
-							account.URL,
-						},
+						{"Account", account.Name},
+						{"User ID", account.UserID},
+						{"API token", account.Token},
+						{"URL", account.URL},
 					}
 					var rows [][]string
 					rows = append(rows, fill...)
 					render.AsTable(out, heading, rows, renderOpts)
 					fmt.Print(out)
-					fmt.Printf("\nGetting infomation about available resources...\n\n\n")
 				}
 
-				// Get info about primitive resources
+				fmt.Fprintf(os.Stderr, "Getting information about used resources…\n")
 				client := rt.Client()
-				servers, err := client.GetServerList(context.Background())
-				if err != nil {
-					return NewError(cmd, "Could not get servers' information", err)
+
+				funcs := map[string]func(context.Context, *gsclient.Client) (int, error){
+					"Servers": func(ctx context.Context, c *gsclient.Client) (int, error) {
+						objs, err := c.GetServerList(ctx)
+						return len(objs), err
+					},
+					"Storages": func(ctx context.Context, c *gsclient.Client) (int, error) {
+						objs, err := c.GetStorageList(ctx)
+						return len(objs), err
+					},
+					"IP addresses": func(ctx context.Context, c *gsclient.Client) (int, error) {
+						objs, err := c.GetIPList(ctx)
+						return len(objs), err
+					},
+					"Platform services": func(ctx context.Context, c *gsclient.Client) (int, error) {
+						objs, err := c.GetPaaSServiceList(ctx)
+						return len(objs), err
+					},
 				}
-				storages, err := client.GetStorageList(context.Background())
-				if err != nil {
-					return NewError(cmd, "Could not get storages' information", err)
+
+				var wg sync.WaitGroup
+				ch := make(chan objectCount)
+
+				go func() {
+					wg.Wait()
+					close(ch)
+				}()
+
+				for k, v := range funcs {
+					wg.Add(1)
+					cCopy := context.Background()
+					go func(obj string, f func(context.Context, *gsclient.Client) (int, error)) {
+						defer wg.Done()
+
+						count, err := f(cCopy, client)
+						if err != nil {
+							ch <- objectCount{obj, 0, NewError(cmd, fmt.Sprintf("Could not get %s", obj), err)}
+						}
+						ch <- objectCount{obj, count, nil}
+					}(k, v)
 				}
-				ipAddrs, err := client.GetIPList(context.Background())
-				if err != nil {
-					return NewError(cmd, "Could not get ip addresses' information", err)
-				}
-				paasServices, err := client.GetPaaSServiceList(context.Background())
-				if err != nil {
-					return NewError(cmd, "Could not get PaaS services' information", err)
-				}
+
 				out := new(bytes.Buffer)
 				if !rootFlags.json {
-					heading := []string{"No. of servers", "No. of storages", "No. of ip addresses", "No. of platform services"}
-					fill := [][]string{
-						{
-							strconv.Itoa(len(servers)),
-							strconv.Itoa(len(storages)),
-							strconv.Itoa(len(ipAddrs)),
-							strconv.Itoa(len(paasServices)),
-						},
-					}
+					heading := []string{"object", "count"}
 					var rows [][]string
-					rows = append(rows, fill...)
+					for v := range ch {
+						if v.Err != nil {
+							return v.Err
+						} else {
+							rows = append(rows, []string{v.Obj, strconv.Itoa(v.Count)})
+						}
+					}
 					render.AsTable(out, heading, rows, renderOpts)
 				} else {
-					jsonOutput := infoJSONOutput{
+					m := map[string]int{}
+					for v := range ch {
+						if v.Err != nil {
+							return v.Err
+						} else {
+							m[v.Obj] = v.Count
+						}
+					}
+					jsonOutput := output{
 						AccountEntry: account,
-						ServerCount:  len(servers),
-						StorageCount: len(storages),
-						IPAddrCount:  len(ipAddrs),
-						PaaSCount:    len(paasServices),
+						ServerCount:  m["Servers"],
+						StorageCount: m["Storages"],
+						IPAddrCount:  m["IP addresses"],
+						PaaSCount:    m["Platform services"],
 					}
 					render.AsJSON(out, jsonOutput)
 				}
@@ -103,14 +137,13 @@ var infoCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(infoCmd)
 
-	// Hide some global persistent flags here that don't make sense on 'version'
-	origHelpFunc := versionCmd.HelpFunc()
+	// Hide some global persistent flags
+	origHelpFunc := infoCmd.HelpFunc()
 	rootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
 		if cmd.Name() == "info" || (cmd.HasParent() && cmd.Parent().Name() == "info") {
-			cmd.Flags().MarkHidden("account")
 			cmd.Flags().MarkHidden("config")
-			// cmd.Flags().MarkHidden("json")
 			cmd.Flags().MarkHidden("quiet")
+			cmd.Flags().MarkHidden("noheading")
 		}
 		origHelpFunc(cmd, args)
 	})
