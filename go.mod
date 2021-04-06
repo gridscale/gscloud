@@ -7,7 +7,7 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
-	github.com/mattn/go-runewidth v0.0.10
+	github.com/mattn/go-runewidth v0.0.12
 	github.com/sethvargo/go-password v0.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.1.3
