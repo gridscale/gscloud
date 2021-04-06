@@ -122,9 +122,8 @@ Show summary for a given account:
 					for v := range ch {
 						if v.Err != nil {
 							return v.Err
-						} else {
-							rows = append(rows, []string{v.Obj, strconv.Itoa(v.Count)})
 						}
+						rows = append(rows, []string{v.Obj, strconv.Itoa(v.Count)})
 					}
 					render.AsTable(out, heading, rows, renderOpts)
 				} else {
@@ -132,9 +131,8 @@ Show summary for a given account:
 					for v := range ch {
 						if v.Err != nil {
 							return v.Err
-						} else {
-							m[v.Obj] = v.Count
 						}
+						m[v.Obj] = v.Count
 					}
 					jsonOutput := output{
 						AccountEntry: account,
