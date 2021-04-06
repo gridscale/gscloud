@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.10.0 (UNRELEASED)
+## v0.10.0 (2021-04-06)
 
 FEATURES:
 
@@ -24,7 +24,7 @@ IP addresses       2
 
 FIXED:
 
-* This release also fixes the build on OpenBSD.
+* This release also fixes the build on OpenBSD ([3be8074](https://github.com/gridscale/gscloud/commit/3be807415a17d1ea29ea7d1bdb0493d5f825ba48)).
 
 ## v0.9.0 (2021-02-27)
 
