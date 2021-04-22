@@ -54,7 +54,7 @@ var ipLsCmd = &cobra.Command{
 		var rows [][]string
 		out := new(bytes.Buffer)
 		if !rootFlags.json {
-			heading := []string{"IP", "assigned", "failover", "family", "reverse DNS", "ID"}
+			heading := []string{"IP", "name", "assigned", "failover", "family", "reverse DNS", "ID"}
 			for _, addr := range ipAddresses {
 				if ipFlags.v4 && addr.Properties.Family == 6 {
 					continue
@@ -76,6 +76,7 @@ var ipLsCmd = &cobra.Command{
 				properties := [][]string{
 					{
 						addr.Properties.IP,
+						addr.Properties.Name,
 						isAssigned,
 						isFailover,
 						fmt.Sprintf("v%d", addr.Properties.Family),
