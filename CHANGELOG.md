@@ -4,6 +4,8 @@
 
 FEATURES:
 
+* gscloud-server-create `--with-template` learned to accept IDs in addition to template names (see [PR #133](https://github.com/gridscale/gscloud/pull/133)).
+
 FIXED:
 
 ## v0.10.0 (2021-04-06)

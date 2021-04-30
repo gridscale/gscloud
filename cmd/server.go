@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	"github.com/sethvargo/go-password/password"
@@ -22,7 +23,7 @@ type serverCmdFlags struct {
 	cores            int
 	storageSize      int
 	serverName       string
-	templateName     string
+	template         string
 	hostName         string
 	profile          string
 	availabilityZone string
@@ -275,7 +276,7 @@ To create a server without any storage just omit --with-template flag:
 	$ gscloud server create --name worker-2 --cores=1 --mem=1
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var template gsclient.Template
+		var templateID string
 
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
@@ -284,11 +285,18 @@ To create a server without any storage just omit --with-template flag:
 			return NewError(cmd, "Cannot create server", err)
 		}
 
-		if serverFlags.templateName != "" {
-			templateOp := rt.TemplateOperator()
-			template, err = templateOp.GetTemplateByName(ctx, serverFlags.templateName)
-			if err != nil {
-				return NewError(cmd, "Cannot create server", err)
+		if serverFlags.template != "" {
+			// Might be an ID or a name
+			id, err := uuid.Parse(serverFlags.template)
+			if err == nil {
+				templateID = id.String()
+			} else {
+				templateOp := rt.TemplateOperator()
+				template, err := templateOp.GetTemplateByName(ctx, serverFlags.template)
+				if err != nil {
+					return NewError(cmd, "Cannot create server", err)
+				}
+				templateID = template.Properties.ObjectUUID
 			}
 		}
 
@@ -314,7 +322,7 @@ To create a server without any storage just omit --with-template flag:
 			}
 		}()
 
-		if serverFlags.templateName != "" {
+		if serverFlags.template != "" {
 			password := generatePassword()
 
 			storageOp := rt.StorageOperator()
@@ -323,7 +331,7 @@ To create a server without any storage just omit --with-template flag:
 				Capacity:    serverFlags.storageSize,
 				StorageType: gsclient.DefaultStorageType,
 				Template: &gsclient.StorageTemplate{
-					TemplateUUID: template.Properties.ObjectUUID,
+					TemplateUUID: templateID,
 					Password:     password,
 					PasswordType: gsclient.PlainPasswordType,
 					Hostname:     serverFlags.hostName,
@@ -478,7 +486,7 @@ func init() {
 	serverCreateCmd.Flags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
 	serverCreateCmd.Flags().IntVar(&serverFlags.storageSize, "storage-size", 10, "Storage capacity (GB)")
 	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
-	serverCreateCmd.Flags().StringVar(&serverFlags.templateName, "with-template", "", "Name of template to use")
+	serverCreateCmd.Flags().StringVar(&serverFlags.template, "with-template", "", "Name or ID of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\" (default \"\")")

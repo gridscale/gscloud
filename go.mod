@@ -3,6 +3,7 @@ module github.com/gridscale/gscloud
 go 1.16
 
 require (
+	github.com/google/uuid v1.2.0
 	github.com/gridscale/gsclient-go/v3 v3.6.2
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
