@@ -1,0 +1,7 @@
+.gitattributes export-ignore
+.githooks export-ignore
+.github export-ignore
+.gitignore export-ignore
+.goreleaser.yml export-ignore
+.vscode export-ignore
+release-checklist.md export-ignore
