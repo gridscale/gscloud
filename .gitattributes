@@ -5,3 +5,4 @@
 .goreleaser.yml export-ignore
 .vscode export-ignore
 release-checklist.md export-ignore
+RELEASE.txt export-subst

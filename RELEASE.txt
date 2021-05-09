@@ -1,0 +1,2 @@
+$Format:GIT_COMMIT=%H
+VERSION=%(describe)$
