@@ -42,6 +42,12 @@ var isoImageLsCmd = &cobra.Command{
 			render.AsJSON(os.Stdout, images)
 			return nil
 		}
+		if rootFlags.quiet {
+			for _, image := range images {
+				fmt.Println(image.Properties.ObjectUUID)
+			}
+			return nil
+		}
 		var rows [][]string
 		heading := []string{"id", "name", "changed", "private", "source url"}
 		for _, image := range images {
@@ -61,12 +67,6 @@ var isoImageLsCmd = &cobra.Command{
 				},
 			}
 			rows = append(rows, fill...)
-		}
-		if rootFlags.quiet {
-			for _, info := range rows {
-				fmt.Println(info[0])
-			}
-			return nil
 		}
 		render.AsTable(os.Stdout, heading, rows, renderOpts)
 		return nil
