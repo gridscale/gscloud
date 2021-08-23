@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -35,43 +34,41 @@ var isoImageLsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		imageOp := rt.ISOImageOperator()
 		ctx := context.Background()
-		out := new(bytes.Buffer)
 		images, err := imageOp.GetISOImageList(ctx)
 		if err != nil {
 			return NewError(cmd, "Could not get list of images", err)
 		}
-		var rows [][]string
-		if !rootFlags.json {
-			heading := []string{"id", "name", "changed", "private", "source url"}
-			for _, image := range images {
-				var private string
-				if image.Properties.Private {
-					private = "yes"
-				} else {
-					private = "no"
-				}
-				fill := [][]string{
-					{
-						image.Properties.ObjectUUID,
-						image.Properties.Name,
-						image.Properties.ChangeTime.Local().Format(time.RFC3339),
-						private,
-						image.Properties.SourceURL,
-					},
-				}
-				rows = append(rows, fill...)
-			}
-			if rootFlags.quiet {
-				for _, info := range rows {
-					fmt.Fprintln(out, info[0])
-				}
-			} else {
-				render.AsTable(out, heading, rows, renderOpts)
-			}
-		} else {
-			render.AsJSON(out, images)
+		if rootFlags.json {
+			render.AsJSON(os.Stdout, images)
+			return nil
 		}
-		fmt.Print(out)
+		var rows [][]string
+		heading := []string{"id", "name", "changed", "private", "source url"}
+		for _, image := range images {
+			var private string
+			if image.Properties.Private {
+				private = "yes"
+			} else {
+				private = "no"
+			}
+			fill := [][]string{
+				{
+					image.Properties.ObjectUUID,
+					image.Properties.Name,
+					image.Properties.ChangeTime.Local().Format(time.RFC3339),
+					private,
+					image.Properties.SourceURL,
+				},
+			}
+			rows = append(rows, fill...)
+		}
+		if rootFlags.quiet {
+			for _, info := range rows {
+				fmt.Println(info[0])
+			}
+			return nil
+		}
+		render.AsTable(os.Stdout, heading, rows, renderOpts)
 		return nil
 	},
 }
