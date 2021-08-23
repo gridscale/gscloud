@@ -63,10 +63,11 @@ var isoImageLsCmd = &cobra.Command{
 			}
 			if rootFlags.quiet {
 				for _, info := range rows {
-					fmt.Println(info[0])
+					fmt.Fprintln(out, info[0])
 				}
+			} else {
+				render.AsTable(out, heading, rows, renderOpts)
 			}
-			render.AsTable(out, heading, rows, renderOpts)
 		} else {
 			render.AsJSON(out, images)
 		}
