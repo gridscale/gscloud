@@ -8,6 +8,8 @@ FEATURES:
 
 FIXED:
 
+* Fixed the behavior of `iso-image ls --quiet` ([#134](https://github.com/gridscale/gscloud/issues/134)). Thanks [@ghostwheel42](https://github.com/ghostwheel42)!
+
 ## v0.10.0 (2021-04-06)
 
 FEATURES:
