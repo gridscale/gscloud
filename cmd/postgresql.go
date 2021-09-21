@@ -72,6 +72,6 @@ var postgresReleasesCmd = &cobra.Command{
 }
 
 func init() {
-	postgresCmd.AddCommand(clusterCmd, postgresReleasesCmd)
+	postgresCmd.AddCommand(postgresReleasesCmd)
 	rootCmd.AddCommand(postgresCmd)
 }
