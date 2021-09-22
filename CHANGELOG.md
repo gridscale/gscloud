@@ -1,9 +1,10 @@
 # Changelog
 
-## v0.11.0 (UNRELEASED)
+## v0.11.0 (2021-09-22)
 
 FEATURES:
 
+* Release tarballs now include version strings. With this you can simply use make(1) in a build environment without git(1) installed and still have `gscloud version` produce correct output (Fixes [#131](https://github.com/gridscale/gscloud/issues/131)).
 * gscloud-server-create `--with-template` learned to accept IDs in addition to template names (see [PR #133](https://github.com/gridscale/gscloud/pull/133)).
 
 FIXED:
