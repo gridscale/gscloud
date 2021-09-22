@@ -1,6 +1,8 @@
 .DS_Store
+.vscode/*.log
+bin/
 build
 cover.out
-gscloud
 dist/
-bin/
+gscloud
+gscloud.tar.gz
