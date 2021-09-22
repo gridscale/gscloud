@@ -1,5 +1,12 @@
-VERSION=$$(git describe --tags)
-GIT_COMMIT=$$(git rev-list -1 HEAD)
+VERSION := $(shell if ! git describe --tags 2>/dev/null; then \
+	grep -Po '(?<=^VERSION=)v.*$$' $$PWD/RELEASE.txt; \
+fi; \
+)
+
+GIT_COMMIT := $(shell if ! git rev-list -1 HEAD 2>/dev/null; then \
+	grep -Po '(?<=^GIT_COMMIT=)\w*$$' $$PWD/RELEASE.txt; \
+fi; \
+)
 
 default: build
 
