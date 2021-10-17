@@ -18,7 +18,7 @@ test: build
 	go tool cover -func=cover.out
 
 lint: build
-	golint ./...
+	golint -set_exit_status ./...
 
 clean:
 	go clean
