@@ -8,8 +8,8 @@ On master branch:
 - [ ] Make sure README is up to date
 - [ ] Changelog: add additions and fixes
 - [ ] Changelog: set release date
-- [ ] Create a new tag (e.g. `git tag v0.5.0`)
-- [ ] Push the tag (e.g. `git push origin --tags v0.5.0`)
+- [ ] Create a new annotated tag (e.g. `git tag -a -m 'New release' v0.12.0`)
+- [ ] Push the tag (e.g. `git push origin --follow-tags`)
 
 That's it. Everything else should be done by the pipeline.
 
