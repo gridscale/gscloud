@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.11.1 (2021-09-23)
+## v0.11.1 (2022-XX-XX)
+
+FEATURES:
+
+* `gscloud info --json` now includes the sum of total cores, memory, and storage capacity in the output.
 
 FIXED:
 * GitHub does not support `%(describe)`, yet, so we have to upload release artifacts manually for now (see https://github.community/t/support-for-describe-in-export-subst/196618 and [#131](https://github.com/gridscale/gscloud/issues/131)).

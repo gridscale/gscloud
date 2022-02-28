@@ -37,19 +37,18 @@ Show summary for a given account:
 	IP addresses       2
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		type output struct {
 			runtime.AccountEntry
-			ServerCount  int `json:"server_count"`
-			StorageCount int `json:"storage_count"`
-			IPAddrCount  int `json:"ip_address_count"`
-			PaaSCount    int `json:"platform_service_count"`
+			ServerAgg  map[string]interface{} `json:"server"`
+			StorageAgg map[string]interface{} `json:"storage"`
+			IPAddrAgg  map[string]interface{} `json:"ip_address"`
+			PaasAgg    map[string]interface{} `json:"platform_service"`
 		}
 
 		type objectCount struct {
-			Obj   string
-			Count int
-			Err   error
+			Obj string
+			Agg map[string]interface{}
+			Err error
 		}
 
 		conf := rt.Config()
@@ -74,22 +73,59 @@ Show summary for a given account:
 				fmt.Fprintf(os.Stderr, "Getting information about used resources…\n")
 				client := rt.Client()
 
-				funcs := map[string]func(context.Context, *gsclient.Client) (int, error){
-					"Servers": func(ctx context.Context, c *gsclient.Client) (int, error) {
+				funcs := map[string]func(context.Context, *gsclient.Client) (map[string]interface{}, error){
+					"Servers": func(ctx context.Context, c *gsclient.Client) (map[string]interface{}, error) {
 						objs, err := c.GetServerList(ctx)
-						return len(objs), err
+						if err != nil {
+							return nil, err
+						}
+						mem := 0
+						cores := 0
+						for _, obj := range objs {
+							mem += obj.Properties.Memory
+							cores += obj.Properties.Cores
+						}
+						return map[string]interface{}{
+								"count":  len(objs),
+								"memory": mem,
+								"cores":  cores,
+							},
+							nil
 					},
-					"Storages": func(ctx context.Context, c *gsclient.Client) (int, error) {
+					"Storages": func(ctx context.Context, c *gsclient.Client) (map[string]interface{}, error) {
 						objs, err := c.GetStorageList(ctx)
-						return len(objs), err
+						if err != nil {
+							return nil, err
+						}
+						capacity := 0
+						for _, obj := range objs {
+							capacity += obj.Properties.Capacity
+						}
+						return map[string]interface{}{
+								"count":    len(objs),
+								"capacity": capacity,
+							},
+							nil
 					},
-					"IP addresses": func(ctx context.Context, c *gsclient.Client) (int, error) {
+					"IP addresses": func(ctx context.Context, c *gsclient.Client) (map[string]interface{}, error) {
 						objs, err := c.GetIPList(ctx)
-						return len(objs), err
+						if err != nil {
+							return nil, err
+						}
+						return map[string]interface{}{
+								"count": len(objs),
+							},
+							nil
 					},
-					"Platform services": func(ctx context.Context, c *gsclient.Client) (int, error) {
+					"Platform services": func(ctx context.Context, c *gsclient.Client) (map[string]interface{}, error) {
 						objs, err := c.GetPaaSServiceList(ctx)
-						return len(objs), err
+						if err != nil {
+							return nil, err
+						}
+						return map[string]interface{}{
+								"count": len(objs),
+							},
+							nil
 					},
 				}
 
@@ -104,14 +140,14 @@ Show summary for a given account:
 				for k, v := range funcs {
 					wg.Add(1)
 					cCopy := context.Background()
-					go func(obj string, f func(context.Context, *gsclient.Client) (int, error)) {
+					go func(obj string, f func(context.Context, *gsclient.Client) (map[string]interface{}, error)) {
 						defer wg.Done()
 
-						count, err := f(cCopy, client)
+						agg, err := f(cCopy, client)
 						if err != nil {
-							ch <- objectCount{obj, 0, NewError(cmd, fmt.Sprintf("Could not get %s", obj), err)}
+							ch <- objectCount{obj, nil, NewError(cmd, fmt.Sprintf("Could not get %s", obj), err)}
 						}
-						ch <- objectCount{obj, count, nil}
+						ch <- objectCount{obj, agg, nil}
 					}(k, v)
 				}
 
@@ -123,23 +159,25 @@ Show summary for a given account:
 						if v.Err != nil {
 							return v.Err
 						}
-						rows = append(rows, []string{v.Obj, strconv.Itoa(v.Count)})
+						count := v.Agg["count"].(int)
+						rows = append(rows, []string{v.Obj, strconv.Itoa(count)})
 					}
 					render.AsTable(out, heading, rows, renderOpts)
 				} else {
-					m := map[string]int{}
+					m := map[string]map[string]interface{}{}
 					for v := range ch {
 						if v.Err != nil {
 							return v.Err
 						}
-						m[v.Obj] = v.Count
+						m[v.Obj] = v.Agg
 					}
+
 					jsonOutput := output{
 						AccountEntry: account,
-						ServerCount:  m["Servers"],
-						StorageCount: m["Storages"],
-						IPAddrCount:  m["IP addresses"],
-						PaaSCount:    m["Platform services"],
+						ServerAgg:    m["Servers"],
+						StorageAgg:   m["Storages"],
+						IPAddrAgg:    m["IP addresses"],
+						PaasAgg:      m["Platform services"],
 					}
 					render.AsJSON(out, jsonOutput)
 				}
