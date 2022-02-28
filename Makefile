@@ -13,6 +13,11 @@ default: build
 build:
 	go build -ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
 
+build-debug:
+	go build \
+		-gcflags="all=-N -l" \
+		-ldflags "-X github.com/gridscale/gscloud/cmd.GitCommit=$(GIT_COMMIT) -X github.com/gridscale/gscloud/cmd.Version=$(VERSION)"
+
 test: build
 	go test -coverprofile=cover.out ./...
 	go tool cover -func=cover.out

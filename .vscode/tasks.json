@@ -6,7 +6,7 @@
         {
             "label": "Build executable",
             "type": "shell",
-            "command": "make",
+            "command": "make build-debug",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
