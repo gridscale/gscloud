@@ -535,9 +535,6 @@ func toHardwareProfile(val string) (gsclient.ServerHardwareProfile, error) {
 	case "q35":
 		prof = gsclient.Q35ServerHardware
 
-	case "q35_nested":
-		prof = gsclient.Q35NestedServerHardware
-
 	default:
 		return "", fmt.Errorf("Not a valid profile: %s", val)
 	}
