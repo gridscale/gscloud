@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.11.1 (2021-09-23)
+
+FIXED:
+* GitHub does not support `%(describe)`, yet, so we have to upload release artifacts manually for now (see https://github.community/t/support-for-describe-in-export-subst/196618 and [#131](https://github.com/gridscale/gscloud/issues/131)).
+
 ## v0.11.0 (2021-09-22)
 
 FEATURES:
