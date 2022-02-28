@@ -17,10 +17,8 @@ var completionCmd = &cobra.Command{
 		switch args[0] {
 		case "bash":
 			cmd.Root().GenBashCompletion(os.Stdout)
-			break
 		case "zsh":
 			cmd.Root().GenZshCompletion(os.Stdout)
-			break
 		}
 	},
 }
