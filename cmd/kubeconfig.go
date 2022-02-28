@@ -23,14 +23,6 @@ type userEntry struct {
 	User userInfo `yaml:"user"`
 }
 
-type authProviderConfig struct {
-	AccessToken string `yaml:"access-token"`
-}
-
-type authProviderInfo struct {
-	Config authProviderConfig `yaml:"config"`
-}
-
 type userInfo struct {
 	ClientCertificateData string `yaml:"client-certificate-data"`
 	ClientKeyData         string `yaml:"client-key-data"`
