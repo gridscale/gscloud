@@ -536,7 +536,7 @@ func toHardwareProfile(val string) (gsclient.ServerHardwareProfile, error) {
 		prof = gsclient.Q35ServerHardware
 
 	default:
-		return "", fmt.Errorf("Not a valid profile: %s", val)
+		return "", fmt.Errorf("not a valid profile: %s", val)
 	}
 	return prof, nil
 }

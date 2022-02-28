@@ -98,7 +98,7 @@ Shrink a storage:
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
 			if f.Name == "capacity" && f.Changed {
 				if storageFlags.capacity < 1 {
-					err = errors.New("Expected storage capacity ≥ 1 GB")
+					err = errors.New("expected storage capacity ≥ 1 GB")
 				}
 			}
 		})

@@ -40,7 +40,7 @@ var ipLsCmd = &cobra.Command{
 	Long:    `List IP address objects.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if ipFlags.v4 && ipFlags.v6 {
-			return errors.New("No family selected")
+			return errors.New("no family selected")
 		}
 		return nil
 	},
@@ -212,7 +212,7 @@ Create a new IPv4 address:
 `,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if ipFlags.v4 && ipFlags.v6 {
-			return errors.New("No family given. Use either -4 or -6")
+			return errors.New("no family given. Use either -4 or -6")
 		}
 		return nil
 	},
@@ -369,5 +369,5 @@ func idForAddress(ctx context.Context, addr net.IP, op gsclient.IPOperator) (str
 			return obj.Properties.ObjectUUID, nil
 		}
 	}
-	return "", fmt.Errorf("No such IP %s", addr)
+	return "", fmt.Errorf("no such IP %s", addr)
 }
