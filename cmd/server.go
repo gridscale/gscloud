@@ -365,15 +365,12 @@ To create a server without any storage just omit --with-template flag:
 				fmt.Println("Storage created:", storage.ObjectUUID)
 				fmt.Println("Password:", password)
 			} else {
-				out := new(bytes.Buffer)
-
 				jsonOutput := output{
 					Server:   server.ObjectUUID,
 					Storage:  storage.ObjectUUID,
 					Password: password,
 				}
-				render.AsJSON(out, jsonOutput)
-				fmt.Println(out)
+				render.AsJSON(os.Stdout, jsonOutput)
 			}
 		}
 
