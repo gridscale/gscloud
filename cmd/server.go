@@ -276,6 +276,12 @@ To create a server without any storage just omit --with-template flag:
 	$ gscloud server create --name worker-2 --cores=1 --mem=1
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		type output struct {
+			Server   string `json:"server"`
+			Storage  string `json:"storage"`
+			Password string `json:"password"`
+		}
+
 		var templateID string
 
 		serverOp := rt.ServerOperator()
@@ -353,9 +359,22 @@ To create a server without any storage just omit --with-template flag:
 				return NewError(cmd, "Linking storage to server failed", err)
 			}
 			cleanupServer = false
-			fmt.Println("Server created:", server.ObjectUUID)
-			fmt.Println("Storage created:", storage.ObjectUUID)
-			fmt.Println("Password:", password)
+
+			if !rootFlags.json {
+				fmt.Println("Server created:", server.ObjectUUID)
+				fmt.Println("Storage created:", storage.ObjectUUID)
+				fmt.Println("Password:", password)
+			} else {
+				out := new(bytes.Buffer)
+
+				jsonOutput := output{
+					Server:   server.ObjectUUID,
+					Storage:  storage.ObjectUUID,
+					Password: password,
+				}
+				render.AsJSON(out, jsonOutput)
+				fmt.Println(out)
+			}
 		}
 
 		cleanupServer = false
