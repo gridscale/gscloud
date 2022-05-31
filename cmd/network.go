@@ -85,6 +85,10 @@ Create a network:
 
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		type output struct {
+			Network string `json:"network"`
+		}
+
 		networkOp := rt.NetworkOperator()
 		ctx := context.Background()
 		network, err := networkOp.CreateNetwork(ctx, gsclient.NetworkCreateRequest{
@@ -94,7 +98,11 @@ Create a network:
 		if err != nil {
 			return NewError(cmd, "Could not create network", err)
 		}
-		fmt.Println("Network created:", network.ObjectUUID)
+		if !rootFlags.json {
+			fmt.Println("Network created:", network.ObjectUUID)
+		} else {
+			render.AsJSON(os.Stdout, output{Network: network.ObjectUUID})
+		}
 		return nil
 	},
 }
