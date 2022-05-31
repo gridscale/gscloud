@@ -105,6 +105,10 @@ Create a Fedora CoreOS image:
 	   --source-url="https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/33.20201214.3.1/x86_64/fedora-coreos-33.20201214.3.1-live.x86_64.iso"
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		type output struct {
+			Image string `json:"image"`
+		}
+
 		imageOp := rt.ISOImageOperator()
 		ctx := context.Background()
 		image, err := imageOp.CreateISOImage(ctx, gsclient.ISOImageCreateRequest{
@@ -114,7 +118,11 @@ Create a Fedora CoreOS image:
 		if err != nil {
 			return NewError(cmd, "Creating image failed", err)
 		}
-		fmt.Println("Image created:", image.ObjectUUID)
+		if !rootFlags.json {
+			fmt.Println("Image created:", image.ObjectUUID)
+		} else {
+			render.AsJSON(os.Stdout, output{Image: image.ObjectUUID})
+		}
 		return nil
 	},
 }
