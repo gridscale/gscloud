@@ -130,10 +130,7 @@ Get the list of storages as JSON:
 # ENVIRONMENT
 
 GSCLOUD_ACCOUNT
-	Specify the account used. May be overriden by --account option
-
-KUBECONFIG
-	
+	Specify the account used. Gets overriden by --account option
 	  	
 `, runtime.ConfigPathWithoutUser()),
 	DisableAutoGenTag: true,
