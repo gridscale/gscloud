@@ -126,6 +126,15 @@ Get the list of storages as JSON:
         }
       }
     ]
+
+# ENVIRONMENT
+
+GSCLOUD_ACCOUNT
+	Specify the account used. May be overriden by --account option
+
+KUBECONFIG
+	
+	  	
 `, runtime.ConfigPathWithoutUser()),
 	DisableAutoGenTag: true,
 }
@@ -157,7 +166,7 @@ func init() {
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), "Path to configuration file")
-	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", account, "Specify the account used")
+	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", account, "Specify the account used. Overrides GSCLOUD_ACCOUNT environment variable")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")

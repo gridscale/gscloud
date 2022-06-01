@@ -99,7 +99,13 @@ var getKubernetesReleasesCmd = &cobra.Command{
 var saveKubeconfigCmd = &cobra.Command{
 	Use:   "save-kubeconfig",
 	Short: "Saves configuration of the given cluster into a kubeconfig",
-	Long:  "Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.",
+	Long: `	Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.
+	
+# ENVIRONMENT
+
+KUBECONFIG
+	Specifies the path to the kubeconfig. Gets overriden by --kubeconfig
+	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
@@ -269,7 +275,7 @@ var execCredentialCmd = &cobra.Command{
 }
 
 func init() {
-	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
+	saveKubeconfigCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file. Overrides KUBECONFIG environment variable")
 	saveKubeconfigCmd.Flags().String("cluster", "", "The cluster's UUID")
 	saveKubeconfigCmd.MarkFlagRequired("cluster")
 	saveKubeconfigCmd.Flags().Bool("credential-plugin", false, "Enables credential plugin authentication method (exec-credential)")
