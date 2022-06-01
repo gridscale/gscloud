@@ -246,11 +246,11 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 	return rt, nil
 }
 
-// Loads UserId, Token and URL from their respective environment variable
+// LoadEnvVariables loads UserId, Token and URL from their respective environment variable
 func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
-	userIdEnv, userIdEnvExists := os.LookupEnv("GSCLOUD_USER_ID")
-	if userIdEnvExists {
-		defaultAc.UserID = userIdEnv
+	userIDEnv, userIDEnvExists := os.LookupEnv("GSCLOUD_USER_ID")
+	if userIDEnvExists {
+		defaultAc.UserID = userIDEnv
 	}
 
 	tokenEnv, tokenEnvExists := os.LookupEnv("GSCLOUD_API_TOKEN")
@@ -258,9 +258,9 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 		defaultAc.Token = tokenEnv
 	}
 
-	apiUrlEnv, apiUrlEnvExists := os.LookupEnv("GSCLOUD_API_URL")
-	if apiUrlEnvExists {
-		defaultAc.URL = apiUrlEnv
+	apiURLEnv, apiURLEnvExists := os.LookupEnv("GSCLOUD_API_URL")
+	if apiURLEnvExists {
+		defaultAc.URL = apiURLEnv
 	}
 	return defaultAc
 }
