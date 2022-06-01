@@ -218,21 +218,24 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 // only one runtime instance in the program.
 func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 	var ac AccountEntry
-	var accountInConfig = false
+	var accountIndex = -1
 
-	for _, a := range conf.Accounts {
+	for i, a := range conf.Accounts {
 		if accountName == a.Name {
 			ac = a
-			accountInConfig = true
+			accountIndex = i
 			break
 		}
 	}
 
-	if len(conf.Accounts) > 0 && !accountInConfig {
+	if len(conf.Accounts) > 0 && accountIndex == -1 {
 		if !CommandWithoutConfig(os.Args) {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
 	}
+
+	ac = LoadEnvVariables(ac)
+	conf.Accounts[accountIndex] = ac
 
 	client := newClient(ac)
 	rt := &Runtime{
@@ -241,6 +244,25 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 		config:      conf,
 	}
 	return rt, nil
+}
+
+// Loads UserId, Token and URL from their respective environment variable
+func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
+	userIdEnv, userIdEnvExists := os.LookupEnv("GSCLOUD_USER_ID")
+	if userIdEnvExists {
+		defaultAc.UserID = userIdEnv
+	}
+
+	tokenEnv, tokenEnvExists := os.LookupEnv("GSCLOUD_API_TOKEN")
+	if tokenEnvExists {
+		defaultAc.Token = tokenEnv
+	}
+
+	apiUrlEnv, apiUrlEnvExists := os.LookupEnv("GSCLOUD_API_URL")
+	if apiUrlEnvExists {
+		defaultAc.URL = apiUrlEnv
+	}
+	return defaultAc
 }
 
 // NewTestRuntime creates a pretty useless runtime instance. Except maybe if
