@@ -131,7 +131,16 @@ Get the list of storages as JSON:
 
 GSCLOUD_ACCOUNT
 	Specify the account used. Gets overriden by --account option
-	  	
+
+GSCLOUD_USER_ID
+	Specify the user id used. Overrides the value in the config file
+
+GSCLOUD_API_TOKEN
+	Specify the API token used. Overrides the value in the config file
+
+GSCLOUD_API_URL
+	Specify the URL of the API. Overrides the value in the config file
+
 `, runtime.ConfigPathWithoutUser()),
 	DisableAutoGenTag: true,
 }
