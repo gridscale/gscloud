@@ -99,7 +99,7 @@ var getKubernetesReleasesCmd = &cobra.Command{
 var saveKubeconfigCmd = &cobra.Command{
 	Use:   "save-kubeconfig",
 	Short: "Saves configuration of the given cluster into a kubeconfig",
-	Long: `	Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.
+	Long: `Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.
 	
 # ENVIRONMENT
 
