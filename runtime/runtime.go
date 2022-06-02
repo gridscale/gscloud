@@ -234,7 +234,7 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 		}
 	}
 
-	if len(conf.Accounts) >= accountIndex && accountIndex != -1 {
+	if accountIndex != -1 {
 		ac = LoadEnvVariables(ac)
 		conf.Accounts[accountIndex] = ac
 	}
