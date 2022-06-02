@@ -4,6 +4,7 @@
 * c0deN <patrick@gridscale.io>
 * Felix Kronlage-Dammers <fkr@gridscale.io>
 * Ibrahim Takouna <ibrahim@gridscale.io>
+* JanLukasGithub <jan@garloff.de>
 * Marc Harriss <mharriss@gridscale.io>
 * Seth Centerbar <scenterbar@togetherwork.com>
 * Van Thong Nguyen <tom@gridscale.io>
