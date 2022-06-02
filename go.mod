@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/gridscale/gsclient-go/v3 v3.8.1
+	github.com/gridscale/gsclient-go/v3 v3.10.0
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
