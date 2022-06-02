@@ -248,17 +248,17 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 
 // LoadEnvVariables loads UserId, Token and URL from their respective environment variable
 func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
-	userIDEnv, userIDEnvExists := os.LookupEnv("GSCLOUD_USER_ID")
+	userIDEnv, userIDEnvExists := os.LookupEnv("GRIDSCALE_UUID")
 	if userIDEnvExists {
 		defaultAc.UserID = userIDEnv
 	}
 
-	tokenEnv, tokenEnvExists := os.LookupEnv("GSCLOUD_API_TOKEN")
+	tokenEnv, tokenEnvExists := os.LookupEnv("GRIDSCALE_TOKEN")
 	if tokenEnvExists {
 		defaultAc.Token = tokenEnv
 	}
 
-	apiURLEnv, apiURLEnvExists := os.LookupEnv("GSCLOUD_API_URL")
+	apiURLEnv, apiURLEnvExists := os.LookupEnv("GRIDSCALE_URL")
 	if apiURLEnvExists {
 		defaultAc.URL = apiURLEnv
 	}
