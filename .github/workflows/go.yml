@@ -32,7 +32,7 @@ jobs:
 
       - name: Lint gscloud
         run: |
-          go get staticcheck
+          go install honnef.co/go/tools/cmd/staticcheck@latest
           make lint
 
       - name: Run tests
