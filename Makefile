@@ -23,7 +23,7 @@ test: build
 	go tool cover -func=cover.out
 
 lint: build
-	golint -set_exit_status ./...
+	staticcheck ./...
 
 clean:
 	go clean

@@ -25,14 +25,15 @@ jobs:
       - name: Install dependencies
         run: |
           go get -v -t $(go list ./... | grep -v /examples)
-          go get -u golang.org/x/lint/golint
           go mod tidy
 
       - name: Build gscloud
         run: make
 
       - name: Lint gscloud
-        run: make lint
+        run: |
+          go get staticcheck
+          make lint
 
       - name: Run tests
         run: make test
