@@ -49,3 +49,10 @@ func resetEnv(environ []string) {
 		os.Setenv(splitString[0], splitString[1])
 	}
 }
+
+func Test_EmptyConfig(t *testing.T) {
+	testConfig := Config{Accounts: []AccountEntry{}}
+	_, err := NewRuntime(testConfig, "test")
+
+	assert.Nil(t, err)
+}
