@@ -234,8 +234,10 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 		}
 	}
 
-	ac = LoadEnvVariables(ac)
-	conf.Accounts[accountIndex] = ac
+	if len(conf.Accounts) >= accountIndex {
+		ac = LoadEnvVariables(ac)
+		conf.Accounts[accountIndex] = ac
+	}
 
 	client := newClient(ac)
 	rt := &Runtime{
