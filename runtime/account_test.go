@@ -21,9 +21,9 @@ func Test_SelectAccount(t *testing.T) {
 func Test_SelectAccountSettings(t *testing.T) {
 	defer resetEnv(os.Environ())
 
-	os.Setenv("GSCLOUD_USER_ID", "passedUserId")
-	os.Setenv("GSCLOUD_API_TOKEN", "passedToken")
-	os.Setenv("GSCLOUD_API_URL", "passed.example.com")
+	os.Setenv("GRIDSCALE_UUID", "passedUserId")
+	os.Setenv("GRIDSCALE_TOKEN", "passedToken")
+	os.Setenv("GRIDSCALE_URL", "passed.example.com")
 
 	testAccount := AccountEntry{
 		Name:   "test",

@@ -129,16 +129,16 @@ Get the list of storages as JSON:
 
 # ENVIRONMENT
 
-GSCLOUD_ACCOUNT
+GRIDSCALE_ACCOUNT
 	Specify the account used. Gets overriden by --account option
 
-GSCLOUD_USER_ID
+GRIDSCALE_UUID
 	Specify the user id used. Overrides the value in the config file
 
-GSCLOUD_API_TOKEN
+GRIDSCALE_TOKEN
 	Specify the API token used. Overrides the value in the config file
 
-GSCLOUD_API_URL
+GRIDSCALE_URL
 	Specify the URL of the API. Overrides the value in the config file
 
 `, runtime.ConfigPathWithoutUser()),
@@ -166,13 +166,13 @@ func init() {
 	rootCmd.SilenceUsage = true
 	rootCmd.SilenceErrors = true
 
-	account, accountEnvPresent := os.LookupEnv("GSCLOUD_ACCOUNT")
+	account, accountEnvPresent := os.LookupEnv("GRIDSCALE_ACCOUNT")
 	if !accountEnvPresent {
 		account = "default"
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), "Path to configuration file")
-	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", account, "Specify the account used. Overrides GSCLOUD_ACCOUNT environment variable")
+	rootCmd.PersistentFlags().StringVarP(&rootFlags.account, "account", "", account, "Specify the account used. Overrides GRIDSCALE_ACCOUNT environment variable")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVarP(&renderOpts.NoHeader, "noheading", "", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")
