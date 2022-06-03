@@ -23,6 +23,10 @@ func Test_CommandWithoutConfig(t *testing.T) {
 			Args:     []string{"gscloud", "server", "create", "--account", "completion"},
 			Expected: false,
 		},
+		{
+			Args:     []string{"gscloud", "--json", "completion"},
+			Expected: true,
+		},
 	}
 
 	for _, test := range testCases {
