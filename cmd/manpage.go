@@ -39,6 +39,7 @@ This will overwrite any existing man-page created previously.
 		fmt.Printf("Written to %s\n", absPath)
 		return nil
 	},
+	Args: cobra.ExactValidArgs(1),
 }
 
 func init() {
