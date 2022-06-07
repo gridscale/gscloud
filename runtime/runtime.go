@@ -228,14 +228,14 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 		}
 	}
 
-	if len(conf.Accounts) > 0 && accountIndex == -1 {
-		if !CommandWithoutConfig(os.Args) {
+	if accountIndex == -1 {
+		if len(conf.Accounts) > 0 && !CommandWithoutConfig(os.Args) {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
+	} else {
+		ac = LoadEnvVariables(ac)
+		conf.Accounts[accountIndex] = ac
 	}
-
-	ac = LoadEnvVariables(ac)
-	conf.Accounts[accountIndex] = ac
 
 	client := newClient(ac)
 	rt := &Runtime{
