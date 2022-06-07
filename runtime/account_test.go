@@ -8,22 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_SelectAccount(t *testing.T) {
-	testAccount := AccountEntry{
-		Name: "test",
+func Test_NewRuntime(t *testing.T) {
+	type testCase struct {
+		Configuration        Config
+		AccountName          string
+		Environment          []string
+		ExpectedRuntimeIsNil bool
+		ExpectedAccount      AccountEntry
+		ExpectedErrorIsNil   bool
 	}
-	testConfig := Config{Accounts: []AccountEntry{testAccount}}
-	rt, err := NewRuntime(testConfig, "test")
-	assert.Nil(t, err)
-	assert.Equal(t, rt.Account(), "test")
-}
-
-func Test_SelectAccountSettings(t *testing.T) {
-	defer resetEnv(os.Environ())
-
-	os.Setenv("GRIDSCALE_UUID", "passedUserId")
-	os.Setenv("GRIDSCALE_TOKEN", "passedToken")
-	os.Setenv("GRIDSCALE_URL", "passed.example.com")
 
 	testAccount := AccountEntry{
 		Name:   "test",
@@ -31,13 +24,62 @@ func Test_SelectAccountSettings(t *testing.T) {
 		Token:  "test",
 		URL:    "test.example.com",
 	}
-	testConfig := Config{Accounts: []AccountEntry{testAccount}}
-	rt, err := NewRuntime(testConfig, "test")
 
-	assert.Nil(t, err)
-	assert.Equal(t, "passedUserId", rt.config.Accounts[0].UserID)
-	assert.Equal(t, "passedToken", rt.config.Accounts[0].Token)
-	assert.Equal(t, "passed.example.com", rt.config.Accounts[0].URL)
+	testCases := []testCase{
+		{
+			Configuration:        Config{[]AccountEntry{testAccount}},
+			AccountName:          testAccount.Name,
+			Environment:          []string{},
+			ExpectedRuntimeIsNil: false,
+			ExpectedAccount:      testAccount,
+			ExpectedErrorIsNil:   true,
+		},
+		{
+			Configuration:        Config{[]AccountEntry{testAccount}},
+			AccountName:          "default",
+			Environment:          []string{},
+			ExpectedRuntimeIsNil: true,
+			ExpectedAccount:      AccountEntry{},
+			ExpectedErrorIsNil:   false,
+		},
+		{
+			Configuration:        Config{[]AccountEntry{}},
+			AccountName:          "default",
+			Environment:          []string{},
+			ExpectedRuntimeIsNil: false,
+			ExpectedAccount:      AccountEntry{},
+			ExpectedErrorIsNil:   true,
+		},
+		{
+			Configuration:        Config{[]AccountEntry{testAccount}},
+			AccountName:          testAccount.Name,
+			Environment:          []string{"GRIDSCALE_UUID=envUserId", "GRIDSCALE_TOKEN=envToken", "GRIDSCALE_URL=env.example.com"},
+			ExpectedRuntimeIsNil: false,
+			ExpectedAccount:      AccountEntry{Name: testAccount.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
+			ExpectedErrorIsNil:   true,
+		},
+	}
+
+	for _, test := range testCases {
+		oldEnviron := os.Environ()
+		resetEnv(test.Environment)
+
+		rt, err := NewRuntime(test.Configuration, test.AccountName)
+
+		assert.Equal(t, test.ExpectedErrorIsNil, err == nil)
+		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
+
+		if rt != nil {
+			for _, ac := range rt.config.Accounts {
+				if ac.Name == rt.accountName {
+					assert.Equal(t, test.ExpectedAccount, ac)
+					break
+				}
+			}
+		}
+
+		resetEnv(oldEnviron)
+	}
 }
 
 func resetEnv(environ []string) {
@@ -46,6 +88,8 @@ func resetEnv(environ []string) {
 	for _, s := range environ {
 		splitString := strings.Split(s, "=")
 
-		os.Setenv(splitString[0], splitString[1])
+		if len(splitString) >= 2 {
+			os.Setenv(splitString[0], splitString[1])
+		}
 	}
 }
