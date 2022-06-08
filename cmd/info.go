@@ -70,7 +70,7 @@ Show summary for a given account:
 					fmt.Print(out)
 				}
 
-				fmt.Fprintf(os.Stderr, "Getting information about used resources…\n")
+				fmt.Fprintln(os.Stderr, "Getting information about used resources…")
 				client := rt.Client()
 
 				funcs := map[string]func(context.Context, *gsclient.Client) (map[string]interface{}, error){
