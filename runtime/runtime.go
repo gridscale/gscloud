@@ -212,24 +212,21 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 // only one runtime instance in the program.
 func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Runtime, error) {
 	var ac AccountEntry
-	var accountIndex = -1
 
-	for i, a := range conf.Accounts {
+	for _, a := range conf.Accounts {
 		if accountName == a.Name {
 			ac = a
-			accountIndex = i
 			break
 		}
 	}
 
-	if accountIndex == -1 {
+	if (ac == AccountEntry{}) {
 		if len(conf.Accounts) > 0 && !commandWithoutConfig {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
-	} else {
-		ac = LoadEnvVariables(ac)
-		conf.Accounts[accountIndex] = ac
 	}
+
+	ac = LoadEnvVariables(ac)
 
 	client := newClient(ac)
 	rt := &Runtime{
@@ -261,18 +258,14 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 // NewTestRuntime creates a pretty useless runtime instance. Except maybe if
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
-	testConfig := Config{Accounts: []AccountEntry{
-		{
+	rt := &Runtime{
+		account: AccountEntry{
 			Name:   "test",
 			UserID: "testId",
 			Token:  "testToken",
 			URL:    "testURL",
 		},
-	}}
-
-	rt := &Runtime{
-		account: testConfig.Accounts[0],
-		client:  nil,
+		client: nil,
 	}
 	return rt, nil
 }
