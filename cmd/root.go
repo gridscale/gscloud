@@ -185,7 +185,7 @@ func init() {
 func initConfig() {
 	if rootFlags.configFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(runtime.ConfigPath())
+		viper.SetConfigFile(rootFlags.configFile)
 	} else {
 		// Use default paths.
 		viper.SetConfigName("config")
