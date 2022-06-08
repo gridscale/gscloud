@@ -344,12 +344,12 @@ func init() {
 	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.v4, "v4", "4", false, "Add a new IPv4 address")
 	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.v6, "v6", "6", false, "Add a new IPv6 address")
 	ipAddCmd.PersistentFlags().StringVarP(&ipFlags.name, "name", "n", "", "Optional name of the IP address being created. Can be omitted")
-	ipAddCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
-	ipAddCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Optional reverse DNS entry for the IP address")
+	ipAddCmd.PersistentFlags().BoolVar(&ipFlags.failover, "failover", false, "Enable failover. If given, IP is no longer available for DHCP and cannot be assigned")
+	ipAddCmd.PersistentFlags().StringVar(&ipFlags.reverseDNS, "reverse-dns", "", "Optional reverse DNS entry for the IP address")
 
 	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.name, "name", "n", "", "Change name of the IP address")
-	ipSetCmd.PersistentFlags().BoolVarP(&ipFlags.failover, "failover", "", false, "Enable failover")
-	ipSetCmd.PersistentFlags().StringVarP(&ipFlags.reverseDNS, "reverse-dns", "", "", "Set reverse DNS entry")
+	ipSetCmd.PersistentFlags().BoolVar(&ipFlags.failover, "failover", false, "Enable failover")
+	ipSetCmd.PersistentFlags().StringVar(&ipFlags.reverseDNS, "reverse-dns", "", "Set reverse DNS entry")
 
 	ipAssignCmd.PersistentFlags().StringVarP(&ipFlags.targetID, "to", "t", "", "ID of target server or load balancer")
 	ipAssignCmd.MarkPersistentFlagRequired("to")
