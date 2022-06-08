@@ -20,7 +20,7 @@ type Config struct {
 
 const configPath = "/gridscale/config.yaml"
 
-// ConfigPath construct platform specific path to the configuration file.
+// ConfigPath constructs the platform specific path to the configuration file.
 // - on Linux: $XDG_CONFIG_HOME or $HOME/.config
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
@@ -33,7 +33,7 @@ func ConfigPath() string {
 	return path
 }
 
-// ConfigPathWithoutUser same as ConfigPath but with environment variables not expanded.
+// ConfigPathWithoutUser is the same as ConfigPath but with environment variables not expanded.
 func ConfigPathWithoutUser() string {
 	return localConfig + configPath
 }
