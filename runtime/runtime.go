@@ -216,7 +216,7 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 
 // NewRuntime creates a new runtime for a given account. Usually there should be
 // only one runtime instance in the program.
-func NewRuntime(conf Config, accountName string) (*Runtime, error) {
+func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Runtime, error) {
 	var ac AccountEntry
 	var accountIndex = -1
 
@@ -229,7 +229,7 @@ func NewRuntime(conf Config, accountName string) (*Runtime, error) {
 	}
 
 	if accountIndex == -1 {
-		if len(conf.Accounts) > 0 && !CommandWithoutConfig(os.Args) {
+		if len(conf.Accounts) > 0 && !commandWithoutConfig {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
 	} else {
