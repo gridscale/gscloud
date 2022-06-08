@@ -12,6 +12,7 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
+	account     *AccountEntry
 	accountName string
 	client      interface{}
 	config      Config
@@ -239,6 +240,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 
 	client := newClient(ac)
 	rt := &Runtime{
+		account:     &conf.Accounts[accountIndex],
 		accountName: ac.Name,
 		client:      client,
 		config:      conf,
@@ -268,9 +270,20 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 // NewTestRuntime creates a pretty useless runtime instance. Except maybe if
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
+	testConfig := Config{Accounts: []AccountEntry{
+		{
+			Name:   "test",
+			UserID: "testId",
+			Token:  "testToken",
+			URL:    "testURL",
+		},
+	}}
+
 	rt := &Runtime{
-		accountName: "test",
+		account:     &testConfig.Accounts[0],
+		accountName: testConfig.Accounts[0].Name,
 		client:      nil,
+		config:      testConfig,
 	}
 	return rt, nil
 }
