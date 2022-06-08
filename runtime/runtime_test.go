@@ -72,7 +72,7 @@ func Test_NewRuntime(t *testing.T) {
 		if rt != nil {
 			assert.NotNil(t, rt.account)
 
-			assert.Equal(t, test.ExpectedAccount, *rt.account)
+			assert.Equal(t, test.ExpectedAccount, rt.account)
 		}
 
 		resetEnv(oldEnviron)

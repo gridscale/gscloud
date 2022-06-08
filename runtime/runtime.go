@@ -12,7 +12,7 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	account     *AccountEntry
+	account     AccountEntry
 	accountName string
 	client      interface{}
 	config      Config
@@ -46,7 +46,7 @@ func (r *Runtime) AccountName() string {
 }
 
 // Account is the current selected account.
-func (r *Runtime) Account() *AccountEntry {
+func (r *Runtime) Account() AccountEntry {
 	return r.account
 }
 
@@ -245,7 +245,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 
 	client := newClient(ac)
 	rt := &Runtime{
-		account:     &conf.Accounts[accountIndex],
+		account:     ac,
 		accountName: ac.Name,
 		client:      client,
 		config:      conf,
@@ -285,7 +285,7 @@ func NewTestRuntime() (*Runtime, error) {
 	}}
 
 	rt := &Runtime{
-		account:     &testConfig.Accounts[0],
+		account:     testConfig.Accounts[0],
 		accountName: testConfig.Accounts[0].Name,
 		client:      nil,
 		config:      testConfig,

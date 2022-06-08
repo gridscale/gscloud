@@ -53,10 +53,6 @@ Show summary for a given account:
 
 		account := rt.Account()
 
-		if account == nil {
-			panic("unexpected nil account")
-		}
-
 		if !rootFlags.json {
 			out := new(bytes.Buffer)
 			heading := []string{"setting", "value"}
@@ -175,7 +171,7 @@ Show summary for a given account:
 			}
 
 			jsonOutput := output{
-				AccountEntry: *account,
+				AccountEntry: account,
 				ServerAgg:    m["Servers"],
 				StorageAgg:   m["Storages"],
 				IPAddrAgg:    m["IP addresses"],
