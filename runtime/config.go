@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// AccountEntry represents a single account in the config file.
-type AccountEntry struct {
+// ProjectEntry represents a single project in the config file
+type ProjectEntry struct {
 	Name   string `yaml:"name" json:"name"`
 	UserID string `yaml:"userId" json:"userId"`
 	Token  string `yaml:"token" json:"token"`
@@ -15,7 +15,7 @@ type AccountEntry struct {
 
 // Config are all configuration settings parsed from a configuration file.
 type Config struct {
-	Projects []AccountEntry `yaml:"projects"`
+	Projects []ProjectEntry `yaml:"projects"`
 }
 
 const configPath = "/gridscale/config.yaml"

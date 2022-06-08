@@ -11,14 +11,14 @@ import (
 func Test_NewRuntime(t *testing.T) {
 	type testCase struct {
 		Configuration        Config
-		AccountName          string
+		ProjectName          string
 		Environment          []string
 		ExpectedRuntimeIsNil bool
-		ExpectedAccount      AccountEntry
+		ExpectedProject      ProjectEntry
 		ExpectedErrorIsNil   bool
 	}
 
-	testAccount := AccountEntry{
+	testProject := ProjectEntry{
 		Name:   "test",
 		UserID: "test",
 		Token:  "test",
@@ -27,35 +27,35 @@ func Test_NewRuntime(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
-			AccountName:          testAccount.Name,
+			Configuration:        Config{[]ProjectEntry{testProject}},
+			ProjectName:          testProject.Name,
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: false,
-			ExpectedAccount:      testAccount,
+			ExpectedProject:      testProject,
 			ExpectedErrorIsNil:   true,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
-			AccountName:          "default",
+			Configuration:        Config{[]ProjectEntry{testProject}},
+			ProjectName:          "default",
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: true,
-			ExpectedAccount:      AccountEntry{},
+			ExpectedProject:      ProjectEntry{},
 			ExpectedErrorIsNil:   false,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{}},
-			AccountName:          "default",
+			Configuration:        Config{[]ProjectEntry{}},
+			ProjectName:          "default",
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: false,
-			ExpectedAccount:      AccountEntry{},
+			ExpectedProject:      ProjectEntry{},
 			ExpectedErrorIsNil:   true,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
-			AccountName:          testAccount.Name,
+			Configuration:        Config{[]ProjectEntry{testProject}},
+			ProjectName:          testProject.Name,
 			Environment:          []string{"GRIDSCALE_UUID=envUserId", "GRIDSCALE_TOKEN=envToken", "GRIDSCALE_URL=env.example.com"},
 			ExpectedRuntimeIsNil: false,
-			ExpectedAccount:      AccountEntry{Name: testAccount.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
+			ExpectedProject:      ProjectEntry{Name: testProject.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
 			ExpectedErrorIsNil:   true,
 		},
 	}
@@ -64,15 +64,15 @@ func Test_NewRuntime(t *testing.T) {
 		oldEnviron := os.Environ()
 		resetEnv(test.Environment)
 
-		rt, err := NewRuntime(test.Configuration, test.AccountName, false)
+		rt, err := NewRuntime(test.Configuration, test.ProjectName, false)
 
 		assert.Equal(t, test.ExpectedErrorIsNil, err == nil)
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
 
 		if rt != nil {
 			for _, ac := range rt.config.Projects {
-				if ac.Name == rt.accountName {
-					assert.Equal(t, test.ExpectedAccount, ac)
+				if ac.Name == rt.ProjectName {
+					assert.Equal(t, test.ExpectedProject, ac)
 					break
 				}
 			}

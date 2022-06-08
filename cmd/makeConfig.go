@@ -51,16 +51,16 @@ func init() {
 	rootCmd.AddCommand(makeConfigCmd)
 }
 
-// emptyConfig creates a new config YAML with a 'default' account.
+// emptyConfig creates a new config YAML with a 'default' project
 func emptyConfig() []byte {
-	defaultAccount := runtime.AccountEntry{
+	defaultProject := runtime.ProjectEntry{
 		Name:   "default",
 		UserID: "",
 		Token:  "",
 		URL:    defaultAPIURL,
 	}
 	c := runtime.Config{
-		Projects: []runtime.AccountEntry{defaultAccount},
+		Projects: []runtime.ProjectEntry{defaultProject},
 	}
 	out, _ := yaml.Marshal(&c)
 	return out

@@ -16,16 +16,16 @@ import (
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "Print account summary",
-	Long: `Print information about the current account.
+	Short: "Print project summary",
+	Long: `Print information about the current project.
 
 # EXAMPLES
 
-Show summary for a given account:
+Show summary for a given project:
 
-	$ gscloud --account=dev@example.com info
+	$ gscloud --project=dev@example.com info
 	SETTING    VALUE
-	Account    dev@example.com
+	Project    dev@example.com
 	User ID    7ff8003b-55c5-45c5-bf0c-3746735a4f99
 	API token  <redacted>
 	URL        https://api.gridscale.io
@@ -38,7 +38,7 @@ Show summary for a given account:
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		type output struct {
-			runtime.AccountEntry
+			runtime.ProjectEntry
 			ServerAgg  map[string]interface{} `json:"server"`
 			StorageAgg map[string]interface{} `json:"storage"`
 			IPAddrAgg  map[string]interface{} `json:"ip_address"`
@@ -52,17 +52,17 @@ Show summary for a given account:
 		}
 
 		conf := rt.Config()
-		for _, account := range conf.Projects {
-			accountName := rt.Account()
-			if account.Name == accountName {
+		for _, project := range conf.Projects {
+			projectName := rt.Project()
+			if project.Name == projectName {
 				if !rootFlags.json {
 					out := new(bytes.Buffer)
 					heading := []string{"setting", "value"}
 					fill := [][]string{
-						{"Account", account.Name},
-						{"User ID", account.UserID},
-						{"API token", account.Token},
-						{"URL", account.URL},
+						{"Project", project.Name},
+						{"User ID", project.UserID},
+						{"API token", project.Token},
+						{"URL", project.URL},
 					}
 					var rows [][]string
 					rows = append(rows, fill...)
@@ -173,7 +173,7 @@ Show summary for a given account:
 					}
 
 					jsonOutput := output{
-						AccountEntry: account,
+						ProjectEntry: project,
 						ServerAgg:    m["Servers"],
 						StorageAgg:   m["Storages"],
 						IPAddrAgg:    m["IP addresses"],

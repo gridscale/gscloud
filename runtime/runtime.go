@@ -12,7 +12,7 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	accountName string
+	ProjectName string
 	client      interface{}
 	config      Config
 }
@@ -39,9 +39,9 @@ func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
 	r.client = op
 }
 
-// Account is the current selected account.
-func (r *Runtime) Account() string {
-	return r.accountName
+// Project is the current selected project.
+func (r *Runtime) Project() string {
+	return r.ProjectName
 }
 
 // Client provides access to the API client.
@@ -214,32 +214,32 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 	r.client = op
 }
 
-// NewRuntime creates a new runtime for a given account. Usually there should be
+// NewRuntime creates a new runtime for a given project. Usually there should be
 // only one runtime instance in the program.
-func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Runtime, error) {
-	var ac AccountEntry
-	var accountIndex = -1
+func NewRuntime(conf Config, projectName string, commandWithoutConfig bool) (*Runtime, error) {
+	var ac ProjectEntry
+	var projectIndex = -1
 
 	for i, a := range conf.Projects {
-		if accountName == a.Name {
+		if projectName == a.Name {
 			ac = a
-			accountIndex = i
+			projectIndex = i
 			break
 		}
 	}
 
-	if accountIndex == -1 {
+	if projectIndex == -1 {
 		if len(conf.Projects) > 0 && !commandWithoutConfig {
-			return nil, fmt.Errorf("account '%s' does not exist", accountName)
+			return nil, fmt.Errorf("project '%s' does not exist", projectName)
 		}
 	} else {
 		ac = LoadEnvVariables(ac)
-		conf.Projects[accountIndex] = ac
+		conf.Projects[projectIndex] = ac
 	}
 
 	client := newClient(ac)
 	rt := &Runtime{
-		accountName: ac.Name,
+		ProjectName: ac.Name,
 		client:      client,
 		config:      conf,
 	}
@@ -247,7 +247,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 }
 
 // LoadEnvVariables loads UserId, Token and URL from their respective environment variable
-func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
+func LoadEnvVariables(defaultAc ProjectEntry) ProjectEntry {
 	userIDEnv, userIDEnvExists := os.LookupEnv("GRIDSCALE_UUID")
 	if userIDEnvExists {
 		defaultAc.UserID = userIDEnv
@@ -269,7 +269,7 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
 	rt := &Runtime{
-		accountName: "test",
+		ProjectName: "test",
 		client:      nil,
 	}
 	return rt, nil
@@ -280,16 +280,16 @@ func CachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
-// newClient creates new gsclient from a given instance of AccountEntry
-func newClient(account AccountEntry) *gsclient.Client {
-	if account.URL == "" {
-		config := gsclient.DefaultConfiguration(account.UserID, account.Token)
+// newClient creates new gsclient from a given instance of ProjectEntry
+func newClient(project ProjectEntry) *gsclient.Client {
+	if project.URL == "" {
+		config := gsclient.DefaultConfiguration(project.UserID, project.Token)
 		return gsclient.NewClient(config)
 	}
 	config := gsclient.NewConfiguration(
-		account.URL,
-		account.UserID,
-		account.Token,
+		project.URL,
+		project.UserID,
+		project.Token,
 		false,
 		true,
 		500,

@@ -20,7 +20,7 @@ func Test_CommandWithoutConfig(t *testing.T) {
 			Expected: false,
 		},
 		{
-			Args:     []string{"gscloud", "server", "create", "--account", "completion"},
+			Args:     []string{"gscloud", "server", "create", "--project", "completion"},
 			Expected: false,
 		},
 		{

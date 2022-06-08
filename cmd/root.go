@@ -28,7 +28,7 @@ func NewError(cmd *cobra.Command, what string, err error) *Error {
 
 type rootCmdFlags struct {
 	configFile string
-	account    string
+	project    string
 	json       bool
 	quiet      bool
 	debug      bool
@@ -67,7 +67,7 @@ gscloud returns zero exit code on success, non-zero on failure. Following exit c
     1. The requested command failed.
     2. Reading the configuration file failed.
     3. The configuration could not be parsed.
-    4. The account specified does not exist in the configuration file.
+    4. The project specified does not exist in the configuration file.
 
 # EXAMPLES
 
@@ -130,8 +130,8 @@ Get the list of storages as JSON:
 
 # ENVIRONMENT
 
-GRIDSCALE_ACCOUNT
-	Specify the account used. Gets overriden by --account option
+GRIDSCALE_PROJECT
+	Specify the project used. Gets overriden by --project option
 
 GRIDSCALE_UUID
 	Specify the user id used. Overrides the value in the config file
@@ -167,13 +167,13 @@ func init() {
 	rootCmd.SilenceUsage = true
 	rootCmd.SilenceErrors = true
 
-	account, accountEnvPresent := os.LookupEnv("GRIDSCALE_ACCOUNT")
-	if !accountEnvPresent {
-		account = "default"
+	project, projectEnvPresent := os.LookupEnv("GRIDSCALE_PROJECT")
+	if !projectEnvPresent {
+		project = "default"
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), "Path to configuration file")
-	rootCmd.PersistentFlags().StringVar(&rootFlags.account, "account", account, "Specify the account used. Overrides GRIDSCALE_ACCOUNT environment variable")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.project, "project", project, "Specify the project used. Overrides GRIDSCALE_PROJECT environment variable")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVar(&renderOpts.NoHeader, "noheading", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")
@@ -207,14 +207,14 @@ func initConfig() {
 	}
 }
 
-// initRuntime initializes the client for a given account.
+// initRuntime initializes the client for a given project
 func initRuntime() {
 	conf, err := runtime.ParseConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(3)
 	}
-	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account, CommandWithoutConfig(os.Args))
+	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.project, CommandWithoutConfig(os.Args))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(4)

@@ -152,8 +152,8 @@ KUBECONFIG
 					Args: []string{
 						"--config",
 						runtime.ConfigPath(),
-						"--account",
-						rt.Account(),
+						"--project",
+						rt.Project(),
 						"kubernetes",
 						"cluster",
 						"exec-credential",
