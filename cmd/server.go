@@ -501,7 +501,7 @@ func init() {
 	serverCreateCmd.Flags().IntVar(&serverFlags.memory, "mem", 1, "Memory (GB)")
 	serverCreateCmd.Flags().IntVar(&serverFlags.cores, "cores", 1, "No. of cores")
 	serverCreateCmd.Flags().IntVar(&serverFlags.storageSize, "storage-size", 10, "Storage capacity (GB)")
-	serverCreateCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
+	serverCreateCmd.Flags().StringVarP(&serverFlags.serverName, "name", "n", "", "Name of the server")
 	serverCreateCmd.Flags().StringVar(&serverFlags.template, "with-template", "", "Name or ID of template to use")
 	serverCreateCmd.Flags().StringVar(&serverFlags.hostName, "hostname", "", "Hostname")
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
@@ -510,7 +510,7 @@ func init() {
 
 	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
 	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
-	serverSetCmd.Flags().StringVar(&serverFlags.serverName, "name", "", "Name of the server")
+	serverSetCmd.Flags().StringVarP(&serverFlags.serverName, "name", "n", "", "Name of the server")
 
 	serverRmCmd.Flags().BoolVarP(&serverFlags.includeRelated, "include-related", "i", false, "Remove all objects currently related to this server, not just the server")
 	serverRmCmd.Flags().BoolVarP(&serverFlags.force, "force", "f", false, "Force a destructive operation")

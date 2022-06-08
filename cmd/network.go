@@ -126,7 +126,7 @@ var networkRmCmd = &cobra.Command{
 }
 
 func init() {
-	networkCreateCmd.Flags().StringVar(&networkFlags.networkName, "name", "", "Name of the network")
+	networkCreateCmd.Flags().StringVarP(&networkFlags.networkName, "name", "n", "", "Name of the network")
 
 	networkCmd.AddCommand(networkLsCmd, networkRmCmd, networkCreateCmd)
 	rootCmd.AddCommand(networkCmd)
