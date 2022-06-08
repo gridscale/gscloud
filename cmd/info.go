@@ -52,7 +52,7 @@ Show summary for a given account:
 		}
 
 		conf := rt.Config()
-		for _, account := range conf.Accounts {
+		for _, account := range conf.Projects {
 			accountName := rt.Account()
 			if account.Name == accountName {
 				if !rootFlags.json {

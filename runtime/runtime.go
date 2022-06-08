@@ -220,7 +220,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 	var ac AccountEntry
 	var accountIndex = -1
 
-	for i, a := range conf.Accounts {
+	for i, a := range conf.Projects {
 		if accountName == a.Name {
 			ac = a
 			accountIndex = i
@@ -229,12 +229,12 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 	}
 
 	if accountIndex == -1 {
-		if len(conf.Accounts) > 0 && !commandWithoutConfig {
+		if len(conf.Projects) > 0 && !commandWithoutConfig {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
 	} else {
 		ac = LoadEnvVariables(ac)
-		conf.Accounts[accountIndex] = ac
+		conf.Projects[accountIndex] = ac
 	}
 
 	client := newClient(ac)

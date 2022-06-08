@@ -60,7 +60,7 @@ func emptyConfig() []byte {
 		URL:    defaultAPIURL,
 	}
 	c := runtime.Config{
-		Accounts: []runtime.AccountEntry{defaultAccount},
+		Projects: []runtime.AccountEntry{defaultAccount},
 	}
 	out, _ := yaml.Marshal(&c)
 	return out
