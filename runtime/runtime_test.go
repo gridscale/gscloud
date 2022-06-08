@@ -70,8 +70,6 @@ func Test_NewRuntime(t *testing.T) {
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
 
 		if rt != nil {
-			assert.NotNil(t, rt.account)
-
 			assert.Equal(t, test.ExpectedAccount, rt.account)
 		}
 
