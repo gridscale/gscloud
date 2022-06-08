@@ -70,12 +70,9 @@ func Test_NewRuntime(t *testing.T) {
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
 
 		if rt != nil {
-			for _, ac := range rt.config.Accounts {
-				if ac.Name == rt.accountName {
-					assert.Equal(t, test.ExpectedAccount, ac)
-					break
-				}
-			}
+			assert.NotNil(t, rt.account)
+
+			assert.Equal(t, test.ExpectedAccount, *rt.account)
 		}
 
 		resetEnv(oldEnviron)

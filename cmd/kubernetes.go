@@ -145,6 +145,10 @@ KUBECONFIG
 			ClientKey:         u.User.ClientCertificateData,
 		}
 		if credentialPlugin {
+			if rt.Account() == nil {
+				panic("unexpected nil account")
+			}
+
 			currentKubeConfig.AuthInfos[u.Name] = &clientcmdapi.AuthInfo{
 				Exec: &clientcmdapi.ExecConfig{
 					APIVersion: clientauth.SchemeGroupVersion.String(),
@@ -153,7 +157,7 @@ KUBECONFIG
 						"--config",
 						runtime.ConfigPath(),
 						"--account",
-						rt.AccountName(),
+						rt.Account().Name,
 						"kubernetes",
 						"cluster",
 						"exec-credential",
