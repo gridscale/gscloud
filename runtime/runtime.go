@@ -45,6 +45,11 @@ func (r *Runtime) AccountName() string {
 	return r.accountName
 }
 
+// Account is the current selected account.
+func (r *Runtime) Account() *AccountEntry {
+	return r.account
+}
+
 // Client provides access to the API client.
 func (r *Runtime) Client() *gsclient.Client {
 	return r.client.(*gsclient.Client)
