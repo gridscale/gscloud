@@ -12,10 +12,8 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	account     AccountEntry
-	accountName string
-	client      interface{}
-	config      Config
+	account AccountEntry
+	client  interface{}
 }
 
 // KubernetesOperator amalgamates operations for Kubernetes PaaS.
@@ -40,11 +38,6 @@ func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
 	r.client = op
 }
 
-// AccountName is the current selected account.
-func (r *Runtime) AccountName() string {
-	return r.accountName
-}
-
 // Account is the current selected account.
 func (r *Runtime) Account() AccountEntry {
 	return r.account
@@ -53,11 +46,6 @@ func (r *Runtime) Account() AccountEntry {
 // Client provides access to the API client.
 func (r *Runtime) Client() *gsclient.Client {
 	return r.client.(*gsclient.Client)
-}
-
-// Config allows access to configuration.
-func (r *Runtime) Config() *Config {
-	return &r.config
 }
 
 // ServerIPRelationOperator return an operation to remove a storage.
@@ -245,10 +233,8 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 
 	client := newClient(ac)
 	rt := &Runtime{
-		account:     ac,
-		accountName: ac.Name,
-		client:      client,
-		config:      conf,
+		account: ac,
+		client:  client,
 	}
 	return rt, nil
 }
@@ -285,10 +271,8 @@ func NewTestRuntime() (*Runtime, error) {
 	}}
 
 	rt := &Runtime{
-		account:     testConfig.Accounts[0],
-		accountName: testConfig.Accounts[0].Name,
-		client:      nil,
-		config:      testConfig,
+		account: testConfig.Accounts[0],
+		client:  nil,
 	}
 	return rt, nil
 }
