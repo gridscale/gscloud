@@ -128,7 +128,7 @@ Create a Fedora CoreOS image:
 }
 
 func init() {
-	isoImageCreateCmd.Flags().StringVar(&isoImageFlags.name, "name", "", "Name of the image")
+	isoImageCreateCmd.Flags().StringVarP(&isoImageFlags.name, "name", "n", "", "Name of the image")
 	isoImageCreateCmd.MarkFlagRequired("name")
 	isoImageCreateCmd.Flags().StringVar(&isoImageFlags.sourceURL, "source-url", "", "URL from where the image is downloaded")
 	isoImageCreateCmd.MarkFlagRequired("source-url")
