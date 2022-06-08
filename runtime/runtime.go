@@ -12,7 +12,7 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	account AccountEntry
+	account ProjectEntry
 	client  interface{}
 }
 
@@ -38,8 +38,8 @@ func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
 	r.client = op
 }
 
-// Account is the current selected account.
-func (r *Runtime) Account() AccountEntry {
+// Project is the current selected account.
+func (r *Runtime) Project() ProjectEntry {
 	return r.account
 }
 
@@ -211,17 +211,17 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 // NewRuntime creates a new runtime for a given account. Usually there should be
 // only one runtime instance in the program.
 func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Runtime, error) {
-	var ac AccountEntry
+	var ac ProjectEntry
 
-	for _, a := range conf.Accounts {
+	for _, a := range conf.Projects {
 		if accountName == a.Name {
 			ac = a
 			break
 		}
 	}
 
-	if (ac == AccountEntry{}) {
-		if len(conf.Accounts) > 0 && !commandWithoutConfig {
+	if (ac == ProjectEntry{}) {
+		if len(conf.Projects) > 0 && !commandWithoutConfig {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
 	}
@@ -237,7 +237,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 }
 
 // LoadEnvVariables loads UserId, Token and URL from their respective environment variable
-func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
+func LoadEnvVariables(defaultAc ProjectEntry) ProjectEntry {
 	userIDEnv, userIDEnvExists := os.LookupEnv("GRIDSCALE_UUID")
 	if userIDEnvExists {
 		defaultAc.UserID = userIDEnv
@@ -259,7 +259,7 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
 	rt := &Runtime{
-		account: AccountEntry{
+		account: ProjectEntry{
 			Name:   "test",
 			UserID: "testId",
 			Token:  "testToken",
@@ -275,8 +275,8 @@ func CachePath() string {
 	return configdir.LocalCache("gscloud")
 }
 
-// newClient creates new gsclient from a given instance of AccountEntry
-func newClient(account AccountEntry) *gsclient.Client {
+// newClient creates new gsclient from a given instance of ProjectEntry
+func newClient(account ProjectEntry) *gsclient.Client {
 	if account.URL == "" {
 		config := gsclient.DefaultConfiguration(account.UserID, account.Token)
 		return gsclient.NewClient(config)

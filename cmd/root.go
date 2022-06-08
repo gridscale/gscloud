@@ -28,7 +28,8 @@ func NewError(cmd *cobra.Command, what string, err error) *Error {
 
 type rootCmdFlags struct {
 	configFile string
-	account    string
+	project    string
+	account    string // Deprecated
 	json       bool
 	quiet      bool
 	debug      bool
@@ -40,9 +41,7 @@ var (
 	rt         *runtime.Runtime
 )
 
-const (
-	defaultAPIURL = "https://api.gridscale.io"
-)
+const defaultAPIURL = "https://api.gridscale.io"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -167,13 +166,15 @@ func init() {
 	rootCmd.SilenceUsage = true
 	rootCmd.SilenceErrors = true
 
-	account, accountEnvPresent := os.LookupEnv("GRIDSCALE_ACCOUNT")
+	project, accountEnvPresent := os.LookupEnv("GRIDSCALE_ACCOUNT")
 	if !accountEnvPresent {
-		account = "default"
+		project = "default"
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", "", "Path to configuration file")
-	rootCmd.PersistentFlags().StringVar(&rootFlags.account, "account", account, "Specify the account used. Overrides GRIDSCALE_ACCOUNT environment variable")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.project, "project", "", "Specify the project used. Overrides GRIDSCALE_PROJECT environment variable")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.account, "account", project, "Specify the project used. Is overriden by --project. Deprecated")
+	rootCmd.PersistentFlags().MarkDeprecated("account", "it will be removed in a future update!")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVar(&renderOpts.NoHeader, "noheading", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")
@@ -190,7 +191,14 @@ func initConfig() {
 		// Use default paths.
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(runtime.ConfigPath())
+
+		if !utils.FileExists(runtime.ConfigPath()) && utils.FileExists(runtime.OldConfigPath()) && !CommandWithoutConfig(os.Args) {
+			viper.SetConfigFile(runtime.OldConfigPath())
+			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
+		} else {
+			viper.AddConfigPath(runtime.ConfigPath())
+		}
+
 		viper.AddConfigPath(".")
 	}
 	viper.AutomaticEnv() // read in environment variables that match
@@ -214,7 +222,12 @@ func initRuntime() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(3)
 	}
-	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account, CommandWithoutConfig(os.Args))
+
+	if rootFlags.project == "" && rootFlags.account != "" {
+		rootFlags.project = rootFlags.account
+	}
+
+	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.project, CommandWithoutConfig(os.Args))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(4)
@@ -246,7 +259,7 @@ func initLogging() {
 // command line again.
 func CommandWithoutConfig(cmdLine []string) bool {
 	noConfigNeeded := []string{
-		"make-config", "version", "manpage", "completion",
+		"make-config", "version", "manpage", "completion", "move-config",
 	}
 
 	foundCommand, _, _ := rootCmd.Find(cmdLine[1:])

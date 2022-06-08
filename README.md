@@ -70,8 +70,8 @@ users:
       command: $HOME/gscloud
       args:
         - "--config"
-        - "$HOME/.config/gscloud/config.yaml"
-        - "--account"
+        - "$HOME/.config/gridscale/config.yaml"
+        - "--project"
         - "test"
         - "kubernetes"
         - "cluster"

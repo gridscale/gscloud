@@ -16,6 +16,7 @@ import (
 	"github.com/gridscale/gscloud/utils"
 	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientauth "k8s.io/client-go/pkg/apis/clientauthentication/v1beta1"
@@ -93,7 +94,7 @@ var saveKubeconfigCmd = &cobra.Command{
 	Use:   "save-kubeconfig",
 	Short: "Saves configuration of the given cluster into a kubeconfig",
 	Long: `Saves configuration of the given cluster into a kubeconfig or KUBECONFIG environment variable.
-	
+
 # ENVIRONMENT
 
 KUBECONFIG
@@ -151,9 +152,9 @@ KUBECONFIG
 					Command:    executablePath(),
 					Args: []string{
 						"--config",
-						runtime.ConfigPath(),
-						"--account",
-						rt.Account().Name,
+						viper.ConfigFileUsed(),
+						"--project",
+						rt.Project().Name,
 						"kubernetes",
 						"cluster",
 						"exec-credential",

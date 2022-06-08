@@ -38,7 +38,7 @@ Show summary for a given account:
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		type output struct {
-			runtime.AccountEntry
+			runtime.ProjectEntry
 			ServerAgg  map[string]interface{} `json:"server"`
 			StorageAgg map[string]interface{} `json:"storage"`
 			IPAddrAgg  map[string]interface{} `json:"ip_address"`
@@ -51,7 +51,7 @@ Show summary for a given account:
 			Err error
 		}
 
-		account := rt.Account()
+		account := rt.Project()
 
 		if !rootFlags.json {
 			out := new(bytes.Buffer)
@@ -171,7 +171,7 @@ Show summary for a given account:
 			}
 
 			jsonOutput := output{
-				AccountEntry: account,
+				ProjectEntry: account,
 				ServerAgg:    m["Servers"],
 				StorageAgg:   m["Storages"],
 				IPAddrAgg:    m["IP addresses"],

@@ -1,12 +1,17 @@
 package runtime
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/kirsle/configdir"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 // AccountEntry represents a single account in the config file.
-type AccountEntry struct {
+type ProjectEntry struct {
 	Name   string `yaml:"name" json:"name"`
 	UserID string `yaml:"userId" json:"userId"`
 	Token  string `yaml:"token" json:"token"`
@@ -15,33 +20,69 @@ type AccountEntry struct {
 
 // Config are all configuration settings parsed from a configuration file.
 type Config struct {
-	Accounts []AccountEntry `yaml:"accounts"`
+	Projects []ProjectEntry `yaml:"projects"`
 }
 
-// ConfigPath construct platform specific path to the configuration file.
+// OldConfig are all configuration settings parsed from an old configuration file
+type OldConfig struct {
+	Accounts []ProjectEntry `yaml:"accounts"`
+}
+
+const oldConfigPath = "/gscloud/config.yaml"
+const configPath = "/gridscale/config.yaml"
+
+// ConfigPath constructs the platform specific path to the configuration file.
 // - on Linux: $XDG_CONFIG_HOME or $HOME/.config
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
 func ConfigPath() string {
-	path := viper.ConfigFileUsed()
-	if path == "" {
-		path = configdir.LocalConfig("gscloud") + "/config.yaml"
-		viper.SetConfigFile(path)
-	}
-	return path
+	return configdir.LocalConfig() + configPath
 }
 
-// ConfigPathWithoutUser same as ConfigPath but with environment variables not expanded.
+// ConfigPathWithoutUser is the same as ConfigPath but with environment variables not expanded.
 func ConfigPathWithoutUser() string {
-	return localConfig + "/gscloud/config.yaml"
+	return localConfig + configPath
+}
+
+func OldConfigPath() string {
+	return configdir.LocalConfig() + oldConfigPath
+}
+
+func OldConfigPathWithoutUser() string {
+	return localConfig + oldConfigPath
 }
 
 // ParseConfig parses viper config file.
 func ParseConfig() (*Config, error) {
 	conf := Config{}
 	err := viper.Unmarshal(&conf)
+
 	if err != nil {
 		return nil, err
 	}
+
+	if conf.Projects == nil {
+		oldConf := OldConfig{}
+		viper.Unmarshal(&oldConf)
+
+		conf.Projects = oldConf.Accounts
+	}
+
 	return &conf, nil
+}
+
+func WriteConfig(conf *Config, filePath string) error {
+	err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
+	if err != nil {
+		return err
+	}
+
+	c, _ := yaml.Marshal(conf)
+
+	err = ioutil.WriteFile(filePath, c, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

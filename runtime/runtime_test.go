@@ -14,11 +14,11 @@ func Test_NewRuntime(t *testing.T) {
 		AccountName          string
 		Environment          []string
 		ExpectedRuntimeIsNil bool
-		ExpectedAccount      AccountEntry
+		ExpectedAccount      ProjectEntry
 		ExpectedErrorIsNil   bool
 	}
 
-	testAccount := AccountEntry{
+	testAccount := ProjectEntry{
 		Name:   "test",
 		UserID: "test",
 		Token:  "test",
@@ -27,7 +27,7 @@ func Test_NewRuntime(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
+			Configuration:        Config{[]ProjectEntry{testAccount}},
 			AccountName:          testAccount.Name,
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: false,
@@ -35,27 +35,27 @@ func Test_NewRuntime(t *testing.T) {
 			ExpectedErrorIsNil:   true,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
+			Configuration:        Config{[]ProjectEntry{testAccount}},
 			AccountName:          "default",
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: true,
-			ExpectedAccount:      AccountEntry{},
+			ExpectedAccount:      ProjectEntry{},
 			ExpectedErrorIsNil:   false,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{}},
+			Configuration:        Config{[]ProjectEntry{}},
 			AccountName:          "default",
 			Environment:          []string{},
 			ExpectedRuntimeIsNil: false,
-			ExpectedAccount:      AccountEntry{},
+			ExpectedAccount:      ProjectEntry{},
 			ExpectedErrorIsNil:   true,
 		},
 		{
-			Configuration:        Config{[]AccountEntry{testAccount}},
+			Configuration:        Config{[]ProjectEntry{testAccount}},
 			AccountName:          testAccount.Name,
 			Environment:          []string{"GRIDSCALE_UUID=envUserId", "GRIDSCALE_TOKEN=envToken", "GRIDSCALE_URL=env.example.com"},
 			ExpectedRuntimeIsNil: false,
-			ExpectedAccount:      AccountEntry{Name: testAccount.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
+			ExpectedAccount:      ProjectEntry{Name: testAccount.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
 			ExpectedErrorIsNil:   true,
 		},
 	}
