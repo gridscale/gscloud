@@ -15,7 +15,7 @@ type AccountEntry struct {
 
 // Config are all configuration settings parsed from a configuration file.
 type Config struct {
-	Accounts []AccountEntry `yaml:"accounts"`
+	Accounts []AccountEntry `yaml:"projects"`
 }
 
 const configPath = "/gridscale/config.yaml"
