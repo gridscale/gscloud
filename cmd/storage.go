@@ -157,7 +157,7 @@ var storageRmCmd = &cobra.Command{
 func init() {
 	storageSetCmd.PersistentFlags().StringVarP(&storageFlags.name, "name", "n", "", "Change name")
 	storageSetCmd.PersistentFlags().IntVar(&storageFlags.capacity, "capacity", 0, "Change size (GB)")
-	storageSetCmd.PersistentFlags().BoolVarP(&storageFlags.force, "force", "", false, "Force a potential destructive operation")
+	storageSetCmd.PersistentFlags().BoolVarP(&storageFlags.force, "force", "f", false, "Force a potential destructive operation")
 
 	storageCmd.AddCommand(storageLsCmd, storageSetCmd, storageRmCmd)
 	rootCmd.AddCommand(storageCmd)
