@@ -153,7 +153,7 @@ KUBECONFIG
 						"--config",
 						runtime.ConfigPath(),
 						"--account",
-						rt.Account(),
+						rt.AccountName(),
 						"kubernetes",
 						"cluster",
 						"exec-credential",

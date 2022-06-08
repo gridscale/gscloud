@@ -40,8 +40,8 @@ func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
 	r.client = op
 }
 
-// Account is the current selected account.
-func (r *Runtime) Account() string {
+// AccountName is the current selected account.
+func (r *Runtime) AccountName() string {
 	return r.accountName
 }
 
