@@ -64,7 +64,7 @@ func Test_NewRuntime(t *testing.T) {
 		oldEnviron := os.Environ()
 		resetEnv(test.Environment)
 
-		rt, err := NewRuntime(test.Configuration, test.AccountName)
+		rt, err := NewRuntime(test.Configuration, test.AccountName, false)
 
 		assert.Equal(t, test.ExpectedErrorIsNil, err == nil)
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)

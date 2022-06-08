@@ -197,7 +197,7 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Not found. Disregard
-		} else if _, ok := err.(*os.PathError); ok && runtime.CommandWithoutConfig(os.Args) {
+		} else if _, ok := err.(*os.PathError); ok && CommandWithoutConfig(os.Args) {
 			// --config given along with make-config → we're about to create that file. Disregard
 		} else {
 			fmt.Fprintln(os.Stderr, err)
@@ -213,7 +213,7 @@ func initRuntime() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(3)
 	}
-	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account)
+	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.account, CommandWithoutConfig(os.Args))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(4)
@@ -237,4 +237,28 @@ func initLogging() {
 	} else {
 		log.SetLevel(log.InfoLevel)
 	}
+}
+
+// CommandWithoutConfig return true if current command does not need a config file.
+// Called from within a cobra initializer function. Unfortunately there is no
+// way of getting the current command from an cobra initializer so we scan the
+// command line again.
+func CommandWithoutConfig(cmdLine []string) bool {
+	noConfigNeeded := []string{
+		"make-config", "version", "manpage", "completion",
+	}
+
+	foundCommand, _, _ := rootCmd.Find(cmdLine[1:])
+
+	return contains(noConfigNeeded, foundCommand.Name())
+}
+
+// contains tests whether string e is in slice s.
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
