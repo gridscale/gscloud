@@ -18,12 +18,14 @@ type Config struct {
 	Projects []ProjectEntry `yaml:"projects"`
 }
 
+const oldConfigPath = "/gscloud/config.yaml"
 const configPath = "/gridscale/config.yaml"
 
 // ConfigPath constructs the platform specific path to the configuration file.
 // - on Linux: $XDG_CONFIG_HOME or $HOME/.config
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
+// Right now this has the side effect of calling viper.SetConfigFile()
 func ConfigPath() string {
 	path := viper.ConfigFileUsed()
 	if path == "" {
@@ -36,6 +38,10 @@ func ConfigPath() string {
 // ConfigPathWithoutUser is the same as ConfigPath but with environment variables not expanded.
 func ConfigPathWithoutUser() string {
 	return localConfig + configPath
+}
+
+func OldConfigPath() string {
+	return configdir.LocalConfig() + oldConfigPath
 }
 
 // ParseConfig parses viper config file.
