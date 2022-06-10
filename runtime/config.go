@@ -18,6 +18,11 @@ type Config struct {
 	Projects []ProjectEntry `yaml:"projects"`
 }
 
+// OldConfig are all configuration settings parsed from an old configuration file
+type OldConfig struct {
+	Accounts []ProjectEntry `yaml:"accounts"`
+}
+
 const oldConfigPath = "/gscloud/config.yaml"
 const configPath = "/gridscale/config.yaml"
 
