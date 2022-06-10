@@ -261,7 +261,7 @@ func initLogging() {
 // command line again.
 func CommandWithoutConfig(cmdLine []string) bool {
 	noConfigNeeded := []string{
-		"make-config", "version", "manpage", "completion",
+		"make-config", "version", "manpage", "completion", "move-config",
 	}
 
 	foundCommand, _, _ := rootCmd.Find(cmdLine[1:])
