@@ -53,8 +53,17 @@ func OldConfigPath() string {
 func ParseConfig() (*Config, error) {
 	conf := Config{}
 	err := viper.Unmarshal(&conf)
+
 	if err != nil {
 		return nil, err
 	}
+
+	if conf.Projects == nil {
+		oldConf := OldConfig{}
+		viper.Unmarshal(&oldConf)
+
+		conf.Projects = oldConf.Accounts
+	}
+
 	return &conf, nil
 }
