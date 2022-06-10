@@ -194,7 +194,7 @@ func initConfig() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
 
-		if !utils.FileExists(runtime.ConfigPath()) && utils.FileExists(runtime.OldConfigPath()) {
+		if !utils.FileExists(runtime.ConfigPath()) && utils.FileExists(runtime.OldConfigPath()) && !CommandWithoutConfig(os.Args) {
 			viper.SetConfigFile(runtime.OldConfigPath())
 			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
 		} else {
