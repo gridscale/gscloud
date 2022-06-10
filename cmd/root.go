@@ -172,7 +172,7 @@ func init() {
 		account = "default"
 	}
 
-	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), "Path to configuration file")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", "", "Path to configuration file")
 	rootCmd.PersistentFlags().StringVar(&rootFlags.account, "account", account, "Specify the account used. Overrides GRIDSCALE_ACCOUNT environment variable")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVar(&renderOpts.NoHeader, "noheading", false, "Do not print column headings")
