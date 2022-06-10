@@ -172,7 +172,7 @@ func init() {
 		project = "default"
 	}
 
-	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", runtime.ConfigPathWithoutUser(), "Path to configuration file")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", "", "Path to configuration file")
 	rootCmd.PersistentFlags().StringVar(&rootFlags.project, "project", project, "Specify the project used. Overrides GRIDSCALE_PROJECT environment variable")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVar(&renderOpts.NoHeader, "noheading", false, "Do not print column headings")
@@ -190,7 +190,14 @@ func initConfig() {
 		// Use default paths.
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(runtime.ConfigPath())
+
+		if !utils.FileExists(runtime.ConfigPath()) && utils.FileExists(runtime.OldConfigPath()) {
+			viper.SetConfigFile(runtime.OldConfigPath())
+			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
+		} else {
+			viper.AddConfigPath(runtime.ConfigPath())
+		}
+
 		viper.AddConfigPath(".")
 	}
 	viper.AutomaticEnv() // read in environment variables that match
