@@ -29,6 +29,7 @@ func NewError(cmd *cobra.Command, what string, err error) *Error {
 type rootCmdFlags struct {
 	configFile string
 	project    string
+	account    string // Deprecated
 	json       bool
 	quiet      bool
 	debug      bool
@@ -173,7 +174,9 @@ func init() {
 	}
 
 	rootCmd.PersistentFlags().StringVar(&rootFlags.configFile, "config", "", "Path to configuration file")
-	rootCmd.PersistentFlags().StringVar(&rootFlags.project, "project", project, "Specify the project used. Overrides GRIDSCALE_PROJECT environment variable")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.project, "project", "", "Specify the project used. Overrides GRIDSCALE_PROJECT environment variable")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.account, "account", project, "Specify the project used. Is overriden by --project. Deprecated")
+	rootCmd.PersistentFlags().MarkDeprecated("account", "it will be removed in a future update!")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.json, "json", "j", false, "Print JSON to stdout instead of a table")
 	rootCmd.PersistentFlags().BoolVar(&renderOpts.NoHeader, "noheading", false, "Do not print column headings")
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")
@@ -221,6 +224,11 @@ func initRuntime() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(3)
 	}
+
+	if rootFlags.project == "" && rootFlags.account != "" {
+		rootFlags.project = rootFlags.account
+	}
+
 	theRuntime, err := runtime.NewRuntime(*conf, rootFlags.project, CommandWithoutConfig(os.Args))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
