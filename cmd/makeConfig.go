@@ -32,7 +32,7 @@ Create a new configuration file at a specified path:
 		}
 
 		if !utils.FileExists(filePath) {
-			runtime.WriteConfig(&runtime.Config{Projects: []runtime.ProjectEntry{{}}}, filePath)
+			runtime.WriteConfig(&runtime.Config{Projects: []runtime.ProjectEntry{{URL: defaultAPIURL}}}, filePath)
 
 			fmt.Printf("Written: %s\n", filePath)
 		}

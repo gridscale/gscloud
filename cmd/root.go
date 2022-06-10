@@ -41,9 +41,7 @@ var (
 	rt         *runtime.Runtime
 )
 
-const (
-	defaultAPIURL = "https://api.gridscale.io"
-)
+const defaultAPIURL = "https://api.gridscale.io"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
