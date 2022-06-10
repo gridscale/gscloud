@@ -16,6 +16,7 @@ import (
 	"github.com/gridscale/gscloud/utils"
 	"github.com/kardianos/osext"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientauth "k8s.io/client-go/pkg/apis/clientauthentication/v1beta1"
@@ -151,7 +152,7 @@ KUBECONFIG
 					Command:    executablePath(),
 					Args: []string{
 						"--config",
-						runtime.ConfigPath(),
+						viper.ConfigFileUsed(),
 						"--project",
 						rt.Project(),
 						"kubernetes",

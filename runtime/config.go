@@ -30,14 +30,8 @@ const configPath = "/gridscale/config.yaml"
 // - on Linux: $XDG_CONFIG_HOME or $HOME/.config
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
-// Right now this has the side effect of calling viper.SetConfigFile()
 func ConfigPath() string {
-	path := viper.ConfigFileUsed()
-	if path == "" {
-		path = configdir.LocalConfig() + configPath
-		viper.SetConfigFile(path)
-	}
-	return path
+	return configdir.LocalConfig() + configPath
 }
 
 // ConfigPathWithoutUser is the same as ConfigPath but with environment variables not expanded.
