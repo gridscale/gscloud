@@ -1,8 +1,13 @@
 package runtime
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/kirsle/configdir"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 // ProjectEntry represents a single project in the config file
@@ -64,4 +69,20 @@ func ParseConfig() (*Config, error) {
 	}
 
 	return &conf, nil
+}
+
+func WriteConfig(conf *Config, filePath string) error {
+	err := os.MkdirAll(filepath.Dir(filePath), os.FileMode(0700))
+	if err != nil {
+		return err
+	}
+
+	c, _ := yaml.Marshal(conf)
+
+	err = ioutil.WriteFile(filePath, c, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
