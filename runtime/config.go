@@ -49,6 +49,10 @@ func OldConfigPath() string {
 	return configdir.LocalConfig() + oldConfigPath
 }
 
+func OldConfigPathWithoutUser() string {
+	return localConfig + oldConfigPath
+}
+
 // ParseConfig parses viper config file.
 func ParseConfig() (*Config, error) {
 	conf := Config{}
