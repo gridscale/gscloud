@@ -63,3 +63,26 @@ func Test_StringLess(t *testing.T) {
 		assert.Equal(t, test.expected, sorter.Less(0, 1))
 	}
 }
+
+func Test_contains(t *testing.T) {
+	testCases := []struct {
+		Slice    []string
+		Item     string
+		Expected bool
+	}{
+		{
+			Slice:    []string{"test1", "test2", "test3"},
+			Item:     "test3",
+			Expected: true,
+		},
+		{
+			Slice:    []string{"test1", "test2", "test3"},
+			Item:     "test4",
+			Expected: false,
+		},
+	}
+
+	for _, test := range testCases {
+		assert.Equal(t, test.Expected, Contains(test.Slice, test.Item))
+	}
+}

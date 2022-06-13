@@ -6,6 +6,7 @@ import (
 
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
+	"github.com/gridscale/gscloud/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -250,15 +251,5 @@ func CommandWithoutConfig(cmdLine []string) bool {
 
 	foundCommand, _, _ := rootCmd.Find(cmdLine[1:])
 
-	return contains(noConfigNeeded, foundCommand.Name())
-}
-
-// contains tests whether string e is in slice s.
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+	return utils.Contains(noConfigNeeded, foundCommand.Name())
 }

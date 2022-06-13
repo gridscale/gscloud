@@ -33,26 +33,3 @@ func Test_CommandWithoutConfig(t *testing.T) {
 		assert.Equal(t, test.Expected, CommandWithoutConfig(test.Args))
 	}
 }
-
-func Test_contains(t *testing.T) {
-	testCases := []struct {
-		Slice    []string
-		Item     string
-		Expected bool
-	}{
-		{
-			Slice:    []string{"test1", "test2", "test3"},
-			Item:     "test3",
-			Expected: true,
-		},
-		{
-			Slice:    []string{"test1", "test2", "test3"},
-			Item:     "test4",
-			Expected: false,
-		},
-	}
-
-	for _, test := range testCases {
-		assert.Equal(t, test.Expected, contains(test.Slice, test.Item))
-	}
-}
