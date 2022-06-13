@@ -23,13 +23,6 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-// AlphaNum implements sort.Interface for []string.
-type AlphaNum []string
-
-func (a AlphaNum) Len() int           { return len(a) }
-func (a AlphaNum) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a AlphaNum) Less(i, j int) bool { return a[i] < a[j] }
-
 func executablePath() string {
 	filePath, err := osext.Executable()
 	if err != nil {
@@ -72,7 +65,7 @@ var getKubernetesReleasesCmd = &cobra.Command{
 				releases = append(releases, template.Properties.Release)
 			}
 		}
-		sort.Sort(sort.Reverse(AlphaNum(releases)))
+		sort.Sort(sort.Reverse(utils.StringSorter(releases)))
 		if !rootFlags.json {
 			heading := []string{"releases"}
 			var rows [][]string

@@ -10,3 +10,10 @@ func FileExists(filename string) bool {
 	}
 	return !info.IsDir()
 }
+
+// StringSorter implements sort.Interface for []string.
+type StringSorter []string
+
+func (a StringSorter) Len() int           { return len(a) }
+func (a StringSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a StringSorter) Less(i, j int) bool { return a[i] < a[j] }

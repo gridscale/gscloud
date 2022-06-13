@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/gridscale/gscloud/render"
+	"github.com/gridscale/gscloud/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -48,7 +49,7 @@ var postgresReleasesCmd = &cobra.Command{
 			}
 		}
 		releases = unique(releases)
-		sort.Sort(sort.Reverse(AlphaNum(releases)))
+		sort.Sort(sort.Reverse(utils.StringSorter(releases)))
 		if !rootFlags.json {
 			heading := []string{"releases"}
 			var rows [][]string
