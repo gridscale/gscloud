@@ -64,6 +64,34 @@ func Test_StringLess(t *testing.T) {
 	}
 }
 
+func Test_StringSwap(t *testing.T) {
+	testCases := []struct {
+		Slice    []string
+		Index1   int
+		Index2   int
+		Expected []string
+	}{
+		{
+			Slice:    []string{"", "a", "b", "c"},
+			Index1:   0,
+			Index2:   3,
+			Expected: []string{"c", "a", "b", ""},
+		},
+		{
+			Slice:    []string{"", "a", "b", "c"},
+			Index1:   0,
+			Index2:   0,
+			Expected: []string{"", "a", "b", "c"},
+		},
+	}
+
+	for _, test := range testCases {
+		sorter := StringSorter(test.Slice)
+		sorter.Swap(test.Index1, test.Index2)
+		assert.Equal(t, test.Expected, []string(sorter))
+	}
+}
+
 func Test_contains(t *testing.T) {
 	testCases := []struct {
 		Slice    []string
