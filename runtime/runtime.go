@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/gridscale/gsclient-go/v3"
+	"github.com/gridscale/gscloud/utils"
 	"github.com/kirsle/configdir"
 )
 
@@ -25,7 +25,7 @@ type KubernetesOperator interface {
 
 // PaaSOperator return an operation to Get a PaaS.
 func (r *Runtime) PaaSOperator() gsclient.PaaSOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.PaaSOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -33,7 +33,7 @@ func (r *Runtime) PaaSOperator() gsclient.PaaSOperator {
 
 // SetPaaSOperator set operation to Create PaaS.
 func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -56,7 +56,7 @@ func (r *Runtime) Config() *Config {
 
 // ServerIPRelationOperator return an operation to remove a storage.
 func (r *Runtime) ServerIPRelationOperator() gsclient.ServerIPRelationOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.ServerIPRelationOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -64,7 +64,7 @@ func (r *Runtime) ServerIPRelationOperator() gsclient.ServerIPRelationOperator {
 
 // SetServerIPRelationOperator set operation to delete storages.
 func (r *Runtime) SetServerIPRelationOperator(op gsclient.ServerIPRelationOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -72,7 +72,7 @@ func (r *Runtime) SetServerIPRelationOperator(op gsclient.ServerIPRelationOperat
 
 // StorageOperator return an operation to remove a storage.
 func (r *Runtime) StorageOperator() gsclient.StorageOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.StorageOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -80,7 +80,7 @@ func (r *Runtime) StorageOperator() gsclient.StorageOperator {
 
 // SetStorageOperator set operation to delete storages.
 func (r *Runtime) SetStorageOperator(op gsclient.StorageOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -88,7 +88,7 @@ func (r *Runtime) SetStorageOperator(op gsclient.StorageOperator) {
 
 // TemplateOperator return an operation to remove a storage.
 func (r *Runtime) TemplateOperator() gsclient.TemplateOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.TemplateOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -96,7 +96,7 @@ func (r *Runtime) TemplateOperator() gsclient.TemplateOperator {
 
 // SetTemplateOperator set operation to delete storages.
 func (r *Runtime) SetTemplateOperator(op gsclient.TemplateOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -104,7 +104,7 @@ func (r *Runtime) SetTemplateOperator(op gsclient.TemplateOperator) {
 
 // KubernetesOperator return operation relating to Kubernetes managed services.
 func (r *Runtime) KubernetesOperator() KubernetesOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(KubernetesOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -112,7 +112,7 @@ func (r *Runtime) KubernetesOperator() KubernetesOperator {
 
 // SetKubernetesOperator set Kubernetes PaaS operation.
 func (r *Runtime) SetKubernetesOperator(op KubernetesOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -120,7 +120,7 @@ func (r *Runtime) SetKubernetesOperator(op KubernetesOperator) {
 
 // SSHKeyOperator return operation to manipulate SSH keys.
 func (r *Runtime) SSHKeyOperator() gsclient.SSHKeyOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.SSHKeyOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -128,7 +128,7 @@ func (r *Runtime) SSHKeyOperator() gsclient.SSHKeyOperator {
 
 // SetSSHKeyOperator set operation to manipulate SSH keys.
 func (r *Runtime) SetSSHKeyOperator(op gsclient.SSHKeyOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -136,7 +136,7 @@ func (r *Runtime) SetSSHKeyOperator(op gsclient.SSHKeyOperator) {
 
 // ServerOperator return operation for server objects.
 func (r *Runtime) ServerOperator() gsclient.ServerOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.ServerOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -144,7 +144,7 @@ func (r *Runtime) ServerOperator() gsclient.ServerOperator {
 
 // SetServerOperator set operation for server objects.
 func (r *Runtime) SetServerOperator(op gsclient.ServerOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -152,7 +152,7 @@ func (r *Runtime) SetServerOperator(op gsclient.ServerOperator) {
 
 // ISOImageOperator return operation for server objects.
 func (r *Runtime) ISOImageOperator() gsclient.ISOImageOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.ISOImageOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -160,7 +160,7 @@ func (r *Runtime) ISOImageOperator() gsclient.ISOImageOperator {
 
 // SetISOImageOperator set operation for ISO image objects.
 func (r *Runtime) SetISOImageOperator(op gsclient.ISOImageOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -168,7 +168,7 @@ func (r *Runtime) SetISOImageOperator(op gsclient.ISOImageOperator) {
 
 // NetworkOperator return operations for network objects.
 func (r *Runtime) NetworkOperator() gsclient.NetworkOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.NetworkOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -176,7 +176,7 @@ func (r *Runtime) NetworkOperator() gsclient.NetworkOperator {
 
 // SetNetworkOperator set operations to work on network objects.
 func (r *Runtime) SetNetworkOperator(op gsclient.NetworkOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -184,7 +184,7 @@ func (r *Runtime) SetNetworkOperator(op gsclient.NetworkOperator) {
 
 // IPOperator return operations to manipulate IP addresses.
 func (r *Runtime) IPOperator() gsclient.IPOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.IPOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -192,7 +192,7 @@ func (r *Runtime) IPOperator() gsclient.IPOperator {
 
 // SetIPOperator set operations to manipulate IP addresses.
 func (r *Runtime) SetIPOperator(op gsclient.IPOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -200,7 +200,7 @@ func (r *Runtime) SetIPOperator(op gsclient.IPOperator) {
 
 // ServerStorageRelationOperator return an operation to associate server objects with storages.
 func (r *Runtime) ServerStorageRelationOperator() gsclient.ServerStorageRelationOperator {
-	if UnderTest() {
+	if utils.UnderTest() {
 		return r.client.(gsclient.ServerStorageRelationOperator)
 	}
 	return r.client.(*gsclient.Client)
@@ -208,7 +208,7 @@ func (r *Runtime) ServerStorageRelationOperator() gsclient.ServerStorageRelation
 
 // SetServerStorageRelationOperator set operation to delete storages.
 func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRelationOperator) {
-	if !UnderTest() {
+	if !utils.UnderTest() {
 		panic("unexpected use")
 	}
 	r.client = op
@@ -273,11 +273,6 @@ func NewTestRuntime() (*Runtime, error) {
 		client:      nil,
 	}
 	return rt, nil
-}
-
-// UnderTest returns true when gscloud is running within 'Go test'.
-func UnderTest() bool {
-	return strings.HasSuffix(os.Args[0], ".test")
 }
 
 // CachePath returns the local cache path of the current user.

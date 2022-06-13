@@ -1,6 +1,9 @@
 package utils
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 // FileExists checks whether given file is present.
 func FileExists(filename string) bool {
@@ -26,4 +29,9 @@ func Contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+// UnderTest returns true when gscloud is running within 'Go test'.
+func UnderTest() bool {
+	return strings.HasSuffix(os.Args[0], ".test")
 }

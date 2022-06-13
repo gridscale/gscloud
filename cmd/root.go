@@ -158,7 +158,7 @@ func Execute() {
 
 func init() {
 	// Register following initializers only when we are not running tests.
-	if !runtime.UnderTest() {
+	if !utils.UnderTest() {
 		cobra.OnInitialize(initConfig, initRuntime, initLogging)
 	}
 
