@@ -263,7 +263,7 @@ func NewTestRuntime() (*Runtime, error) {
 			Name:   "test",
 			UserID: "testId",
 			Token:  "testToken",
-			URL:    "testURL",
+			URL:    "testURL.example.com",
 		},
 		client: nil,
 	}
