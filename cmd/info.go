@@ -130,11 +130,6 @@ Show summary for a given account:
 		var wg sync.WaitGroup
 		ch := make(chan objectCount)
 
-		go func() {
-			wg.Wait()
-			close(ch)
-		}()
-
 		for k, v := range funcs {
 			wg.Add(1)
 			cCopy := context.Background()
@@ -148,6 +143,11 @@ Show summary for a given account:
 				ch <- objectCount{obj, agg, nil}
 			}(k, v)
 		}
+
+		go func() {
+			wg.Wait()
+			close(ch)
+		}()
 
 		out := new(bytes.Buffer)
 		if !rootFlags.json {
