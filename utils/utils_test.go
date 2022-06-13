@@ -29,3 +29,37 @@ func Test_FileExists(t *testing.T) {
 		assert.Equal(t, test.Expected, FileExists(test.Filename))
 	}
 }
+
+func Test_StringLess(t *testing.T) {
+	testCases := []struct {
+		string1  string
+		string2  string
+		expected bool
+	}{
+		{
+			string1:  "abcd",
+			string2:  "abcde",
+			expected: true,
+		},
+		{
+			string1:  "abcde",
+			string2:  "abcde",
+			expected: false,
+		},
+		{
+			string1:  "abcdef",
+			string2:  "abcde",
+			expected: false,
+		},
+		{
+			string1:  "",
+			string2:  "abcde",
+			expected: true,
+		},
+	}
+
+	for _, test := range testCases {
+		sorter := StringSorter{test.string1, test.string2}
+		assert.Equal(t, test.expected, sorter.Less(0, 1))
+	}
+}
