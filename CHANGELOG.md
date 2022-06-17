@@ -9,6 +9,7 @@ FEATURES:
 * The configuration file format has been changed (see [#153](https://github.com/gridscale/gscloud/pull/153)), but the old one can still be loaded
 * `gscloud move-config` has been added to move the old config to the new path and format
 * `--account` has been renamed to `--project`. `--account` is still working, but deprecated and it will be removed in a future release
+* Added environment variable `GRIDSCALE_PROJECT` that controls the account used
 
 FIXED:
 * GitHub does not support `%(describe)`, yet, so we have to upload release artifacts manually for now (see https://github.community/t/support-for-describe-in-export-subst/196618 and [#131](https://github.com/gridscale/gscloud/issues/131)).
