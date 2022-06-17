@@ -5,9 +5,15 @@
 FEATURES:
 
 * `gscloud info --json` now includes the sum of total cores, memory, and storage capacity in the output.
+* Added environment variables `GRIDSCALE_UUID`, `GRIDSCALE_TOKEN` and `GRIDSCALE_URL` that control user ID, token and URL.
+* All `--name` and `--force` flags now have a `-n` or `-f` shorthand.
 
 FIXED:
 * GitHub does not support `%(describe)`, yet, so we have to upload release artifacts manually for now (see https://github.community/t/support-for-describe-in-export-subst/196618 and [#131](https://github.com/gridscale/gscloud/issues/131)).
+* `gscloud server create`, `gscloud network create` and `gscloud iso-image create` don't return valid json when `--json` is given ([#95](https://github.com/gridscale/gscloud/issues/95), [#141](https://github.com/gridscale/gscloud/pull/141)).
+* Some account names lead to the wrong error ([#147](https://github.com/gridscale/gscloud/issues/147)).
+* `gscloud manpage` crashes without arguments instead of returning an error message ([#150](https://github.com/gridscale/gscloud/issues/150)).
+* `gscloud info` could output less than wanted ([#159](https://github.com/gridscale/gscloud/pull/159)).
 
 ## v0.11.0 (2021-09-22)
 
