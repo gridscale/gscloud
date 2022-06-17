@@ -1,12 +1,17 @@
 # Changelog
 
-## v0.11.1 (2022-XX-XX)
+## v0.12.0 (2022-XX-XX)
 
 FEATURES:
 
 * `gscloud info --json` now includes the sum of total cores, memory, and storage capacity in the output.
 * Added environment variables `GRIDSCALE_UUID`, `GRIDSCALE_TOKEN` and `GRIDSCALE_URL` that control user ID, token and URL.
+* The configuration file has been moved from `$OS_SPECIFIC_PATH/gscloud/config.yaml` to `$OS_SPECIFIC_PATH/gridscale/config.yaml` for [shared credentials across gridscale tools](https://github.com/gridscale/terraform-provider-gridscale/issues/183).
+* The configuration file format has been changed (see [#153](https://github.com/gridscale/gscloud/pull/153)), but the old one can still be loaded.
+* `gscloud move-config` command has been added to move the old config to the new path and format.
+* `--account` has been renamed to `--project`. `--account` is still working, but deprecated and it will be removed in a future release.
 * All `--name` and `--force` flags now have a `-n` or `-f` shorthand.
+* Added environment variable `GRIDSCALE_PROJECT` that controls the account used
 
 FIXED:
 * GitHub does not support `%(describe)`, yet, so we have to upload release artifacts manually for now (see https://github.community/t/support-for-describe-in-export-subst/196618 and [#131](https://github.com/gridscale/gscloud/issues/131)).
