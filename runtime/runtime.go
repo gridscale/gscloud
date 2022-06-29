@@ -12,9 +12,8 @@ import (
 
 // Runtime holds all run-time infos.
 type Runtime struct {
-	accountName string
-	client      interface{}
-	config      Config
+	account AccountEntry
+	client  interface{}
 }
 
 // KubernetesOperator amalgamates operations for Kubernetes PaaS.
@@ -40,18 +39,13 @@ func (r *Runtime) SetPaaSOperator(op gsclient.PaaSOperator) {
 }
 
 // Account is the current selected account.
-func (r *Runtime) Account() string {
-	return r.accountName
+func (r *Runtime) Account() AccountEntry {
+	return r.account
 }
 
 // Client provides access to the API client.
 func (r *Runtime) Client() *gsclient.Client {
 	return r.client.(*gsclient.Client)
-}
-
-// Config allows access to configuration.
-func (r *Runtime) Config() *Config {
-	return &r.config
 }
 
 // ServerIPRelationOperator return an operation to remove a storage.
@@ -218,30 +212,26 @@ func (r *Runtime) SetServerStorageRelationOperator(op gsclient.ServerStorageRela
 // only one runtime instance in the program.
 func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Runtime, error) {
 	var ac AccountEntry
-	var accountIndex = -1
 
-	for i, a := range conf.Accounts {
+	for _, a := range conf.Accounts {
 		if accountName == a.Name {
 			ac = a
-			accountIndex = i
 			break
 		}
 	}
 
-	if accountIndex == -1 {
+	if (ac == AccountEntry{}) {
 		if len(conf.Accounts) > 0 && !commandWithoutConfig {
 			return nil, fmt.Errorf("account '%s' does not exist", accountName)
 		}
-	} else {
-		ac = LoadEnvVariables(ac)
-		conf.Accounts[accountIndex] = ac
 	}
+
+	ac = LoadEnvVariables(ac)
 
 	client := newClient(ac)
 	rt := &Runtime{
-		accountName: ac.Name,
-		client:      client,
-		config:      conf,
+		account: ac,
+		client:  client,
 	}
 	return rt, nil
 }
@@ -269,8 +259,13 @@ func LoadEnvVariables(defaultAc AccountEntry) AccountEntry {
 // used for testing.
 func NewTestRuntime() (*Runtime, error) {
 	rt := &Runtime{
-		accountName: "test",
-		client:      nil,
+		account: AccountEntry{
+			Name:   "test",
+			UserID: "testId",
+			Token:  "testToken",
+			URL:    "testURL.example.com",
+		},
+		client: nil,
 	}
 	return rt, nil
 }
