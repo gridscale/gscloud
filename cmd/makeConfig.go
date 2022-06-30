@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
@@ -25,16 +26,21 @@ Create a new configuration file at a specified path:
 
 `, runtime.ConfigPathWithoutUser()),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		filePath := runtime.ConfigPath()
+		filePath := filepath.Join(runtime.ConfigPath(), "config.yaml")
 
 		if rootFlags.configFile != "" {
 			filePath = rootFlags.configFile
 		}
 
 		if !utils.FileExists(filePath) {
-			runtime.WriteConfig(&runtime.Config{Projects: []runtime.ProjectEntry{{URL: defaultAPIURL}}}, filePath)
+			err := runtime.WriteConfig(&runtime.Config{Projects: []runtime.ProjectEntry{{URL: defaultAPIURL}}}, filePath)
+			if err != nil {
+				return err
+			}
 
 			fmt.Printf("Written: %s\n", filePath)
+		} else {
+			fmt.Printf("%s already exists\n", filePath)
 		}
 		return nil
 	},
