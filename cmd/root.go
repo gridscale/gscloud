@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
@@ -182,6 +184,13 @@ func init() {
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
 }
 
+func exists(path string) bool {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return true
+}
+
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if rootFlags.configFile != "" {
@@ -192,8 +201,8 @@ func initConfig() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
 
-		if !utils.FileExists(runtime.ConfigPath()) && utils.FileExists(runtime.OldConfigPath()) && !CommandWithoutConfig(os.Args) {
-			viper.SetConfigFile(runtime.OldConfigPath())
+		if !exists(runtime.ConfigPath()) && exists(runtime.OldConfigPath()) && !CommandWithoutConfig(os.Args) {
+			viper.SetConfigFile(filepath.Join(runtime.OldConfigPath(), "config.yaml"))
 			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
 		} else {
 			viper.AddConfigPath(runtime.ConfigPath())
@@ -204,9 +213,7 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Not found. Disregard
-		} else if _, ok := err.(*os.PathError); ok && CommandWithoutConfig(os.Args) {
+		if _, ok := err.(*os.PathError); ok && CommandWithoutConfig(os.Args) {
 			// --config given along with make-config → we're about to create that file. Disregard
 		} else {
 			fmt.Fprintln(os.Stderr, err)

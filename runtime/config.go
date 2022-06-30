@@ -10,6 +10,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const (
+	oldConfigPath = "gscloud"
+	configPath    = "gridscale"
+)
+
 // AccountEntry represents a single account in the config file.
 type ProjectEntry struct {
 	Name   string `yaml:"name" json:"name"`
@@ -28,24 +33,23 @@ type OldConfig struct {
 	Accounts []ProjectEntry `yaml:"accounts"`
 }
 
-const oldConfigPath = "/gscloud/config.yaml"
-const configPath = "/gridscale/config.yaml"
-
 // ConfigPath constructs the platform specific path to the configuration file.
 // - on Linux: $XDG_CONFIG_HOME or $HOME/.config
 // - on macOS: $HOME/Library/Application Support
 // - on Windows: %APPDATA% or "C:\\Users\\%USER%\\AppData\\Roaming"
 func ConfigPath() string {
-	return configdir.LocalConfig() + configPath
+	p := filepath.Join(configdir.LocalConfig(), configPath)
+	return p
+}
+
+func OldConfigPath() string {
+	p := filepath.Join(configdir.LocalConfig(), oldConfigPath)
+	return p
 }
 
 // ConfigPathWithoutUser is the same as ConfigPath but with environment variables not expanded.
 func ConfigPathWithoutUser() string {
 	return localConfig + configPath
-}
-
-func OldConfigPath() string {
-	return configdir.LocalConfig() + oldConfigPath
 }
 
 func OldConfigPathWithoutUser() string {
