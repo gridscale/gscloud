@@ -206,6 +206,7 @@ func initConfig() {
 			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
 		} else {
 			viper.AddConfigPath(runtime.ConfigPath())
+			viper.AddConfigPath(runtime.OldConfigPath())
 		}
 
 		viper.AddConfigPath(".")
