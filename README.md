@@ -31,13 +31,11 @@ You can use `gscloud make-config` to generate a new config file. Make sure to ad
 Example config:
 
 ```yml
-accounts:
-- account:
-  name: default
+projects:
+- name: default
   userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
   token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
-- account:
-  name: liveaccount
+- name: liveaccount
   userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
   token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
   url: https://api.gridscale.io
@@ -87,7 +85,7 @@ gscloud returns zero exit code on success, non-zero on failure. Following exit c
 1. The requested command failed.
 2. Reading the configuration file failed.
 3. The configuration could not be parsed.
-4. The account specified does not exist in the configuration file.
+4. The project specified does not exist in the configuration file.
 
 ## Shell completions
 
