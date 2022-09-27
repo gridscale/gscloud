@@ -28,6 +28,11 @@ See [here](docs/source.md) on how to build gscloud from source.
 
 You can use `gscloud make-config` to generate a new config file. Make sure to add your user ID and API token here.
 
+Default locations:
+- Linux: `~/.kube/config`
+- Mac: `~/Library/Application Support/gscloud/config.yaml`
+- Windows: `%APPDATA%` or `"C:\\Users\\%USER%\\AppData\\Roaming"`
+
 Example config:
 
 ```yml
