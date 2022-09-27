@@ -36,11 +36,13 @@ Default locations:
 Example config:
 
 ```yml
-projects:
-- name: default
+accounts:
+- account:
+  name: default
   userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
   token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
-- name: liveaccount
+- account:
+  name: liveaccount
   userId: 2727b9ab-65ff-4d1e-af5e-d08d682bd1fa
   token: 6eb139b3b6515515a6f358d3a635e9b38f05935782602d4fd5c1b5716af54526
   url: https://api.gridscale.io
@@ -74,7 +76,7 @@ users:
       args:
         - "--config"
         - "$HOME/.config/gridscale/config.yaml"
-        - "--project"
+        - "--account"
         - "test"
         - "kubernetes"
         - "cluster"
