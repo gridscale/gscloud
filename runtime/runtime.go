@@ -287,8 +287,8 @@ func newClient(account ProjectEntry) *gsclient.Client {
 		account.Token,
 		false,
 		true,
-		500,
-		0, // no retries
+		1000,
+		10, // no retries
 	)
 	return gsclient.NewClient(config)
 }
