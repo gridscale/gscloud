@@ -6,6 +6,13 @@ FEATURES:
 
 FIXED:
 
+## v0.12.1 (2023-01-05)
+
+IMPROVEMENTS:
+
+* Enable retry ability (see [#165](https://github.com/gridscale/gscloud/pull/165)).
+
+
 ## v0.12.0 (2022-06-30)
 
 FEATURES:
