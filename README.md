@@ -52,9 +52,17 @@ You can use gscloud to retrieve the kubeconfig of your managed Kubernetes cluste
 `gscloud kubernetes cluster save-kubeconfig --credential-plugin --cluster <CLUSTER_UUID>`
 
 That way, gscloud will use the gridscale credentials configured in your gscloud
-configuration to obtain a kubeconfig for your cluster, add that as a new context to your
-`~/.kube/config` and register itself as the credential plugin for the context. This allows gscloud
-to automatically obtain a new kubeconfig for you, once your existing has expired.
+configuration to obtain a kubeconfig for your cluster and add that as a new context to your
+`~/.kube/config`.
+
+If you execute the command with `--credential-plugin`, as given in the example above, gscloud
+will register itself as the credential plugin for the context and thereby automatically renew
+the kubeconfig for you, once it has expired. If you do not pass in `--credential-plugin`, the
+certificate will expire and can be renewed by running gscloud manually again.
+
+When using gscloud in the context of a pipeline, the use of `--credential-plugin` is discouraged,
+as it can lead to colliding kubeconfig renewals, unless gscloud's cache directory is persisted
+across steps as an artifact.
 
 ## Exit codes
 
