@@ -206,7 +206,7 @@ func initConfig() {
 
 		if !exists(runtime.ConfigPath()) && exists(runtime.OldConfigPath()) && !CommandWithoutConfig(os.Args) {
 			viper.SetConfigFile(filepath.Join(runtime.OldConfigPath(), "config.yaml"))
-			log.Warnln("Using deprecated old config file. Use `gscloud make-config --move` to move to the new one")
+			log.Warnln("Using deprecated old config file. Use `gscloud move-config` to move to the new one")
 		} else {
 			viper.AddConfigPath(runtime.ConfigPath())
 			viper.AddConfigPath(runtime.OldConfigPath())
