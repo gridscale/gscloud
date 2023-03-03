@@ -193,6 +193,9 @@ func exists(path string) bool {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	if CommandWithoutConfig(os.Args) {
+		return
+	}
 	if rootFlags.configFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(rootFlags.configFile)
