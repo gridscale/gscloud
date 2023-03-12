@@ -217,12 +217,9 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(*os.PathError); ok && CommandWithoutConfig(os.Args) {
-			// --config given along with make-config → we're about to create that file. Disregard
-		} else {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(2)
-		}
+		// if viper fails to read config, we ignore the error
+		// since there might be ENV variables set.
+		fmt.Printf("[WARN] Error: %s. Trying to use ENV variables.\n", err.Error())
 	}
 }
 
