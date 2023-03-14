@@ -216,11 +216,7 @@ func initConfig() {
 	}
 	viper.AutomaticEnv() // read in environment variables that match
 
-	if err := viper.ReadInConfig(); err != nil {
-		// if viper fails to read config, we ignore the error
-		// since there might be ENV variables set.
-		fmt.Printf("[WARN] Error: %s. Trying to use ENV variables.\n", err.Error())
-	}
+	viper.ReadInConfig()
 }
 
 // initRuntime initializes the client for a given account.
