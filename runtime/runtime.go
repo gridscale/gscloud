@@ -230,7 +230,7 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 	ac = LoadEnvVariables(ac)
 
 	if ac.UserID == "" || ac.Token == "" {
-		return nil, errors.New("cannot find UserID or Token. Please set them in the config file or as environment variables.")
+		return nil, errors.New("cannot find UserID or Token in config file or environment variables")
 	}
 
 	client := newClient(ac)
