@@ -46,6 +46,12 @@ projects:
   url: https://api.gridscale.io
 ```
 
+Following environment variables can also be used instead of config file:
+- `GRIDSCALE_UUID` - corresponds to `userId`
+- `GRIDSCALE_TOKEN` - corresponds to `token`
+- `GRIDSCALE_URL` - corresponds to `url`
+**Note**: If the config file and the environment variables are used at the same time, the config file will be ignored and the environment variables will be used.
+
 ## Kubernetes
 
 You can use gscloud to retrieve the kubeconfig of your managed Kubernetes cluster via 
