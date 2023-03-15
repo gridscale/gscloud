@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"log"
 	"os"
 	"strings"
 	"testing"
@@ -73,9 +72,6 @@ func Test_NewRuntime(t *testing.T) {
 		resetEnv(test.Environment)
 
 		rt, err := NewRuntime(test.Configuration, test.AccountName, false)
-		log.Println(rt)
-		log.Println(err)
-
 		assert.Equal(t, test.ExpectedErrorIsNil, err == nil)
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
 
