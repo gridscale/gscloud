@@ -221,6 +221,9 @@ func initConfig() {
 
 // initRuntime initializes the client for a given account.
 func initRuntime() {
+	if CommandWithoutConfig(os.Args) {
+		return
+	}
 	conf, err := runtime.ParseConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
