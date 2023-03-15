@@ -1,10 +1,16 @@
 # Changelog
 
-## v0.13.0 (2022-xx-xx)
-
-FEATURES:
+## v0.12.2 (2023-03-15)
 
 FIXED:
+* Fix error "config not found" when exec cmd that doesn't need config (see [#168](https://github.com/gridscale/gscloud/pull/168)).
+* Fix ENV variables cannot be used when there is no config file (see [#169](https://github.com/gridscale/gscloud/pull/169)).
+* Correct some warning messages and docs.
+
+## v0.12.1 (2023-01-05)
+
+IMPROVEMENTS:
+* Enable retry ability (see [#165](https://github.com/gridscale/gscloud/pull/165)).
 
 ## v0.12.0 (2022-06-30)
 
