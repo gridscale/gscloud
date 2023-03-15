@@ -46,9 +46,9 @@ func Test_NewRuntime(t *testing.T) {
 			Configuration:        Config{[]ProjectEntry{}},
 			AccountName:          "default",
 			Environment:          []string{},
-			ExpectedRuntimeIsNil: false,
+			ExpectedRuntimeIsNil: true,
 			ExpectedAccount:      ProjectEntry{},
-			ExpectedErrorIsNil:   true,
+			ExpectedErrorIsNil:   false,
 		},
 		{
 			Configuration:        Config{[]ProjectEntry{testAccount}},
@@ -58,6 +58,13 @@ func Test_NewRuntime(t *testing.T) {
 			ExpectedAccount:      ProjectEntry{Name: testAccount.Name, UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
 			ExpectedErrorIsNil:   true,
 		},
+		{
+			Configuration:        Config{[]ProjectEntry{}},
+			Environment:          []string{"GRIDSCALE_UUID=envUserId", "GRIDSCALE_TOKEN=envToken", "GRIDSCALE_URL=env.example.com"},
+			ExpectedRuntimeIsNil: false,
+			ExpectedAccount:      ProjectEntry{UserID: "envUserId", Token: "envToken", URL: "env.example.com"},
+			ExpectedErrorIsNil:   true,
+		},
 	}
 
 	for _, test := range testCases {
@@ -65,7 +72,6 @@ func Test_NewRuntime(t *testing.T) {
 		resetEnv(test.Environment)
 
 		rt, err := NewRuntime(test.Configuration, test.AccountName, false)
-
 		assert.Equal(t, test.ExpectedErrorIsNil, err == nil)
 		assert.Equal(t, test.ExpectedRuntimeIsNil, rt == nil)
 

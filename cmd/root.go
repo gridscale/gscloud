@@ -216,18 +216,14 @@ func initConfig() {
 	}
 	viper.AutomaticEnv() // read in environment variables that match
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(*os.PathError); ok && CommandWithoutConfig(os.Args) {
-			// --config given along with make-config → we're about to create that file. Disregard
-		} else {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(2)
-		}
-	}
+	viper.ReadInConfig()
 }
 
 // initRuntime initializes the client for a given account.
 func initRuntime() {
+	if CommandWithoutConfig(os.Args) {
+		return
+	}
 	conf, err := runtime.ParseConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

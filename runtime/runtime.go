@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -227,6 +228,10 @@ func NewRuntime(conf Config, accountName string, commandWithoutConfig bool) (*Ru
 	}
 
 	ac = LoadEnvVariables(ac)
+
+	if ac.UserID == "" || ac.Token == "" {
+		return nil, errors.New("cannot find UserID or Token in config file or environment variables")
+	}
 
 	client := newClient(ac)
 	rt := &Runtime{
