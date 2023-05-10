@@ -30,6 +30,7 @@ type serverCmdFlags struct {
 	autoRecovery     bool
 	includeRelated   bool
 	force            bool
+	userDataBase64   string
 }
 
 var (
@@ -307,14 +308,18 @@ To create a server without any storage just omit --with-template flag:
 		}
 
 		cleanupServer := false
-		server, err := serverOp.CreateServer(ctx, gsclient.ServerCreateRequest{
+		serverCreateRequest := gsclient.ServerCreateRequest{
 			Name:            serverFlags.serverName,
 			Cores:           serverFlags.cores,
 			Memory:          serverFlags.memory,
 			HardwareProfile: profile,
 			AvailablityZone: serverFlags.availabilityZone,
 			AutoRecovery:    &serverFlags.autoRecovery,
-		})
+		}
+		if serverFlags.userDataBase64 != "" {
+			serverCreateRequest.UserData = &serverFlags.userDataBase64
+		}
+		server, err := serverOp.CreateServer(ctx, serverCreateRequest)
 		if err != nil {
 			return NewError(cmd, "Creating server failed", err)
 		}
@@ -388,14 +393,19 @@ var serverSetCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
+		serverUpdateRequest := gsclient.ServerUpdateRequest{
+			Cores:  serverFlags.cores,
+			Memory: serverFlags.memory,
+			Name:   serverFlags.serverName,
+		}
+		if serverFlags.userDataBase64 != "" {
+			serverUpdateRequest.UserData = &serverFlags.userDataBase64
+		}
 		err := serverOp.UpdateServer(
 			ctx,
 			args[0],
-			gsclient.ServerUpdateRequest{
-				Cores:  serverFlags.cores,
-				Memory: serverFlags.memory,
-				Name:   serverFlags.serverName,
-			})
+			serverUpdateRequest,
+		)
 		if err != nil {
 			return NewError(cmd, "Failed setting property", err)
 		}
@@ -507,10 +517,12 @@ func init() {
 	serverCreateCmd.Flags().StringVar(&serverFlags.profile, "profile", "q35", "Hardware profile")
 	serverCreateCmd.Flags().StringVar(&serverFlags.availabilityZone, "availability-zone", "", "Availability zone. One of \"a\", \"b\", \"c\" (default \"\")")
 	serverCreateCmd.Flags().BoolVar(&serverFlags.autoRecovery, "auto-recovery", true, "Whether to restart in case of errors")
+	serverCreateCmd.Flags().StringVar(&serverFlags.userDataBase64, "user-data-base64", "", "For system configuration on first boot. May contain cloud-config data or shell scripting, encoded as base64 string. Supported tools are cloud-init, Cloudbase-init, and Ignition.")
 
 	serverSetCmd.Flags().IntVar(&serverFlags.memory, "mem", 0, "Memory (GB)")
 	serverSetCmd.Flags().IntVar(&serverFlags.cores, "cores", 0, "No. of cores")
 	serverSetCmd.Flags().StringVarP(&serverFlags.serverName, "name", "n", "", "Name of the server")
+	serverSetCmd.Flags().StringVar(&serverFlags.userDataBase64, "user-data-base64", "", "For system configuration on first boot. May contain cloud-config data or shell scripting, encoded as base64 string. Supported tools are cloud-init, Cloudbase-init, and Ignition.")
 
 	serverRmCmd.Flags().BoolVarP(&serverFlags.includeRelated, "include-related", "i", false, "Remove all objects currently related to this server, not just the server")
 	serverRmCmd.Flags().BoolVarP(&serverFlags.force, "force", "f", false, "Force a destructive operation")
