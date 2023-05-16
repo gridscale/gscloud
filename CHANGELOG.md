@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.13.0 (2023-05-16)
+
+FEATURES:
+* Add `--user-data-base64` flag to server create/update command to allow user data to be passed as base64 encoded string (see [#170](https://github.com/gridscale/gscloud/pull/170)).
+
 ## v0.12.2 (2023-03-15)
 
 FIXED:
