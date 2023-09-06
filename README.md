@@ -30,7 +30,7 @@ You can use `gscloud make-config` to generate a new config file. Make sure to ad
 
 Default locations:
 - Linux: `$XDG_CONFIG_HOME/gridscale/config.yaml` or `$HOME/.config/gridscale/config.yaml`
-- Mac: `~/Library/Application Support/gscloud/config.yaml`
+- Mac: `~/Library/Application Support/gridscale/config.yaml`
 - Windows: `%APPDATA%` or `"C:\\Users\\%USER%\\AppData\\Roaming"`
 
 Example config:
