@@ -347,7 +347,9 @@ func loadCachedKubeConfig(id string) (*clientauth.ExecCredential, error) {
 		return nil, err
 	}
 
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	var execCredential *clientauth.ExecCredential
 	if err := json.NewDecoder(f).Decode(&execCredential); err != nil {
@@ -357,7 +359,10 @@ func loadCachedKubeConfig(id string) (*clientauth.ExecCredential, error) {
 	timeStamp := execCredential.Status.ExpirationTimestamp
 
 	if execCredential.Status == nil || timeStamp.IsZero() || timeStamp.Time.Before(time.Now()) {
-		err = os.Remove(kubeConfigPath)
+		err = f.Close()
+		if err == nil {
+			err = os.Remove(kubeConfigPath)
+		}
 		return nil, err
 	}
 
