@@ -357,7 +357,10 @@ func loadCachedKubeConfig(id string) (*clientauth.ExecCredential, error) {
 	timeStamp := execCredential.Status.ExpirationTimestamp
 
 	if execCredential.Status == nil || timeStamp.IsZero() || timeStamp.Time.Before(time.Now()) {
-		err = os.Remove(kubeConfigPath)
+		err = f.Close()
+		if err == nil {
+			err = os.Remove(kubeConfigPath)
+		}
 		return nil, err
 	}
 
