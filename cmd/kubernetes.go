@@ -347,9 +347,7 @@ func loadCachedKubeConfig(id string) (*clientauth.ExecCredential, error) {
 		return nil, err
 	}
 
-	defer func() {
-		_ = f.Close()
-	}()
+	defer f.Close()
 
 	var execCredential *clientauth.ExecCredential
 	if err := json.NewDecoder(f).Decode(&execCredential); err != nil {
