@@ -1,10 +1,10 @@
 VERSION := $(shell if ! git describe --tags 2>/dev/null; then \
-	grep -Po '(?<=^VERSION=)v.*$$' $$PWD/RELEASE.txt; \
+	grep '^VERSION=' $$PWD/RELEASE.txt|cut -d'=' -f2-; \
 fi; \
 )
 
 GIT_COMMIT := $(shell if ! git rev-list -1 HEAD 2>/dev/null; then \
-	grep -Po '(?<=^GIT_COMMIT=)\w*$$' $$PWD/RELEASE.txt; \
+	grep '^GIT_COMMIT=' $$PWD/RELEASE.txt|cut -d'=' -f2-; \
 fi; \
 )
 
