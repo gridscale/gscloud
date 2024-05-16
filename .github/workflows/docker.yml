@@ -1,0 +1,41 @@
+name: Docker
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create RELEASE.txt
+        run: |
+          echo "GIT_COMMIT=${{ github.sha }}" > RELEASE.txt
+          echo "VERSION=${{ github.ref_name }}" >> RELEASE.txt
+          cat RELEASE.txt
+
+      - name: Login to GitHub registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ github.actor }}
+          password:  ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+      
+      - name: Build and push Docker container to GitHub registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          labels: |
+            git_commit=${{ github.sha }}
+            version=${{ github.ref_name }}
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
