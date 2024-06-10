@@ -272,6 +272,32 @@ type NetworkUpdateRequest struct {
 	DHCPReservedSubnet *[]string `json:"dhcp_reserved_subnet,omitempty"`
 }
 
+// NetworkUpdatePutRequest represents a PUT request for updating a network.
+type NetworkUpdatePutRequest struct {
+	// New name.
+	Name string `json:"name"`
+
+	// L2Security.
+	L2Security bool `json:"l2security"`
+
+	// List of labels.
+	Labels *[]string `json:"labels"`
+
+	// Defines the information if dhcp is activated for this network or not.
+	DHCPActive *bool `json:"dhcp_active"`
+
+	// The general IP Range configured for this network (/24 for private networks).
+	DHCPRange *string `json:"dhcp_range"`
+
+	// The ip reserved and communicated by the dhcp service to be the default gateway.
+	DHCPGateway *string `json:"dhcp_gateway"`
+
+	DHCPDNS *string `json:"dhcp_dns"`
+
+	// Subrange within the ip range.
+	DHCPReservedSubnet *[]string `json:"dhcp_reserved_subnet"`
+}
+
 // PinnedServerList hold a list of pinned server with corresponding DCHP IP.
 type PinnedServerList struct {
 	// List of server and it's assigned DHCP IP
@@ -333,6 +359,22 @@ func (c *Client) DeleteNetwork(ctx context.Context, id string) error {
 //
 // See: https://gridscale.io/en//api-documentation/index.html#operation/updateNetwork
 func (c *Client) UpdateNetwork(ctx context.Context, id string, body NetworkUpdateRequest) error {
+	if !isValidUUID(id) {
+		return errors.New("'id' is invalid")
+	}
+	r := gsRequest{
+		uri:    path.Join(apiNetworkBase, id),
+		method: http.MethodPatch,
+		body:   body,
+	}
+	return r.execute(ctx, *c, nil)
+}
+
+// PutUpdateNetwork updates a specific network based on given id. This method uses PUT mechanism, which means all fields
+// must be provided, even if they are not changed. If you want to update only some fields, use UpdateNetwork method instead.
+//
+// See: https://gridscale.io/en//api-documentation/index.html#operation/updateNetwork
+func (c *Client) PutUpdateNetwork(ctx context.Context, id string, body NetworkUpdatePutRequest) error {
 	if !isValidUUID(id) {
 		return errors.New("'id' is invalid")
 	}

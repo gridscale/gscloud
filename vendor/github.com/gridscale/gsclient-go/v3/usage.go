@@ -15,7 +15,7 @@ type UsageOperator interface {
 	GetDistributedStoragesUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (DistributedStoragesUsage, error)
 	GetRocketStoragesUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (RocketStoragesUsage, error)
 	GetStorageBackupsUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (StorageBackupsUsage, error)
-	etSnapshotsUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (SnapshotsUsage, error)
+	GetSnapshotsUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (SnapshotsUsage, error)
 	GetTemplatesUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (TemplatesUsage, error)
 	GetISOImagesUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (ISOImagesUsage, error)
 	GetIPsUsage(ctx context.Context, queryLevel usageQueryLevel, fromTime GSTime, toTime *GSTime, withoutDeleted bool, intervalVariable string) (IPsUsage, error)

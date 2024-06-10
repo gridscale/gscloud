@@ -70,6 +70,15 @@ type ServerProperties struct {
 	// Helps to identify which data center an object belongs to.
 	LocationUUID string `json:"location_uuid"`
 
+	// The human-readable name of the location. It supports the full UTF-8 character set, with a maximum of 64 characters.
+	LocationCountry string `json:"location_country"`
+
+	// Uses IATA airport code, which works as a location identifier.
+	LocationIata string `json:"location_iata"`
+
+	// The human-readable name of the location. It supports the full UTF-8 character set, with a maximum of 64 characters.
+	LocationName string `json:"location_name"`
+
 	// The power status of the server.
 	Power bool `json:"power"`
 
