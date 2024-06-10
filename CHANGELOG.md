@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.13.1 (2024-06-10)
+
+IMPROVEMENTS:
+- Fix default Mac config location in README [PR #172](https://github.com/gridscale/gscloud/pull/172).
+- Build docker image on release [PR #174](https://github.com/gridscale/gscloud/pull/174).
+
+FIXED:
+- Fix windows file access handling [PR #173](https://github.com/gridscale/gscloud/pull/173).
+
 ## v0.13.0 (2023-05-16)
 
 FEATURES:
