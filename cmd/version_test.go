@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -21,6 +21,6 @@ func Test_VersionCmdOutput(t *testing.T) {
 	versionCmd.Run(new(cobra.Command), []string{})
 	w.Close()
 
-	out, _ := ioutil.ReadAll(r)
+	out, _ := io.ReadAll(r)
 	assert.Equal(t, expectedOutput, string(out))
 }

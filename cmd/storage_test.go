@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 	"time"
@@ -124,7 +124,7 @@ func Test_StorageListCmd(t *testing.T) {
 		resetFlags()
 
 		w.Close()
-		out, _ := ioutil.ReadAll(r)
+		out, _ := io.ReadAll(r)
 		assert.Equal(t, test.expectedOutput, string(out))
 	}
 }
@@ -144,6 +144,6 @@ func Test_StorageCmdDelete(t *testing.T) {
 	cmd(new(cobra.Command), []string{"rm", mockStorage.Properties.ObjectUUID})
 
 	w.Close()
-	out, _ := ioutil.ReadAll(r)
+	out, _ := io.ReadAll(r)
 	assert.Equal(t, err.expectedOutput, string(out))
 }

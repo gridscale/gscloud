@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -120,7 +120,7 @@ func Test_ServerCommmandDelete(t *testing.T) {
 		cmd := serverRmCmd.RunE
 		cmd(new(cobra.Command), []string{"rm", mockServer.Properties.ObjectUUID})
 		w.Close()
-		out, _ := ioutil.ReadAll(r)
+		out, _ := io.ReadAll(r)
 		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
 			assert.Equal(t, tc.expectedOutput, string(out))
@@ -172,7 +172,7 @@ func Test_ServerCommmandLs(t *testing.T) {
 		cmd := serverLsCmd.RunE
 		cmd(new(cobra.Command), []string{"ls"})
 		w.Close()
-		out, _ := ioutil.ReadAll(r)
+		out, _ := io.ReadAll(r)
 		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
 			assert.Contains(t, string(out), tc.expectedPartOfOutput)
@@ -218,7 +218,7 @@ func Test_ServerCommmandOn(t *testing.T) {
 		cmd := serverOnCmd.RunE
 		cmd(new(cobra.Command), []string{"on", mockServer.Properties.ObjectUUID})
 		w.Close()
-		out, _ := ioutil.ReadAll(r)
+		out, _ := io.ReadAll(r)
 		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
 			assert.Equal(t, tc.expectedOutput, string(out))
@@ -280,7 +280,7 @@ func Test_ServerCommmandOff(t *testing.T) {
 		cmd := serverOffCmd.RunE
 		cmd(new(cobra.Command), []string{"off", mockServer.Properties.ObjectUUID})
 		w.Close()
-		out, _ := ioutil.ReadAll(r)
+		out, _ := io.ReadAll(r)
 		assert.Equal(t, tc.expectedFatal, fatal)
 		if tc.isSuccessful {
 			assert.Equal(t, tc.expectedOutput, string(out))

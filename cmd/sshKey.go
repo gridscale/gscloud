@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/gridscale/gsclient-go/v3"
@@ -76,7 +75,7 @@ var sshKeyAddCmd = &cobra.Command{
 	Short: "Add a new SSH key",
 	Long:  `Create a new SSH key.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		publicKey, err := ioutil.ReadFile(sshKeyFlags.pubKeyFile)
+		publicKey, err := os.ReadFile(sshKeyFlags.pubKeyFile)
 		if err != nil {
 			return NewError(cmd, "Error reading file", err)
 		}

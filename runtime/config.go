@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -83,7 +82,7 @@ func WriteConfig(conf *Config, filePath string) error {
 
 	c, _ := yaml.Marshal(conf)
 
-	err = ioutil.WriteFile(filePath, c, 0644)
+	err = os.WriteFile(filePath, c, 0644)
 	if err != nil {
 		return err
 	}
