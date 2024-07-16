@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.13.2 (2024-07-16)
+
+FIXED:
+- Fix invalid kubeconfig error when malformed kubeconfig string is present [PR #176](https://github.com/gridscale/gscloud/pull/176).
+
 ## v0.13.1 (2024-06-10)
 
 IMPROVEMENTS:
