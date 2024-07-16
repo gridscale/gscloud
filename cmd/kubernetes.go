@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/gridscale/gscloud/render"
@@ -298,7 +299,10 @@ func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (kube
 	}
 
 	if len(platformService.Properties.Credentials) != 0 {
-		err := yaml.Unmarshal([]byte(platformService.Properties.Credentials[0].KubeConfig), &kc)
+		kubeconfigStr := platformService.Properties.Credentials[0].KubeConfig
+		// replace "\\n" with "\n" in kubeconfig (if present)
+		kubeconfigStr = strings.ReplaceAll(kubeconfigStr, "\\n", "\n")
+		err := yaml.Unmarshal([]byte(kubeconfigStr), &kc)
 		if err != nil {
 			return kubeConfig{}, time.Time{}, err
 		}
