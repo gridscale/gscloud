@@ -91,6 +91,48 @@ var getKubernetesReleasesCmd = &cobra.Command{
 	},
 }
 
+var getKubernetesVersionsCmd = &cobra.Command{
+	Use:   "versions",
+	Short: "Get available GS Kubernetes versions",
+	Long:  "Prints all available GS Kubernetes versions.",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := context.Background()
+		out := new(bytes.Buffer)
+		op := rt.PaaSOperator()
+		paasTemplates, err := op.GetPaaSTemplateList(ctx)
+		if err != nil {
+			return NewError(cmd, "Could not get get list of Kubernetes versions", err)
+		}
+
+		var versions []string
+		for _, template := range paasTemplates {
+			if template.Properties.Flavour == "kubernetes" {
+				versions = append(versions, template.Properties.Version)
+			}
+		}
+		sort.Sort(sort.Reverse(utils.StringSorter(versions)))
+		if !rootFlags.json {
+			heading := []string{"versions"}
+			var rows [][]string
+			for _, ver := range versions {
+				rows = append(rows, []string{ver})
+			}
+			render.AsTable(out, heading, rows, renderOpts)
+			if rootFlags.quiet {
+				for _, ver := range versions {
+					fmt.Println(ver)
+				}
+				return nil
+			}
+
+		} else {
+			render.AsJSON(out, versions)
+		}
+		fmt.Print(out)
+		return nil
+	},
+}
+
 func clusterLsCmdRun(cmd *cobra.Command, args []string) error {
 	paasOp := rt.PaaSOperator()
 	ctx := context.Background()
@@ -338,7 +380,7 @@ func init() {
 	execCredentialCmd.MarkFlagRequired("cluster")
 	clusterCmd.AddCommand(execCredentialCmd, clusterLsCmd)
 
-	kubernetesCmd.AddCommand(clusterCmd, getKubernetesReleasesCmd)
+	kubernetesCmd.AddCommand(clusterCmd, getKubernetesReleasesCmd, getKubernetesVersionsCmd)
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
