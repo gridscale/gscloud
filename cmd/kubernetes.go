@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gridscale/gsclient-go/v3"
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
 	"github.com/gridscale/gscloud/utils"
@@ -88,6 +89,62 @@ var getKubernetesReleasesCmd = &cobra.Command{
 		fmt.Print(out)
 		return nil
 	},
+}
+
+func clusterLsCmdRun(cmd *cobra.Command, args []string) error {
+	paasOp := rt.PaaSOperator()
+	ctx := context.Background()
+	out := new(bytes.Buffer)
+	paasList, err := paasOp.GetPaaSServiceList(ctx)
+	if err != nil {
+		return NewError(cmd, "Could not get list of k8s cluster", err)
+	}
+	clusterList := []gsclient.PaaSService{}
+	for _, paas := range paasList {
+		if paas.Properties.ServiceTemplateCategory == "kubernetes" {
+			clusterList = append(clusterList, paas)
+		}
+	}
+	var rows [][]string
+	if !rootFlags.json {
+		heading := []string{"id", "name", "status", "service template UUID", "changed", "parameters"}
+		for _, cluster := range clusterList {
+			parameters, err := json.Marshal(cluster.Properties.Parameters)
+			if err != nil {
+				panic(err)
+			}
+			fill := [][]string{
+				{
+					cluster.Properties.ObjectUUID,
+					cluster.Properties.Name,
+					cluster.Properties.Status,
+					cluster.Properties.ServiceTemplateUUID,
+					cluster.Properties.ChangeTime.Local().Format(time.RFC3339),
+					// Print parameters as json string
+					string(parameters),
+				},
+			}
+			rows = append(rows, fill...)
+		}
+		if rootFlags.quiet {
+			for _, info := range rows {
+				fmt.Println(info[0])
+			}
+		} else {
+			render.AsTable(out, heading, rows, renderOpts)
+		}
+	} else {
+		render.AsJSON(out, clusterList)
+	}
+	fmt.Print(out)
+	return nil
+}
+
+var clusterLsCmd = &cobra.Command{
+	Use:   "ls",
+	Short: "List Kubernetes clusters",
+	Long:  "List Kubernetes clusters.",
+	RunE:  clusterLsCmdRun,
 }
 
 // saveKubeconfigCmd represents the kubeconfig command
@@ -279,7 +336,7 @@ func init() {
 	execCredentialCmd.Flags().String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	execCredentialCmd.Flags().String("cluster", "", "The cluster's UUID")
 	execCredentialCmd.MarkFlagRequired("cluster")
-	clusterCmd.AddCommand(execCredentialCmd)
+	clusterCmd.AddCommand(execCredentialCmd, clusterLsCmd)
 
 	kubernetesCmd.AddCommand(clusterCmd, getKubernetesReleasesCmd)
 	rootCmd.AddCommand(kubernetesCmd)
