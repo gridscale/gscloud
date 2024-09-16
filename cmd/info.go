@@ -129,14 +129,19 @@ Show summary for a given account:
 
 		var wg sync.WaitGroup
 		ch := make(chan objectCount)
+		ctxWithTimeout := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctxWithTimeout, cancel = context.WithTimeout(ctxWithTimeout, rootFlags.timeout)
+			defer cancel()
+		}
 
 		for k, v := range funcs {
 			wg.Add(1)
-			cCopy := context.Background()
 			go func(obj string, f func(context.Context, *gsclient.Client) (map[string]interface{}, error)) {
 				defer wg.Done()
 
-				agg, err := f(cCopy, client)
+				agg, err := f(ctxWithTimeout, client)
 				if err != nil {
 					ch <- objectCount{obj, nil, NewError(cmd, fmt.Sprintf("Could not get %s", obj), err)}
 				}

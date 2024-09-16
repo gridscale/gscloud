@@ -33,6 +33,11 @@ var sshKeyLsCmd = &cobra.Command{
 	Long:    `List SSH key objects.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		op := rt.SSHKeyOperator()
 		sshkeys, err := op.GetSshkeyList(ctx)
@@ -80,6 +85,11 @@ var sshKeyAddCmd = &cobra.Command{
 			return NewError(cmd, "Error reading file", err)
 		}
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		op := rt.SSHKeyOperator()
 		_, err = op.CreateSshkey(ctx, gsclient.SshkeyCreateRequest{
 			Name:   sshKeyFlags.name,
@@ -100,6 +110,11 @@ var sshKeyRmCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		op := rt.SSHKeyOperator()
 		err := op.DeleteSshkey(ctx, args[0])
 		if err != nil {

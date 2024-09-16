@@ -33,6 +33,11 @@ var networkLsCmd = &cobra.Command{
 	Long:    `List networks.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		networkOps := rt.NetworkOperator()
 		networks, err := networkOps.GetNetworkList(ctx)
@@ -91,6 +96,11 @@ Create a network:
 
 		networkOp := rt.NetworkOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		network, err := networkOp.CreateNetwork(ctx, gsclient.NetworkCreateRequest{
 			Name: networkFlags.networkName,
 		})
@@ -115,6 +125,11 @@ var networkRmCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		networkOps := rt.NetworkOperator()
 		err := networkOps.DeleteNetwork(ctx, args[0])
 		if err != nil {

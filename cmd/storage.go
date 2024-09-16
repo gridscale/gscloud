@@ -40,6 +40,11 @@ var storageLsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storageOp := rt.StorageOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		storages, err := storageOp.GetStorageList(ctx)
 		if err != nil {
@@ -106,6 +111,11 @@ Shrink a storage:
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		storageOp := rt.StorageOperator()
 		updateReq := gsclient.StorageUpdateRequest{}
 		if len(storageFlags.name) > 0 {
@@ -145,6 +155,11 @@ var storageRmCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storageOp := rt.StorageOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		err := storageOp.DeleteStorage(ctx, args[0])
 		if err != nil {
 			return NewError(cmd, "Deleting storage failed", err)

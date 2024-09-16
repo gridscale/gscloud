@@ -26,6 +26,11 @@ var templateLsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		templateOp := rt.TemplateOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		templates, err := templateOp.GetTemplateList(ctx)
 		if err != nil {
@@ -70,6 +75,11 @@ var templateRmCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		storageOp := rt.TemplateOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		err := storageOp.DeleteTemplate(ctx, args[0])
 		if err != nil {
 			return NewError(cmd, "Deleting template failed", err)
