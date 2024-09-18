@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.14.0 (2024-09-18)
+
+FEATURES:
+- Allow to set timeout via `--timeout` flag [PR #179](https://github.com/gridscale/gscloud/pull/179).
+- List gridscale k8s versions via `$ gscloud kubernetes versions` [PR #178](https://github.com/gridscale/gscloud/pull/178).
+- List k8s cluster via `$ gscloud kubernetes cluster ls` [PR #177](https://github.com/gridscale/gscloud/pull/177).
+
 ## v0.13.2 (2024-07-16)
 
 FIXED:
