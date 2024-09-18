@@ -25,10 +25,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.RELEASE_SIGNING_KEY }}
           passphrase: ${{ secrets.RELEASE_SIGNING_KEY_PASSPHRASE }}
-
-      - name: Set GPG_TTY
-        run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
-
+      
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
@@ -37,4 +34,3 @@ jobs:
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_TTY: ${{ env.GPG_TTY }}
