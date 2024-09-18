@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gridscale/gscloud/render"
 	"github.com/gridscale/gscloud/runtime"
@@ -35,6 +36,8 @@ type rootCmdFlags struct {
 	json       bool
 	quiet      bool
 	debug      bool
+	timeoutStr string
+	timeout    time.Duration
 }
 
 var (
@@ -182,6 +185,17 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&rootFlags.quiet, "quiet", "q", false, "Print only object IDs")
 	rootCmd.PersistentFlags().BoolVar(&rootFlags.debug, "debug", false, "Debug mode")
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
+	rootCmd.PersistentFlags().StringVar(&rootFlags.timeoutStr, "timeout", "", "Timeout for API requests. Examples: 10s, 10m, 1h")
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if rootFlags.timeoutStr != "" {
+			var err error
+			rootFlags.timeout, err = time.ParseDuration(rootFlags.timeoutStr)
+			if err != nil {
+				return fmt.Errorf("invalid timeout: %s", err)
+			}
+		}
+		return nil
+	}
 }
 
 func exists(path string) bool {

@@ -55,6 +55,11 @@ var getKubernetesReleasesCmd = &cobra.Command{
 	Long:  "Prints all available Kubernetes releases. The latest three releases are supported.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
 		paasTemplates, err := op.GetPaaSTemplateList(ctx)
@@ -97,6 +102,11 @@ var getKubernetesVersionsCmd = &cobra.Command{
 	Long:  "Prints all available GS Kubernetes versions.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
 		paasTemplates, err := op.GetPaaSTemplateList(ctx)
@@ -136,6 +146,11 @@ var getKubernetesVersionsCmd = &cobra.Command{
 func clusterLsCmdRun(cmd *cobra.Command, args []string) error {
 	paasOp := rt.PaaSOperator()
 	ctx := context.Background()
+	if rootFlags.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+		defer cancel()
+	}
 	out := new(bytes.Buffer)
 	paasList, err := paasOp.GetPaaSServiceList(ctx)
 	if err != nil {
@@ -201,6 +216,12 @@ KUBECONFIG
 	Specifies the path to the kubeconfig. Gets overriden by --kubeconfig
 	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
 		credentialPlugin, _ := cmd.Flags().GetBool("credential-plugin")
@@ -225,7 +246,7 @@ KUBECONFIG
 		}
 
 		op := rt.KubernetesOperator()
-		newKubeConfig, _, err := fetchKubeConfigFromProvider(op, clusterID)
+		newKubeConfig, _, err := fetchKubeConfigFromProvider(ctx, op, clusterID)
 		if err != nil {
 			return NewError(cmd, "Invalid kubeconfig", err)
 		}
@@ -302,6 +323,12 @@ var execCredentialCmd = &cobra.Command{
 	Short: "Provides client credentials to kubectl command",
 	Long:  "exec-credential provides client credentials to kubectl command.",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		kubeConfigFile, _ := cmd.Flags().GetString("kubeconfig")
 		clusterID, _ := cmd.Flags().GetString("cluster")
 
@@ -323,7 +350,7 @@ var execCredentialCmd = &cobra.Command{
 		op := rt.KubernetesOperator()
 
 		if execCredential == nil {
-			newKubeConfig, expirationTime, err := fetchKubeConfigFromProvider(op, clusterID)
+			newKubeConfig, expirationTime, err := fetchKubeConfigFromProvider(ctx, op, clusterID)
 			if err != nil {
 				return NewError(cmd, "Could not fetch kubeconfig", err)
 			}
@@ -384,15 +411,15 @@ func init() {
 	rootCmd.AddCommand(kubernetesCmd)
 }
 
-func fetchKubeConfigFromProvider(op runtime.KubernetesOperator, id string) (kubeConfig, time.Time, error) {
+func fetchKubeConfigFromProvider(ctx context.Context, op runtime.KubernetesOperator, id string) (kubeConfig, time.Time, error) {
 	var kc kubeConfig
 	var expirationTime time.Time
 
-	if err := op.RenewK8sCredentials(context.Background(), id); err != nil {
+	if err := op.RenewK8sCredentials(ctx, id); err != nil {
 		return kubeConfig{}, time.Time{}, err
 	}
 
-	platformService, err := op.GetPaaSService(context.Background(), id)
+	platformService, err := op.GetPaaSService(ctx, id)
 	if err != nil {
 		return kubeConfig{}, time.Time{}, err
 	}

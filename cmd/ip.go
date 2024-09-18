@@ -47,6 +47,11 @@ var ipLsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ipOp := rt.IPOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipAddresses, err := ipOp.GetIPList(ctx)
 		if err != nil {
 			return NewError(cmd, "Could not get list of IP addresses", err)
@@ -123,6 +128,11 @@ Delete by address:
 		var id string
 		var err error
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipOp := rt.IPOperator()
 		address := net.ParseIP(args[0])
 		if address != nil {
@@ -160,6 +170,11 @@ Set PTR entry and name on an existing IP:
 		var err error
 		address := net.ParseIP(args[0])
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipOp := rt.IPOperator()
 		if address != nil {
 			id, err = idForAddress(ctx, address, ipOp)
@@ -223,6 +238,11 @@ Create a new IPv4 address:
 		}
 		ipOp := rt.IPOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipAddress, err := ipOp.CreateIP(ctx, gsclient.IPCreateRequest{
 			Family:     family,
 			Failover:   ipFlags.failover,
@@ -264,6 +284,11 @@ Releasing an unassigned IP address will exit with status code 0:
 		var ipID string
 		var err error
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipOp := rt.IPOperator()
 		address := net.ParseIP(args[0])
 		if address != nil {
@@ -319,6 +344,11 @@ Assign an IPv4 address to a server or load balancer:
 		var err error
 
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipOp := rt.IPOperator()
 		addr := net.ParseIP(args[0])
 		if addr != nil {

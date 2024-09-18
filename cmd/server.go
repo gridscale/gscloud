@@ -46,6 +46,11 @@ var serverCmd = &cobra.Command{
 func serverLsCmdRun(cmd *cobra.Command, args []string) error {
 	serverOp := rt.ServerOperator()
 	ctx := context.Background()
+	if rootFlags.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+		defer cancel()
+	}
 	out := new(bytes.Buffer)
 	servers, err := serverOp.GetServerList(ctx)
 	if err != nil {
@@ -95,6 +100,11 @@ var serverLsCmd = &cobra.Command{
 
 func serverOnCmdRun(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
+	if rootFlags.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+		defer cancel()
+	}
 	serverOp := rt.ServerOperator()
 	err := serverOp.StartServer(ctx, args[0])
 	if err != nil {
@@ -112,6 +122,11 @@ var serverOnCmd = &cobra.Command{
 
 func serverOffCmdRun(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
+	if rootFlags.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+		defer cancel()
+	}
 	serverOp := rt.ServerOperator()
 	if serverFlags.forceShutdown {
 		err := serverOp.StopServer(ctx, args[0])
@@ -137,6 +152,11 @@ var serverOffCmd = &cobra.Command{
 func serverRmCmdRun(cmd *cobra.Command, args []string) error {
 	serverOp := rt.ServerOperator()
 	ctx := context.Background()
+	if rootFlags.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+		defer cancel()
+	}
 	id := args[0]
 	s, err := serverOp.GetServer(ctx, id)
 	if err != nil {
@@ -287,6 +307,11 @@ To create a server without any storage just omit --with-template flag:
 
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		profile, err := toHardwareProfile(serverFlags.profile)
 		if err != nil {
 			return NewError(cmd, "Cannot create server", err)
@@ -393,6 +418,11 @@ var serverSetCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		serverOp := rt.ServerOperator()
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		serverUpdateRequest := gsclient.ServerUpdateRequest{
 			Cores:  serverFlags.cores,
 			Memory: serverFlags.memory,
@@ -426,6 +456,11 @@ var serverAssignCmd = &cobra.Command{
 
 		serverID = args[0]
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		ipOp := rt.IPOperator()
 		addr := net.ParseIP(args[1])
 		if addr != nil {
@@ -464,6 +499,11 @@ Only list request IDs of a server (in case you need to tell suport what happened
 	RunE: func(cmd *cobra.Command, args []string) error {
 		serverID := args[0]
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		serverOp := rt.ServerOperator()
 		events, err := serverOp.GetServerEventList(ctx, serverID)
 		if err != nil {

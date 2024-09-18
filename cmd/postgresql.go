@@ -35,6 +35,11 @@ var postgresReleasesCmd = &cobra.Command{
 	Long:  "Returns the available PostgreSQL releases",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+		if rootFlags.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, rootFlags.timeout)
+			defer cancel()
+		}
 		out := new(bytes.Buffer)
 		op := rt.PaaSOperator()
 		paasTemplates, err := op.GetPaaSTemplateList(ctx)
