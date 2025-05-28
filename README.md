@@ -46,10 +46,19 @@ projects:
   url: https://api.gridscale.io
 ```
 
+You can specify a custom location for the config file by using the `--config` flag, which
+allows you to keep multiple configs per project or environment. For example:
+
+```shelld
+gscloud --config production.yml info
+gscloud --config staging.yml info
+```
+
 Following environment variables can also be used instead of config file:
 - `GRIDSCALE_UUID` - corresponds to `userId`
 - `GRIDSCALE_TOKEN` - corresponds to `token`
 - `GRIDSCALE_URL` - corresponds to `url`
+
 **Note**: If the config file and the environment variables are used at the same time, the config file will be ignored and the environment variables will be used.
 
 ## Kubernetes
