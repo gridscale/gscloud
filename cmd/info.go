@@ -30,11 +30,11 @@ Show summary for a given account:
 	API token  <redacted>
 	URL        https://api.gridscale.io
 	Getting information about used resources…
-	OBJECT             COUNT
-	Platform services  0
-	Servers            18
-	Storages           24
-	IP addresses       2
+	OBJECT             COUNT  CORES  MEMORY (GiB)  CAPACITY (GiB)
+	Platform services  0      -      -             -
+	Servers            18     36     72            -
+	Storages           24     -      -             240
+	IP addresses       2      -      -             -
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		type output struct {
@@ -156,14 +156,28 @@ Show summary for a given account:
 
 		out := new(bytes.Buffer)
 		if !rootFlags.json {
-			heading := []string{"object", "count"}
+			heading := []string{"object", "count", "cores", "memory (GiB)", "capacity (GiB)"}
 			var rows [][]string
 			for v := range ch {
 				if v.Err != nil {
 					return v.Err
 				}
 				count := v.Agg["count"].(int)
-				rows = append(rows, []string{v.Obj, strconv.Itoa(count)})
+				cores := "-"
+				memory := "-"
+				capacity := "-"
+
+				if val, ok := v.Agg["cores"]; ok {
+					cores = strconv.Itoa(val.(int))
+				}
+				if val, ok := v.Agg["memory"]; ok {
+					memory = strconv.Itoa(val.(int))
+				}
+				if val, ok := v.Agg["capacity"]; ok {
+					capacity = strconv.Itoa(val.(int))
+				}
+
+				rows = append(rows, []string{v.Obj, strconv.Itoa(count), cores, memory, capacity})
 			}
 			render.AsTable(out, heading, rows, renderOpts)
 		} else {
